@@ -128,3 +128,4 @@ a{color:#1DF08A}
 .vote.on::after,.pcard.on::after{content:'Selected';font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase}
 .chip.on::before{content:'✓ '}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.pv,.pop,.bar>i,.hours .hb i,.pfill{animation:none!important;transition:none!important}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
