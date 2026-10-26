@@ -13,14 +13,14 @@
  * No auth, no persistence. Fine for a classroom of ~8. Set CORS_ORIGIN or leave * .
  */
 import http from 'node:http';
-import { parsePrinciples, snapshot } from './tally.js';
+import { parseDefenses, parsePrinciples, snapshot } from './tally.js';
 
 const PORT = Number(process.env.PORT || 8787);
 const CORS = process.env.CORS_ORIGIN || '*';
 const ROOM_TTL_MS = Number(process.env.ROOM_TTL_MS || 6 * 60 * 60 * 1000);
 const CORS_HEADERS = 'Content-Type, ngrok-skip-browser-warning';
 
-/** @typedef {{ open: boolean; votes: { principles: string[]; at: string }[]; clients: Set<import('node:http').ServerResponse>; created: number }} Room */
+/** @typedef {{ open: boolean; votes: { principles: string[]; defenses: Record<string, string>; at: string }[]; clients: Set<import('node:http').ServerResponse>; created: number }} Room */
 
 /** @type {Map<string, Room>} */
 const rooms = new Map();
@@ -155,7 +155,8 @@ const server = http.createServer(async (req, res) => {
     if (body === null) return sendJson(res, 400, { error: 'invalid json' });
     const principles = parsePrinciples(body.principles);
     if (!principles) return sendJson(res, 400, { error: 'need exactly 3 distinct known principles' });
-    r.votes.push({ principles, at: new Date().toISOString() });
+    const defenses = parseDefenses(body.defenses, principles);
+    r.votes.push({ principles, defenses, at: new Date().toISOString() });
     const snap = snapshot(r.votes, r.open);
     broadcast(r);
     return sendJson(res, 201, snap);

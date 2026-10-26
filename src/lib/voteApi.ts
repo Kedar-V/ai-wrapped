@@ -4,10 +4,16 @@ export interface LiveTallyRow {
   pct: number;
 }
 
+export interface LiveDefense {
+  principle: string;
+  text: string;
+}
+
 export interface LiveSnapshot {
   open: boolean;
   votes: number;
   tally: LiveTallyRow[];
+  defenses?: LiveDefense[];
 }
 
 const DEFAULT = 'http://localhost:8787';
@@ -97,10 +103,10 @@ async function json<T>(path: string, init?: RequestInit): Promise<T> {
 export const createRoom = () => json<{ code: string }>('/rooms', { method: 'POST' });
 export const getActiveRoom = () => json<{ code: string; open: boolean }>('/active');
 export const getRoom = (code: string) => json<LiveSnapshot>(`/rooms/${code.toUpperCase()}`);
-export const postVote = (code: string, principles: string[]) =>
+export const postVote = (code: string, principles: string[], defenses?: Record<string, string>) =>
   json<LiveSnapshot>(`/rooms/${code.toUpperCase()}/votes`, {
     method: 'POST',
-    body: JSON.stringify({ principles }),
+    body: JSON.stringify({ principles, defenses: defenses || {} }),
   });
 export const stopRoom = (code: string) =>
   json<LiveSnapshot>(`/rooms/${code.toUpperCase()}/stop`, { method: 'POST' });

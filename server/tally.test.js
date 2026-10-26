@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { parsePrinciples, snapshot, tallyVotes } from './tally.js';
+import { parseDefenses, parsePrinciples, snapshot, tallyVotes } from './tally.js';
 
 describe('parsePrinciples', () => {
   it('accepts three distinct valid principles', () => {
@@ -24,5 +24,19 @@ describe('tallyVotes', () => {
     assert.equal(t.find((x) => x.name === 'Validity')?.count, 3);
     assert.equal(t.find((x) => x.name === 'Privacy')?.count, 2);
     assert.equal(snapshot(votes, true).votes, 3);
+  });
+});
+
+describe('parseDefenses + snapshot', () => {
+  it('keeps trimmed defenses for chosen principles and lists them in the snapshot', () => {
+    const principles = ['Privacy', 'Autonomy', 'Transparency'];
+    const d = parseDefenses(
+      { Privacy: '  keep data close  ', Autonomy: 'choice', Extra: 'nope', Transparency: '' },
+      principles,
+    );
+    assert.deepEqual(d, { Privacy: 'keep data close', Autonomy: 'choice' });
+    const snap = snapshot([{ principles, defenses: d }], true);
+    assert.equal(snap.defenses.length, 2);
+    assert.equal(snap.defenses[0].principle, 'Privacy');
   });
 });

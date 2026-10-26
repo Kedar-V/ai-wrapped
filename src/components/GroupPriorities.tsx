@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
+import { DefenseCloud } from './DefenseCloud';
 import { createRoom, getActiveRoom, postVote, readVotedCode, streamRoom, takePendingRoom, writeVotedCode, type LiveSnapshot } from '../lib/voteApi';
 import { useAppStore } from '../store/useAppStore';
 
 /**
  * Live classroom poll: instructor hits Start poll; students pick three principles
  * and press Submit once. After submit, this browser is locked for that room.
+ * Defense sentences feed a live word cloud.
  */
 export function GroupPriorities() {
   const cPri = useAppStore((s) => s.cPri);
+  const cDef = useAppStore((s) => s.cDef);
   const pollLocked = useAppStore((s) => s.pollLocked);
   const set = useAppStore((s) => s.set);
   const [code, setCode] = useState('');
@@ -60,7 +63,7 @@ export function GroupPriorities() {
       writeVotedCode(null);
       set({ pollLocked: false });
       setCode(r.code);
-      setMsg('Poll open — students pick three principles, then Submit.');
+      setMsg('Poll open — pick three, write why, then Submit.');
     } catch (e) {
       setMsg(e instanceof Error ? e.message : String(e));
     } finally {
@@ -73,7 +76,8 @@ export function GroupPriorities() {
     setBusy(true);
     setMsg('');
     try {
-      const s = await postVote(code, cPri);
+      const defenses = Object.fromEntries(cPri.map((p) => [p, (cDef[p] || '').trim()]).filter(([, t]) => t));
+      const s = await postVote(code, cPri, defenses);
       setLive(s);
       writeVotedCode(code);
       set({ pollLocked: true });
@@ -116,7 +120,9 @@ export function GroupPriorities() {
 
       {code && live?.open && !pollLocked && (
         <div className="small muted">
-          {cPri.length === 3 ? 'Ready — press Submit vote (one submission per person).' : `Pick ${3 - cPri.length} more principle${3 - cPri.length === 1 ? '' : 's'} above, then Submit.`}
+          {cPri.length === 3
+            ? 'Add a one-line defense above, then Submit vote (once per person).'
+            : `Pick ${3 - cPri.length} more principle${3 - cPri.length === 1 ? '' : 's'}, defend them, then Submit.`}
         </div>
       )}
       {pollLocked && <div className="gap g">Your vote is in. Picks are locked for this poll.</div>}
@@ -139,6 +145,11 @@ export function GroupPriorities() {
           ))}
         </div>
       )}
+
+      <div>
+        <div className="eyebrow">Why · defense word cloud</div>
+        <DefenseCloud texts={(live?.defenses || []).map((d) => d.text)} />
+      </div>
 
       {msg && <div className="small muted" role="status">{msg}</div>}
     </div>
