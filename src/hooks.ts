@@ -7,17 +7,18 @@ import { featuresOf, PERSONAS } from './data/personas';
 import { scoreOf } from './lib/scoring';
 import { TH } from './data/model';
 
+/** Apply the current hash to the store. Call before first render so deep links survive. */
+export function syncFromHash() {
+  const k = window.location.hash.replace(/^#\/?/, '');
+  if (isScreen(k) && k !== useAppStore.getState().screen) useAppStore.getState().go(k);
+}
+
 /** Keep location.hash (#/welcome) and store.screen in sync, both directions. */
 export function useHashRoute() {
   const screen = useAppStore((s) => s.screen);
   useEffect(() => {
-    const read = () => {
-      const k = window.location.hash.replace(/^#\/?/, '');
-      if (isScreen(k) && k !== useAppStore.getState().screen) useAppStore.getState().go(k);
-    };
-    read();
-    window.addEventListener('hashchange', read);
-    return () => window.removeEventListener('hashchange', read);
+    window.addEventListener('hashchange', syncFromHash);
+    return () => window.removeEventListener('hashchange', syncFromHash);
   }, []);
   useEffect(() => {
     const want = '#/' + screen;

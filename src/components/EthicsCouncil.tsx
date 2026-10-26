@@ -1,5 +1,6 @@
 import { AFTER, BEFORE, FINALS, NEG_WHO, POLICIES, PRINCIPLES } from '../data/policies';
 import { useAppStore } from '../store/useAppStore';
+import { GroupPriorities } from './GroupPriorities';
 
 const STEPS = ['1 Principles', '2 Policy', '3 Negotiation', '4 Final vote', '5 Before and after'];
 
@@ -11,8 +12,9 @@ export function EthicsCouncil() {
   const covered = pol ? cPri.filter((p) => pol.sup.includes(p)) : [];
   const ok = [cPri.length === 3, !!cPol, true, !!cFinal, true][stp - 1];
   const toggle = (n: string) => {
-    if (cPri.includes(n)) set({ cPri: cPri.filter((x) => x !== n) });
-    else if (cPri.length < 3) set({ cPri: [...cPri, n] });
+    const cur = useAppStore.getState().cPri;
+    if (cur.includes(n)) set({ cPri: cur.filter((x) => x !== n) });
+    else if (cur.length < 3) set({ cPri: [...cur, n] });
   };
   const covMsg = pol && cPri.length === 3
     ? `Your policy serves ${covered.length} of your 3 priorities${covered.length ? ' (' + covered.join(', ') + ')' : ''}. ${covered.length < 2 ? 'Consider whether the policy matches what you said matters most.' : 'Good alignment.'}`
@@ -47,6 +49,7 @@ export function EthicsCouncil() {
               ))}
             </div>
           )}
+          <GroupPriorities />
         </>
       )}
 
@@ -118,6 +121,7 @@ export function EthicsCouncil() {
               <div className="small muted">Not real classroom data; no classroom backend exists.</div>
             </div>
           </div>
+          <GroupPriorities />
           <div className="card hi"><div className="disp h2">Who deserves an explanation, and when is an explanation simply not enough?</div></div>
         </>
       )}

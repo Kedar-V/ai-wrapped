@@ -17,6 +17,21 @@ npm test        # Vitest
 
 `welcome → persona → wrapped → think → explain → lab → matrix → trap → disclosure → council`, plus Instructor mode. Routes are hash based (`#/welcome`, `#/trap`, …) and stay in sync with the store. Use **Instructor mode** in the top bar for stage jumps, persona/stakeholder switching, trap reveals, discussion questions and the facilitator script. **Classroom view** scales the UI ~12% and requests fullscreen. **Reset demo** restores the initial state.
 
+## Group priorities (Ethics Council)
+
+There is no backend, so group results are pooled with files instead of a server:
+
+1. Each student picks three principles. They are saved in that browser's `localStorage` (anonymous random id, no names).
+2. Students click **Export my picks (CSV)** and send the file to the instructor.
+3. The instructor clicks **Import CSV files** on the Council page. The bar chart shows how many participants chose each principle. Invalid rows are ignored and duplicates are merged by id.
+4. Optional: **Export combined (cohort.csv)** and commit it as `public/cohort.csv`. It is loaded automatically and labeled as the published cohort.
+
+The chart is not live: it only reflects picks that were exported and imported. **Clear results in this browser** wipes stored and imported data.
+
+## Hosting on GitHub Pages
+
+The app is fully static with hash routing, so deep links such as `#/trap` work on Pages. `vite.config.ts` uses `base: './'`, so it works at any path. Push to `main`, then set Settings → Pages → Source to **GitHub Actions**; `.github/workflows/deploy.yml` tests, builds and publishes `dist/`. Fonts load from Google Fonts, so viewers need internet access.
+
 ## Shared model
 
 One rule, no hardcoded results (`src/lib/scoring.ts`):
