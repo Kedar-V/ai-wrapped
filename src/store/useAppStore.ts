@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import type { Grid, PresetId } from '../data/disclosure';
 import type { Cell } from '../data/matrix';
 import type { PersonaId } from '../data/personas';
-import type { PolicyId } from '../data/policies';
+import type { NegWho, PolicyId } from '../data/policies';
 import type { AnyScreen } from '../data/scripts';
 import type { StakeholderId } from '../data/stakeholders';
 import type { Features } from '../data/model';
@@ -49,6 +49,8 @@ export interface AppState {
   cDef: Record<string, string>;
   cPol: '' | PolicyId;
   cNeg: PolicyId;
+  /** Selected cell on the negotiation matrix. */
+  cNegSel: { who: NegWho; pid: PolicyId } | null;
   cFinal: string;
   discuss: boolean;
   ans: boolean;
@@ -65,7 +67,7 @@ export function initState(): AppState {
     stk: 'listener', corrected: false, restricted: false, delReq: false, purged: false, eng: null,
     adCamp: 'wellness', adStrat: 'behavioral', exStrat: 'engagement', audStep: 0, audCls: {},
     mView: 'current', mProp: null, asym: 0, trapStep: 0, vote: '', dGrid: null, dPre: 'current',
-    cStep: 1, cPri: [], cDef: {}, cPol: '', cNeg: 'B', cFinal: '', discuss: false, ans: false,
+    cStep: 1, cPri: [], cDef: {}, cPol: '', cNeg: 'B', cNegSel: { who: 'Listener', pid: 'B' }, cFinal: '', discuss: false, ans: false,
     pollLocked: false, finalLocked: false,
   };
 }

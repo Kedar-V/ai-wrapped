@@ -1,4 +1,18 @@
-import { AFTER, BEFORE, NEG_WHO, POLICIES, PRINCIPLES } from '../data/policies';
+import { Fragment } from 'react';
+import {
+  AFTER,
+  BEFORE,
+  NEG_LEAN,
+  NEG_WHO,
+  NEG_WHY,
+  POLICIES,
+  PRINCIPLES,
+  bestFor,
+  leanMeta,
+  leanTally,
+  type NegWho,
+  type PolicyId,
+} from '../data/policies';
 import { useAppStore } from '../store/useAppStore';
 import { FinalVotePoll } from './FinalVotePoll';
 import { GroupPriorities } from './GroupPriorities';
@@ -6,9 +20,11 @@ import { GroupPriorities } from './GroupPriorities';
 const STEPS = ['1 Principles', '2 Policy', '3 Negotiation', '4 Final vote', '5 Before and after'];
 
 export function EthicsCouncil() {
-  const { cStep: stp, cPri, cDef, cPol, cNeg, cFinal, cls, vote, pollLocked, set } = useAppStore();
+  const { cStep: stp, cPri, cDef, cPol, cNegSel, cFinal, cls, vote, pollLocked, set } = useAppStore();
   const pol = POLICIES.find((p) => p.id === cPol);
-  const neg = POLICIES.find((p) => p.id === cNeg)!;
+  const sel = cNegSel ?? { who: 'Listener' as NegWho, pid: 'B' as PolicyId };
+  const selPol = POLICIES.find((p) => p.id === sel.pid)!;
+  const selLean = leanMeta(NEG_LEAN[sel.pid][sel.who]);
   const covered = pol ? cPri.filter((p) => pol.sup.includes(p)) : [];
   const ok = [cPri.length === 3, !!cPol, true, !!cFinal, true][stp - 1];
   const toggle = (n: string) => {
@@ -60,8 +76,22 @@ export function EthicsCouncil() {
           <h2 className="disp h2">Choose a deployment policy.</h2>
           <div className="g2">
             {POLICIES.map((p) => (
-              <button key={p.id} className={'vote' + (cPol === p.id ? ' on' : '')} aria-pressed={cPol === p.id} onClick={() => set({ cPol: p.id, cNeg: p.id })}>
-                <b style={{ fontSize: 20 }}>{p.name}</b><span>{p.desc}</span><span className="small muted">Serves: {p.sup.join(', ')}</span>
+              <button
+                key={p.id}
+                className={'vote' + (cPol === p.id ? ' on' : '')}
+                aria-pressed={cPol === p.id}
+                onClick={() => set({ cPol: p.id, cNeg: p.id, cNegSel: { who: bestFor(p.id), pid: p.id } })}
+              >
+                <b style={{ fontSize: 20 }}>{p.name}</b>
+                <span>{p.desc}</span>
+                <span className="small muted">Rooted in three principles:</span>
+                {p.sup.map((name, i) => (
+                  <span key={name} className="small">
+                    <b>{name}</b> <span className="mono" style={{ color: '#1DF08A' }}>✓</span>
+                    <br />
+                    <span className="muted">{p.why[i]}</span>
+                  </span>
+                ))}
               </button>
             ))}
           </div>
@@ -70,18 +100,58 @@ export function EthicsCouncil() {
 
       {stp === 3 && (
         <>
-          <h2 className="disp h2">Stakeholder negotiation: {neg.name}</h2>
-          <div className="row" role="group" aria-label="Policy">{POLICIES.map((p) => <button key={p.id} className={'chip' + (cNeg === p.id ? ' on' : '')} aria-pressed={cNeg === p.id} onClick={() => set({ cNeg: p.id })}>Policy {p.id}</button>)}</div>
-          <div className="g2">
-            {NEG_WHO.map((who) => (
-              <div key={who} className="card">
-                <div className="h3">{who}</div>
-                <div className="gap g"><b>Strongest case for:</b> {neg.neg[who][0]}</div>
-                <div className="gap p"><b>Strongest case against:</b> {neg.neg[who][1]}</div>
-              </div>
-            ))}
+          <h2 className="disp h2">Who gains and who pays under each policy?</h2>
+          <p className="lead">Each policy is built to serve one stakeholder best and costs the others. Tap any cell to hear that stakeholder’s case.</p>
+          <div className="row small" style={{ flexWrap: 'wrap', gap: 10 }}>
+            <span className="tag t-low">▲ Helps</span><span className="muted">good for them</span>
+            <span className="tag t-med">◆ Trade-off</span><span className="muted">gains and loses</span>
+            <span className="tag t-high">▼ Hurts</span><span className="muted">worse off · illustrative judgments, not scores</span>
           </div>
-          <div className="small muted">No stakeholder holds one fixed view: each can value the benefit and fear the cost.</div>
+          <div className="scroll">
+            <div className="hgrid" role="grid" aria-label="Policy impact by stakeholder">
+              <div />
+              {POLICIES.map((p) => (
+                <div key={p.id} className="hhead" style={cPol === p.id ? { background: 'rgba(29,240,138,.12)' } : undefined}>
+                  <b>{p.short}</b>
+                  <span style={{ color: '#1DF08A' }}>★ Best for {bestFor(p.id)}</span>
+                  {cPol === p.id && <span style={{ color: '#1DF08A' }}>← your pick</span>}
+                </div>
+              ))}
+              {NEG_WHO.map((who) => (
+                <Fragment key={who}>
+                  <div className="hrow">{who}</div>
+                  {POLICIES.map((p) => {
+                    const L = leanMeta(NEG_LEAN[p.id][who]);
+                    const on = sel.who === who && sel.pid === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        className={'hcell ' + L.k + (on ? ' sel' : '')}
+                        onClick={() => set({ cNegSel: { who, pid: p.id }, cNeg: p.id })}
+                      >
+                        <b>{L.label}</b>
+                        <span className="small">{NEG_WHY[p.id][who]}</span>
+                      </button>
+                    );
+                  })}
+                </Fragment>
+              ))}
+              <div className="hrow" style={{ color: '#C4B5E3' }}>Tally ▲ ◆ ▼</div>
+              {POLICIES.map((p) => {
+                const t = leanTally(p.id);
+                return <div key={p.id} className="hsum">▲ {t.H} · ◆ {t.T} · ▼ {t.X}</div>;
+              })}
+            </div>
+          </div>
+          <div className="card pop" style={{ borderColor: '#1DF08A' }}>
+            <div className="eyebrow">Selected</div>
+            <div className="h3">{sel.who} under {selPol.short}</div>
+            <span className={'tag ' + selLean.tag} style={{ alignSelf: 'flex-start' }}>{selLean.label}</span>
+            <div className="gap g"><b>The case for</b> {selPol.neg[sel.who][0]}</div>
+            <div className="gap p"><b>The case against</b> {selPol.neg[sel.who][1]}</div>
+          </div>
+          <div className="small muted">Every policy has exactly one clear winner, and no policy wins for everyone. Choosing a policy means choosing who bears the cost.</div>
         </>
       )}
 

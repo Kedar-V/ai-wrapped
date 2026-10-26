@@ -132,6 +132,17 @@ a{color:#1DF08A}
 .chip,.btn.sm{min-height:44px}
 .ftile,.vote,.cellb,.inp{min-height:44px}
 @media (max-width:760px){.h1{font-size:clamp(40px,12vw,64px)}.card{padding:16px}.stat{font-size:44px}.acts{width:100%}}
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.hgrid{display:grid;grid-template-columns:130px repeat(4,minmax(160px,1fr));gap:8px;min-width:760px}
+.hhead{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:12px;font-size:15px;line-height:1.2}
+.hrow{display:flex;align-items:center;font-weight:700;padding:0 6px}
+.hcell{font:inherit;color:#F6F1FF;text-align:left;border-radius:14px;border:2px solid;padding:12px;min-height:84px;display:flex;flex-direction:column;gap:4px;cursor:pointer;background:transparent}
+.hcell b{font-size:15px}
+.hcell.gain{background:rgba(29,240,138,.14);border-color:rgba(29,240,138,.55)}
+.hcell.mixed{background:rgba(255,138,31,.14);border-color:rgba(255,138,31,.55)}
+.hcell.cost{background:rgba(255,79,122,.16);border-color:rgba(255,79,122,.6)}
+.hcell.sel{border-color:#F6F1FF;box-shadow:0 0 0 3px rgba(246,241,255,.35)}
+.hsum{padding:10px;font-size:14px;color:#D9CCF2;border-top:1px solid rgba(255,255,255,.16)}
 .cloud-block{display:flex;flex-direction:column;gap:10px;margin-top:8px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12)}
 .defense-board{display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:14px;background:rgba(10,5,22,.55);border:1px solid rgba(29,240,138,.35);min-height:100px}
 .defense-board.empty{align-items:center;justify-content:center}
