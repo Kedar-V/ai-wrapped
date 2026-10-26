@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { DefenseBoard } from './DefenseBoard';
-import { createRoom, getActiveRoom, postVote, readVotedCode, streamRoom, takePendingRoom, writeVotedCode, type LiveSnapshot } from '../lib/voteApi';
+import { createRoom, getActiveRoom, getRoom, postVote, readVotedCode, streamRoom, takePendingRoom, writeVotedCode, type LiveSnapshot } from '../lib/voteApi';
 import { useAppStore } from '../store/useAppStore';
 
 /**
@@ -50,12 +50,17 @@ export function GroupPriorities() {
 
   useEffect(() => {
     if (!code) return;
+    let cancelled = false;
+    // Seed state even if EventSource/ngrok flakes — Submit must not depend only on SSE.
+    void getRoom(code)
+      .then((s) => { if (!cancelled) { setLive(s); setMsg(''); } })
+      .catch((e: Error) => { if (!cancelled) setMsg(e.message); });
     const stop = streamRoom(
       code,
-      (s) => { setLive(s); },
+      (s) => { setLive(s); setMsg(''); },
       (e) => setMsg(e.message),
     );
-    return stop;
+    return () => { cancelled = true; stop(); };
   }, [code]);
 
   const startPoll = async () => {
@@ -80,7 +85,7 @@ export function GroupPriorities() {
   };
 
   const submit = async () => {
-    if (!code || !live?.open || pollLocked) return;
+    if (!code || pollLocked || live?.open === false) return;
     // Read latest store — avoids submitting empty defenses from a stale render.
     const { cPri: pri, cDef: def } = useAppStore.getState();
     if (pri.length !== 3) return;
@@ -110,7 +115,8 @@ export function GroupPriorities() {
   const voteCount = live?.votes ?? 0;
   const max = Math.max(1, ...rows.map((r) => r.count));
   const defensesReady = cPri.length === 3 && cPri.every((p) => (cDef[p] || '').trim().length > 0);
-  const canSubmit = !!code && !!live?.open && defensesReady && !pollLocked && !busy;
+  // Enable Submit whenever the poll isn't known-closed (SSE blips shouldn't block voting).
+  const canSubmit = !!code && live?.open !== false && defensesReady && !pollLocked && !busy;
 
   return (
     <div className="card" aria-labelledby="gp-title">
