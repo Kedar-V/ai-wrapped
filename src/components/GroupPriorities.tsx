@@ -17,6 +17,9 @@ export function GroupPriorities() {
   const [live, setLive] = useState<LiveSnapshot | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
+  const [password, setPassword] = useState(() => {
+    try { return sessionStorage.getItem('aiw.pollPassword') || ''; } catch { return ''; }
+  });
 
   // Deep link (?room=) or wait for instructor's active poll
   useEffect(() => {
@@ -56,16 +59,15 @@ export function GroupPriorities() {
   }, [code]);
 
   const startPoll = async () => {
-    let password = '';
-    try { password = sessionStorage.getItem('aiw.pollPassword') || ''; } catch { /* ignore */ }
-    const entered = window.prompt('Instructor password (required to start or reset a poll)', password);
-    if (entered === null) return; // cancelled
-    password = entered;
+    if (!password.trim()) {
+      setMsg('Enter the instructor password next to Start poll, then try again.');
+      return;
+    }
     setBusy(true);
     setMsg('');
     try {
-      const r = await createRoom(password);
-      try { sessionStorage.setItem('aiw.pollPassword', password); } catch { /* ignore */ }
+      const r = await createRoom(password.trim());
+      try { sessionStorage.setItem('aiw.pollPassword', password.trim()); } catch { /* ignore */ }
       writeVotedCode(null);
       set({ pollLocked: false });
       setCode(r.code);
@@ -115,7 +117,18 @@ export function GroupPriorities() {
       <div className="eyebrow">Group priorities · live poll</div>
       <div className="h3" id="gp-title">Which principles is the room choosing?</div>
 
-      <div className="row">
+      <div className="row" style={{ flexWrap: 'wrap', alignItems: 'center' }}>
+        <label className="sr" htmlFor="poll-password">Instructor password</label>
+        <input
+          id="poll-password"
+          className="inp"
+          type="password"
+          autoComplete="current-password"
+          placeholder="Instructor password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={{ maxWidth: 200 }}
+        />
         {!code ? (
           <button className="btn pink" disabled={busy} onClick={() => void startPoll()}>Start poll</button>
         ) : (
@@ -133,6 +146,7 @@ export function GroupPriorities() {
           </>
         )}
       </div>
+      <div className="small muted">Instructor only: type the password, then Start poll / New poll. Students leave this blank and just vote.</div>
 
       {code && live?.open && !pollLocked && (
         <div className="small muted">
