@@ -160,7 +160,7 @@ export function GroupPriorities() {
 
       <div className="cloud-block">
         <div className="eyebrow">Why · live reasons</div>
-        <DefenseBoard defenses={live?.defenses || []} />
+        <DefenseBoard defenses={live?.defenses || []} tally={rows} />
       </div>
 
       {msg && <div className="small muted" role="status">{msg}</div>}
