@@ -38,8 +38,7 @@ describe('store reset', () => {
     const s = useAppStore.getState();
     s.set({ screen: 'trap', persona: 'C', corrected: true, restricted: true, delReq: true, purged: true, trapStep: 4, vote: 'No', cPri: ['Privacy'], present: true });
     s.reset();
-    const { set, pickPersona, reset, ...state } = useAppStore.getState();
-    void set; void pickPersona; void reset;
+    const state = Object.fromEntries(Object.entries(useAppStore.getState()).filter(([, v]) => typeof v !== 'function'));
     expect(state).toEqual(initState());
   });
 });

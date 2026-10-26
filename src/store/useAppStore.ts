@@ -68,6 +68,8 @@ export function initState(): AppState {
 interface Actions {
   set: (patch: Partial<AppState>) => void;
   /** Change persona and clear everything derived from the previous persona. */
+  /** Navigate; remembers the last real screen so Instructor mode can return. */
+  go: (screen: AnyScreen) => void;
   pickPersona: (id: PersonaId) => void;
   reset: () => void;
 }
@@ -75,6 +77,8 @@ interface Actions {
 export const useAppStore = create<AppState & Actions>((set) => ({
   ...initState(),
   set: (patch) => set(patch),
+  go: (screen) =>
+    set((st) => ({ screen, from: screen === 'instructor' ? (st.screen === 'instructor' ? st.from : st.screen) : screen })),
   pickPersona: (id) =>
     set({ persona: id, eng: null, cls: {}, xStage: 'pre', pred: '', act: '', corrected: false, restricted: false, delReq: false, purged: false }),
   reset: () => set(initState()),
