@@ -21,22 +21,25 @@ npm test        # Vitest
 
 A tiny Node server aggregates principle votes across browsers and pushes live tallies over Server-Sent Events.
 
-```bash
-# terminal 1 — vote API (default http://localhost:8787)
-npm run vote-server
+### Classroom demo (GitHub Pages + local ngrok)
 
-# terminal 2 — the React app
+Frontend stays on Pages ([https://kedar-v.github.io/ai-wrapped/](https://kedar-v.github.io/ai-wrapped/)). Only the vote API runs on your laptop, exposed with ngrok:
+
+```bash
+# once: https://ngrok.com/download  then  ngrok config add-authtoken <token>
+npm run vote:demo
+```
+
+Open the printed class link (or share it). **Start voting**, then **Copy class link** / announce the 4-letter code. Keep that terminal open until the session ends (`Ctrl+C`).
+
+### Local only
+
+```bash
+npm run vote-server   # http://localhost:8787
 npm run dev
 ```
 
-1. On the Council page, open **Live voting**.
-2. Instructor clicks **Start voting** and shares the 4-letter code (or projects it).
-3. Students enter the code, click **Join**, pick three principles. Each cast is appended; duplicates count.
-4. The bar chart updates live for everyone in the room. **Stop voting** freezes the room; **Clear votes** empties it.
-
-The frontend talks to `VITE_VOTE_API` (or the URL field / `localStorage`). Deploy the React app to GitHub Pages as before, and host `server/` on any Node host (Railway, Render, Fly, a classroom laptop). Set `CORS_ORIGIN` on the server if you want to lock origins.
-
-API sketch: `POST /rooms`, `POST /rooms/:code/votes`, `GET /rooms/:code/stream`, `POST /rooms/:code/stop`, `POST /rooms/:code/clear`. In-memory only; rooms expire after 6 hours.
+API sketch: `POST /rooms`, `POST /rooms/:code/votes`, `GET /rooms/:code/stream`, `POST /rooms/:code/stop`, `POST /rooms/:code/clear`. In-memory only; rooms expire after 6 hours. Share links use `?voteApi=<https-tunnel>&room=CODE#/council`.
 
 Offline fallback: switch to **CSV / local** on the same panel.
 
@@ -53,7 +56,7 @@ The chart is not live: it only reflects picks that were exported and imported. *
 
 ## Hosting on GitHub Pages
 
-The app is fully static with hash routing, so deep links such as `#/trap` work on Pages. `vite.config.ts` uses `base: './'`, so it works at any path. Push to `main`, then set Settings → Pages → Source to **GitHub Actions**; `.github/workflows/deploy.yml` tests, builds and publishes `dist/`. Fonts load from Google Fonts, so viewers need internet access.
+Live at [https://kedar-v.github.io/ai-wrapped/](https://kedar-v.github.io/ai-wrapped/). The app is fully static with hash routing (`#/trap`, …). `vite.config.ts` uses `base: './'`. Push to `main` → `.github/workflows/deploy.yml` tests, builds and publishes `dist/` (Settings → Pages → Source: **GitHub Actions**). Live voting still needs `npm run vote:demo` on demo day.
 
 ## Shared model
 

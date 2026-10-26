@@ -1,7 +1,8 @@
 /**
  * Tiny in-memory voting API for the Ethics Council.
  *
- * POST   /rooms                 → { code, open: true }   start a session
+ * POST   /rooms                 → { code, open: true }   start a session (becomes active)
+ * GET    /active                → { code, open }         latest open poll, or 404
  * GET    /rooms/:code           → { open, votes, tally }
  * POST   /rooms/:code/votes     → body { principles: [a,b,c] }; appends (duplicates ok)
  * GET    /rooms/:code/stream    → Server-Sent Events of the same snapshot
@@ -17,11 +18,14 @@ import { parsePrinciples, snapshot } from './tally.js';
 const PORT = Number(process.env.PORT || 8787);
 const CORS = process.env.CORS_ORIGIN || '*';
 const ROOM_TTL_MS = Number(process.env.ROOM_TTL_MS || 6 * 60 * 60 * 1000);
+const CORS_HEADERS = 'Content-Type, ngrok-skip-browser-warning';
 
 /** @typedef {{ open: boolean; votes: { principles: string[]; at: string }[]; clients: Set<import('node:http').ServerResponse>; created: number }} Room */
 
 /** @type {Map<string, Room>} */
 const rooms = new Map();
+/** @type {string | null} */
+let activeCode = null;
 
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 function makeCode() {
@@ -47,6 +51,7 @@ function prune() {
     if (now - r.created > ROOM_TTL_MS) {
       for (const res of r.clients) res.end();
       rooms.delete(k);
+      if (activeCode === k) activeCode = null;
     }
   }
 }
@@ -58,7 +63,7 @@ function sendJson(res, status, body) {
     'Content-Type': 'application/json; charset=utf-8',
     'Access-Control-Allow-Origin': CORS,
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': CORS_HEADERS,
     'Cache-Control': 'no-store',
   });
   res.end(data);
@@ -87,7 +92,7 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(204, {
       'Access-Control-Allow-Origin': CORS,
       'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Headers': CORS_HEADERS,
       'Access-Control-Max-Age': '86400',
     });
     return res.end();
@@ -97,12 +102,20 @@ const server = http.createServer(async (req, res) => {
     return sendJson(res, 200, { ok: true });
   }
 
-  // Start voting
+  if (req.method === 'GET' && path === '/active') {
+    prune();
+    const r = activeCode ? room(activeCode) : null;
+    if (!r || !r.open) return sendJson(res, 404, { error: 'no active poll' });
+    return sendJson(res, 200, { code: activeCode, open: true, votes: r.votes.length });
+  }
+
+  // Start poll
   if (req.method === 'POST' && path === '/rooms') {
     prune();
     let code = makeCode();
     while (rooms.has(code)) code = makeCode();
     rooms.set(code, { open: true, votes: [], clients: new Set(), created: Date.now() });
+    activeCode = code;
     return sendJson(res, 201, { code, open: true, votes: 0 });
   }
 
@@ -150,6 +163,7 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'POST' && action === 'stop') {
     r.open = false;
+    if (activeCode === code) activeCode = null;
     broadcast(r);
     return sendJson(res, 200, snapshot(r.votes, r.open));
   }

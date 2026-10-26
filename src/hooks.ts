@@ -9,7 +9,7 @@ import { TH } from './data/model';
 
 /** Apply the current hash to the store. Call before first render so deep links survive. */
 export function syncFromHash() {
-  const k = window.location.hash.replace(/^#\/?/, '');
+  const k = window.location.hash.replace(/^#\/?/, '').split('?')[0];
   if (isScreen(k) && k !== useAppStore.getState().screen) useAppStore.getState().go(k);
 }
 

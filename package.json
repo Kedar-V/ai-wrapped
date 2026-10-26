@@ -10,6 +10,7 @@
     "test": "vitest run && npm --prefix server test",
     "vote-server": "npm --prefix server start",
     "vote-server:dev": "npm --prefix server run dev",
+    "vote:demo": "node scripts/vote-demo.mjs",
     "test:server": "npm --prefix server test"
   },
   "dependencies": {
