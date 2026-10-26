@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
-import { DefenseCloud } from './DefenseCloud';
+import { DefenseBoard } from './DefenseBoard';
 import { createRoom, getActiveRoom, postVote, readVotedCode, streamRoom, takePendingRoom, writeVotedCode, type LiveSnapshot } from '../lib/voteApi';
 import { useAppStore } from '../store/useAppStore';
 
 /**
  * Live classroom poll: instructor hits Start poll; students pick three principles
  * and press Submit once. After submit, this browser is locked for that room.
- * Defense sentences feed a live word cloud.
+ * Defense sentences show as a live quote board under the bars.
  */
 export function GroupPriorities() {
   const cPri = useAppStore((s) => s.cPri);
@@ -159,15 +159,8 @@ export function GroupPriorities() {
       )}
 
       <div className="cloud-block">
-        <div className="eyebrow">Why · defense word cloud</div>
-        <DefenseCloud texts={(live?.defenses || []).map((d) => d.text)} />
-        {(live?.defenses?.length ?? 0) > 0 && (
-          <ul className="defense-list" aria-label="Defense sentences from the room">
-            {(live?.defenses || []).map((d, i) => (
-              <li key={i}><b>{d.principle}:</b> {d.text}</li>
-            ))}
-          </ul>
-        )}
+        <div className="eyebrow">Why · live reasons</div>
+        <DefenseBoard defenses={live?.defenses || []} />
       </div>
 
       {msg && <div className="small muted" role="status">{msg}</div>}
