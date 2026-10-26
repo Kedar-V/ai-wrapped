@@ -11,13 +11,13 @@ export function MatrixScreen() {
   const corrA = M[9][0] === 'A';
   const nodes = [
     { t: 'Listener', cls: 'ok' as const }, { t: 'Listening history', cls: 'ok' as const }, { t: 'Rule v0.3', cls: 'ok' as const }, { t: 'Profile label', cls: 'ok' as const },
-    { t: 'Segment export', cls: corrA ? ('ok' as const) : ('weak' as const) }, { t: 'Advertiser', cls: corrA ? ('ok' as const) : ('weak' as const) },
+    { t: 'Segment export', cls: corrA ? ('ok' as const) : ('weak' as const) }, { t: 'Campaign partner', cls: corrA ? ('ok' as const) : ('weak' as const) },
   ];
   const label = asym >= 4 ? 'All layers shown' : asym === 0 ? 'Start: what each sees' : 'Reveal next layer';
   return (
     <section className="main">
       <div className="eyebrow">Act III · Cross-stakeholder view · Q1 · Q3</div>
-      <h2 className="disp h2">One Profile. Five Stakeholders. Different Explanations.</h2>
+      <h2 className="disp h2">One Profile. Four Stakeholders. Different Explanations.</h2>
 
       <div className="card pop">
         <div className="h3">Information asymmetry reveal</div>
@@ -49,11 +49,11 @@ export function MatrixScreen() {
         </div>
         <div className="card">
           <div className="h3">Information flow ({mView === 'current' ? 'current' : 'proposed'})</div>
-          <DataLineageGraph nodes={nodes} label="Information flow from listener to advertiser" />
+          <DataLineageGraph nodes={nodes} label="Information flow from listener to campaign partner" />
           <div className={'gap ' + (corrA ? 'g' : 'p')}><b>Listener dispute reaches:</b> {corrA ? 'Label → segment → partner copies (full recourse path)' : 'Label only. Segment and partner copies are out of reach'}</div>
           <div className="small"><b>ML Engineer</b> reads the rule and features ({MXS[M[4][1]].l}).</div>
-          <div className="small"><b>Executive</b> approves deployment ({MXS[M[10][3]].l}) with {MXS[M[4][3]].l} access to rules.</div>
-          <div className="small"><b>Auditor</b> reaches governance records ({MXS[M[8][4]].l}); correction authority {MXS[M[9][4]].l}.</div>
+          <div className="small"><b>Executive</b> approves deployment ({MXS[M[10][2]].l}) with {MXS[M[4][2]].l} access to rules.</div>
+          <div className="small"><b>Auditor</b> reaches governance records ({MXS[M[8][3]].l}); correction authority {MXS[M[9][3]].l}.</div>
         </div>
       </div>
     </section>

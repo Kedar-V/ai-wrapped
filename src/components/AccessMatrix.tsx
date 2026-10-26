@@ -54,12 +54,13 @@ export function AccessMatrix() {
 /** Power-vs-understanding gaps, computed from the visible matrix. */
 export function matrixGaps(M: Cell[][]) {
   const g: { cls: string; t: string }[] = [];
-  const exU = [2, 3, 4, 5].filter((r) => M[r][3] !== 'A').length;
-  if (M[10][3] !== 'U' && exU >= 2) g.push({ cls: 'gap d', t: `Executive can influence deployment but lacks full access to ${exU} of 4 understanding layers (explanation, features, rules, provenance). Decides without understanding.` });
-  if (M[6][2] === 'A' && M[2][2] === 'U') g.push({ cls: 'gap d', t: 'Advertisers can set targeting criteria but cannot see why users belong to a segment. Acts on an inference they cannot assess.' });
+  // Columns: 0 Listener, 1 Engineer, 2 Executive, 3 Auditor
+  const exU = [2, 3, 4, 5].filter((r) => M[r][2] !== 'A').length;
+  if (M[10][2] !== 'U' && exU >= 2) g.push({ cls: 'gap d', t: `Executive can influence deployment but lacks full access to ${exU} of 4 understanding layers (explanation, features, rules, provenance). Decides without understanding.` });
   if (M[9][0] !== 'A') g.push({ cls: 'gap p', t: `Listener correction authority is “${MXS[M[9][0]].l}”: they can dispute a label but not stop its downstream use.` });
   if (M[5][0] === 'U') g.push({ cls: 'gap p', t: 'Listener cannot see data provenance. Affected without being able to check where the conclusion came from.' });
   if (M[10][0] === 'U') g.push({ cls: 'gap p', t: 'Listener has no voice in deployment of the system that profiles them.' });
+
   if (!g.length) g.push({ cls: 'gap g', t: 'No major power-versus-understanding gaps in this configuration.' });
   return g;
 }

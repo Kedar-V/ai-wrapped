@@ -12,7 +12,7 @@ export function AuditorDashboard() {
     { l: '3 Rule', t: 'Rule vuln_flag v0.3', text: `Weighted sum scored ${score} against threshold ${TH}.`, have: ['Rule text and unit tests (14/14)'], miss: ['Any clinical or empirical validation', 'Source for the weights and threshold'] },
     { l: '4 Label', t: 'Profile label', text: flagged ? '“Potentially Emotionally Vulnerable” applied' + (corrected ? ' then removed from the profile by the listener.' : '.') : 'No label applied for this profile.', have: ['Label is visible to the listener'], miss: ['Evidence the label is true for this person'] },
     { l: '5 Export', t: 'Segment export', text: flagged ? 'Added to “Evening Reflective · Wellness”' + (purged ? '; purged by the executive.' : corrected ? '; remained after the label was corrected.' : '.') : 'Not exported.', have: ['Export log shows date and recipient'], miss: ['Disclosure to the listener', 'Mechanism that propagates corrections downstream'] },
-    { l: '6 Campaign', t: 'Campaign use', text: flagged ? 'Offered to Calm Harbor’s wellness subscription campaign.' : 'Not used.', have: ['Campaign brief exists'], miss: ['Review of whether targeting emotional vulnerability is acceptable for this advertiser category'] },
+    { l: '6 Campaign', t: 'Campaign use', text: flagged ? 'Offered to Calm Harbor’s wellness subscription campaign.' : 'Not used.', have: ['Campaign brief exists'], miss: ['Review of whether targeting emotional vulnerability is acceptable for this campaign category'] },
   ];
   const sel = chain[audStep];
   const recs: string[] = [];

@@ -11,7 +11,7 @@ export const PRINCIPLES: [string, string][] = [
   ['Data minimization', 'Collect and infer only what is needed.'],
 ];
 
-/** Negotiation matrix stakeholders (Advertiser is not in this grid). */
+/** Core demo stakeholders. */
 export const NEG_WHO = ['Listener', 'Engineer', 'Executive', 'Auditor'] as const;
 export type NegWho = (typeof NEG_WHO)[number];
 export type PolicyId = 'A' | 'B' | 'C' | 'D';

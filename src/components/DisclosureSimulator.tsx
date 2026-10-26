@@ -27,12 +27,11 @@ export function DisclosureSimulator() {
 
   const notes: { cls: string; t: string }[] = [];
   const N = (cls: string, t: string) => notes.push({ cls: 'gap ' + cls, t });
-  if (has('adv', 'raw')) N('p', 'Advertisers can access raw listening histories: more targeting flexibility, but a large increase in privacy exposure and re-identification risk.');
   if (has('pub', 'rule')) N('d', 'Publishing exact rules lets anyone game the model and exposes proprietary logic. It also supports outside scrutiny. Role-restricted and auditor access often achieves most of the accountability with less risk.');
   if (has('pub', 'inf') || has('pub', 'raw')) N('p', 'Public release of personal inferences or histories is a privacy harm regardless of intent.');
   if (has('pub', 'agg')) N('g', 'Aggregate validation metrics carry low privacy risk and high accountability value: a good candidate for public disclosure.');
   if (cnt('adt') === 0) N('d', 'Without protected access, independent auditors cannot verify the platform’s claims. Oversight becomes self-attestation.');
-  if (cnt('pub') + cnt('lis') + cnt('adv') + cnt('adt') === 0) N('d', 'Restricting all external access protects individual data, but nobody outside the company can check the system.');
+  if (cnt('pub') + cnt('lis') + cnt('adt') === 0) N('d', 'Restricting all external access protects individual data, but nobody outside the company can check the system.');
   if (!has('lis', 'cor')) N('p', 'The listener cannot challenge a label. Affected without recourse.');
   if (has('lis', 'inf') && !has('lis', 'rule')) N('d', 'The listener sees the conclusion but not the logic. Disclosure is not the same as understanding.');
   if (has('lis', 'del')) N('g', 'The listener can request erasure downstream: strongest recourse, but requires the platform to build propagation to partners.');
@@ -43,7 +42,7 @@ export function DisclosureSimulator() {
   const modes = [
     { name: 'Public disclosure', n: cnt('pub') },
     { name: 'Individual access', n: cnt('lis') },
-    { name: 'Role-restricted professional access', n: cnt('stf') + cnt('adv') },
+    { name: 'Role-restricted professional access', n: cnt('stf') },
     { name: 'Independent oversight access', n: cnt('adt') },
   ];
 
