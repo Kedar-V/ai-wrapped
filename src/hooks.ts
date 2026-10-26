@@ -37,3 +37,17 @@ export function useProfile() {
   const B = scoreOf(F);
   return { P, F, B, flagged: B.flag, score: Math.round(B.total), thr: TH };
 }
+
+/** Listener actions shared by the Lab and the Trap's remedy lanes. */
+export function useListenerActions() {
+  const { corrected, restricted, delReq, set } = useAppStore();
+  return {
+    corrected, restricted, delReq,
+    toggleCorrect: () => set({ corrected: !corrected }),
+    toggleRestrict: () => set({ restricted: !restricted }),
+    toggleDelete: () => set({ delReq: !delReq }),
+    correctLabel: corrected ? 'Undo correction' : 'Dispute and correct this label',
+    restrictLabel: restricted ? 'Opt-out active (tap to undo)' : 'Opt out of psychological profiling',
+    deleteLabel: delReq ? 'Deletion requested (tap to withdraw)' : 'Request deletion from advertising systems',
+  };
+}
