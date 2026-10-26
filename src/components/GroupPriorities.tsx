@@ -72,16 +72,25 @@ export function GroupPriorities() {
   };
 
   const submit = async () => {
-    if (!code || !live?.open || cPri.length !== 3 || pollLocked) return;
+    if (!code || !live?.open || pollLocked) return;
+    // Read latest store — avoids submitting empty defenses from a stale render.
+    const { cPri: pri, cDef: def } = useAppStore.getState();
+    if (pri.length !== 3) return;
+    const defenses = Object.fromEntries(
+      pri.map((p) => [p, (def[p] || '').trim()] as const).filter((row) => row[1].length > 0),
+    );
+    if (Object.keys(defenses).length < 3) {
+      setMsg('Write a one-line defense for each of your three principles, then Submit.');
+      return;
+    }
     setBusy(true);
     setMsg('');
     try {
-      const defenses = Object.fromEntries(cPri.map((p) => [p, (cDef[p] || '').trim()]).filter(([, t]) => t));
-      const s = await postVote(code, cPri, defenses);
+      const s = await postVote(code, pri, defenses);
       setLive(s);
       writeVotedCode(code);
       set({ pollLocked: true });
-      setMsg('Submitted — your vote is locked.');
+      setMsg('Submitted — your vote and defenses are locked.');
     } catch (e) {
       setMsg(e instanceof Error ? e.message : String(e));
     } finally {
@@ -92,7 +101,8 @@ export function GroupPriorities() {
   const rows = live?.tally ?? [];
   const voteCount = live?.votes ?? 0;
   const max = Math.max(1, ...rows.map((r) => r.count));
-  const canSubmit = !!code && !!live?.open && cPri.length === 3 && !pollLocked && !busy;
+  const defensesReady = cPri.length === 3 && cPri.every((p) => (cDef[p] || '').trim().length > 0);
+  const canSubmit = !!code && !!live?.open && defensesReady && !pollLocked && !busy;
 
   return (
     <div className="card" aria-labelledby="gp-title">
@@ -120,9 +130,11 @@ export function GroupPriorities() {
 
       {code && live?.open && !pollLocked && (
         <div className="small muted">
-          {cPri.length === 3
-            ? 'Add a one-line defense above, then Submit vote (once per person).'
-            : `Pick ${3 - cPri.length} more principle${3 - cPri.length === 1 ? '' : 's'}, defend them, then Submit.`}
+          {cPri.length < 3
+            ? `Pick ${3 - cPri.length} more principle${3 - cPri.length === 1 ? '' : 's'}, defend them, then Submit.`
+            : !defensesReady
+              ? 'Write a defense for each pick above, then Submit vote.'
+              : 'Ready — Submit vote (once per person).'}
         </div>
       )}
       {pollLocked && <div className="gap g">Your vote is in. Picks are locked for this poll.</div>}
@@ -146,9 +158,16 @@ export function GroupPriorities() {
         </div>
       )}
 
-      <div>
+      <div className="cloud-block">
         <div className="eyebrow">Why · defense word cloud</div>
         <DefenseCloud texts={(live?.defenses || []).map((d) => d.text)} />
+        {(live?.defenses?.length ?? 0) > 0 && (
+          <ul className="defense-list" aria-label="Defense sentences from the room">
+            {(live?.defenses || []).map((d, i) => (
+              <li key={i}><b>{d.principle}:</b> {d.text}</li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {msg && <div className="small muted" role="status">{msg}</div>}

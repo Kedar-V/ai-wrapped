@@ -6,7 +6,11 @@ const COLORS = ['#1DF08A', '#FF8A1F', '#A78BFA', '#FF4FA3', '#F6F1FF', '#FF4F7A'
 export function DefenseCloud({ texts }: { texts: string[] }) {
   const words = wordsFromDefenses(texts);
   if (!words.length) {
-    return <div className="small muted">Defense word cloud appears as people submit their “why” sentences.</div>;
+    return (
+      <div className="cloud" aria-live="polite">
+        <span className="small muted">Word cloud fills in as people submit their “why” sentences.</span>
+      </div>
+    );
   }
   const max = words[0]?.weight || 1;
   return (

@@ -132,5 +132,8 @@ a{color:#1DF08A}
 .chip,.btn.sm{min-height:44px}
 .ftile,.vote,.cellb,.inp{min-height:44px}
 @media (max-width:760px){.h1{font-size:clamp(40px,12vw,64px)}.card{padding:16px}.stat{font-size:44px}.acts{width:100%}}
-.cloud{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 14px;min-height:120px;padding:16px;border-radius:14px;background:rgba(10,5,22,.55);border:1px solid rgba(255,255,255,.1)}
+.cloud-block{display:flex;flex-direction:column;gap:10px;margin-top:8px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12)}
+.cloud{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 14px;min-height:140px;padding:18px;border-radius:14px;background:rgba(10,5,22,.55);border:1px solid rgba(29,240,138,.35)}
 .cloud-w{font-family:var(--font-display);font-weight:800;line-height:1.1;letter-spacing:-.02em;display:inline-block}
+.defense-list{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px;color:var(--muted);font-size:14px}
+.defense-list b{color:var(--text)}
