@@ -5,13 +5,14 @@ import { GroupPriorities } from './GroupPriorities';
 const STEPS = ['1 Principles', '2 Policy', '3 Negotiation', '4 Final vote', '5 Before and after'];
 
 export function EthicsCouncil() {
-  const { cStep: stp, cPri, cDef, cPol, cNeg, cFinal, cls, vote, set } = useAppStore();
+  const { cStep: stp, cPri, cDef, cPol, cNeg, cFinal, cls, vote, pollLocked, set } = useAppStore();
   const pol = POLICIES.find((p) => p.id === cPol);
   const neg = POLICIES.find((p) => p.id === cNeg)!;
   const tot = FINALS.reduce((a, b) => a + b[1], 0) + (cFinal ? 1 : 0);
   const covered = pol ? cPri.filter((p) => pol.sup.includes(p)) : [];
   const ok = [cPri.length === 3, !!cPol, true, !!cFinal, true][stp - 1];
   const toggle = (n: string) => {
+    if (useAppStore.getState().pollLocked) return;
     const cur = useAppStore.getState().cPri;
     if (cur.includes(n)) set({ cPri: cur.filter((x) => x !== n) });
     else if (cur.length < 3) set({ cPri: [...cur, n] });
@@ -35,16 +36,17 @@ export function EthicsCouncil() {
           <div className="g3">
             {PRINCIPLES.map((p) => {
               const on = cPri.includes(p[0]);
-              return <button key={p[0]} className={'vote' + (on ? ' on' : '')} aria-pressed={on} disabled={!on && cPri.length >= 3} onClick={() => toggle(p[0])}><b>{p[0]}</b><span className="small muted">{p[1]}</span></button>;
+              return <button key={p[0]} className={'vote' + (on ? ' on' : '')} aria-pressed={on} disabled={pollLocked || (!on && cPri.length >= 3)} onClick={() => toggle(p[0])}><b>{p[0]}</b><span className="small muted">{p[1]}</span></button>;
             })}
           </div>
+          {pollLocked && <div className="small muted">Poll vote submitted — principles are locked.</div>}
           {cPri.length > 0 && (
             <div className="card">
               <div className="h3">Defend your priorities</div>
               {cPri.map((n) => (
                 <div key={n}>
                   <label htmlFor={'def-' + n} className="small muted">Why {n} matters most in this case</label>
-                  <input id={'def-' + n} className="inp" value={cDef[n] ?? ''} onChange={(e) => set({ cDef: { ...cDef, [n]: e.target.value } })} />
+                  <input id={'def-' + n} className="inp" value={cDef[n] ?? ''} onChange={(e) => set({ cDef: { ...cDef, [n]: e.target.value } })} disabled={pollLocked} />
                 </div>
               ))}
             </div>

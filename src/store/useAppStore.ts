@@ -52,6 +52,8 @@ export interface AppState {
   cFinal: string;
   discuss: boolean;
   ans: boolean;
+  /** True after this browser submits its poll vote (locks principle picks). */
+  pollLocked: boolean;
 }
 
 export function initState(): AppState {
@@ -61,7 +63,7 @@ export function initState(): AppState {
     stk: 'listener', corrected: false, restricted: false, delReq: false, purged: false, eng: null,
     adCamp: 'wellness', adStrat: 'behavioral', exStrat: 'engagement', audStep: 0, audCls: {},
     mView: 'current', mProp: null, asym: 0, trapStep: 0, vote: '', dGrid: null, dPre: 'current',
-    cStep: 1, cPri: [], cDef: {}, cPol: '', cNeg: 'B', cFinal: '', discuss: false, ans: false,
+    cStep: 1, cPri: [], cDef: {}, cPol: '', cNeg: 'B', cFinal: '', discuss: false, ans: false, pollLocked: false,
   };
 }
 

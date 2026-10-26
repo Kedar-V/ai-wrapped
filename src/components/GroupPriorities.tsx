@@ -1,18 +1,19 @@
-import { useEffect, useRef, useState } from 'react';
-import { createRoom, getActiveRoom, postVote, streamRoom, takePendingRoom, type LiveSnapshot } from '../lib/voteApi';
+import { useEffect, useState } from 'react';
+import { createRoom, getActiveRoom, postVote, readVotedCode, streamRoom, takePendingRoom, writeVotedCode, type LiveSnapshot } from '../lib/voteApi';
 import { useAppStore } from '../store/useAppStore';
 
 /**
- * Live classroom poll: instructor hits Start poll; everyone else auto-joins
- * the active room and the chart updates over SSE as picks are submitted.
+ * Live classroom poll: instructor hits Start poll; students pick three principles
+ * and press Submit once. After submit, this browser is locked for that room.
  */
 export function GroupPriorities() {
   const cPri = useAppStore((s) => s.cPri);
+  const pollLocked = useAppStore((s) => s.pollLocked);
+  const set = useAppStore((s) => s.set);
   const [code, setCode] = useState('');
   const [live, setLive] = useState<LiveSnapshot | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
-  const lastSent = useRef('');
 
   // Deep link (?room=) or wait for instructor's active poll
   useEffect(() => {
@@ -34,35 +35,49 @@ export function GroupPriorities() {
     return () => { stop = true; window.clearInterval(id); };
   }, [code]);
 
+  // Restore lock if this browser already voted in this room
+  useEffect(() => {
+    if (!code) return;
+    const locked = readVotedCode() === code;
+    set({ pollLocked: locked });
+  }, [code, set]);
+
   useEffect(() => {
     if (!code) return;
     const stop = streamRoom(
       code,
-      (s) => { setLive(s); setMsg(''); },
+      (s) => { setLive(s); },
       (e) => setMsg(e.message),
     );
     return stop;
   }, [code]);
-
-  // Auto-submit when exactly three principles are chosen and the poll is open
-  useEffect(() => {
-    if (!code || !live?.open || cPri.length !== 3) return;
-    const key = cPri.slice().sort().join('|');
-    if (key === lastSent.current) return;
-    lastSent.current = key;
-    void postVote(code, cPri)
-      .then((s) => setLive(s))
-      .catch((e: Error) => setMsg(e.message));
-  }, [code, live?.open, cPri]);
 
   const startPoll = async () => {
     setBusy(true);
     setMsg('');
     try {
       const r = await createRoom();
-      lastSent.current = '';
+      writeVotedCode(null);
+      set({ pollLocked: false });
       setCode(r.code);
-      setMsg('Poll open — picks update live for everyone on this server.');
+      setMsg('Poll open — students pick three principles, then Submit.');
+    } catch (e) {
+      setMsg(e instanceof Error ? e.message : String(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const submit = async () => {
+    if (!code || !live?.open || cPri.length !== 3 || pollLocked) return;
+    setBusy(true);
+    setMsg('');
+    try {
+      const s = await postVote(code, cPri);
+      setLive(s);
+      writeVotedCode(code);
+      set({ pollLocked: true });
+      setMsg('Submitted — your vote is locked.');
     } catch (e) {
       setMsg(e instanceof Error ? e.message : String(e));
     } finally {
@@ -73,6 +88,7 @@ export function GroupPriorities() {
   const rows = live?.tally ?? [];
   const voteCount = live?.votes ?? 0;
   const max = Math.max(1, ...rows.map((r) => r.count));
+  const canSubmit = !!code && !!live?.open && cPri.length === 3 && !pollLocked && !busy;
 
   return (
     <div className="card" aria-labelledby="gp-title">
@@ -80,20 +96,34 @@ export function GroupPriorities() {
       <div className="h3" id="gp-title">Which principles is the room choosing?</div>
 
       <div className="row">
-        {!code || !live?.open ? (
+        {!code ? (
           <button className="btn pink" disabled={busy} onClick={() => void startPoll()}>Start poll</button>
         ) : (
           <>
-            <span className="tag t-obs">Live</span>
+            <span className={'tag ' + (live?.open !== false ? 't-obs' : 't-fict')}>{live?.open === false ? 'Closed' : 'Live'}</span>
             <span className="stat" style={{ fontSize: 28, color: '#1DF08A' }} aria-live="polite">{code}</span>
-            <span className="small muted">Pick three principles above — the chart updates for everyone.</span>
+            {pollLocked ? (
+              <span className="tag t-obs">Submitted</span>
+            ) : live?.open !== false ? (
+              <button className="btn pri" disabled={!canSubmit} onClick={() => void submit()}>
+                Submit vote
+              </button>
+            ) : null}
+            <button className="btn ghost sm" disabled={busy} onClick={() => void startPoll()}>New poll</button>
           </>
         )}
       </div>
 
+      {code && live?.open && !pollLocked && (
+        <div className="small muted">
+          {cPri.length === 3 ? 'Ready — press Submit vote (one submission per person).' : `Pick ${3 - cPri.length} more principle${3 - cPri.length === 1 ? '' : 's'} above, then Submit.`}
+        </div>
+      )}
+      {pollLocked && <div className="gap g">Your vote is in. Picks are locked for this poll.</div>}
+
       {voteCount === 0 ? (
         <div className="gap d">
-          {code ? 'Waiting for votes… pick three principles above.' : 'Instructor: Start poll. Everyone else joins automatically.'}
+          {code ? 'Waiting for votes…' : 'Instructor: Start poll. Everyone else joins automatically.'}
         </div>
       ) : (
         <div role="list" aria-label="Live tally of principle votes" aria-live="polite">

@@ -12,6 +12,18 @@ export interface LiveSnapshot {
 
 const DEFAULT = 'http://localhost:8787';
 const ROOM_KEY = 'aiw.voteRoom';
+const VOTED_KEY = 'aiw.votedCode';
+
+export function readVotedCode(): string | null {
+  try { return sessionStorage.getItem(VOTED_KEY); } catch { return null; }
+}
+
+export function writeVotedCode(code: string | null) {
+  try {
+    if (code) sessionStorage.setItem(VOTED_KEY, code);
+    else sessionStorage.removeItem(VOTED_KEY);
+  } catch { /* ignore */ }
+}
 
 export function voteApiBase(): string {
   const fromEnv = (import.meta.env.VITE_VOTE_API as string | undefined)?.replace(/\/$/, '');
