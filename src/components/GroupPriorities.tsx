@@ -32,7 +32,7 @@ export function GroupPriorities() {
     let stop = false;
     const tick = async () => {
       try {
-        const a = await getActiveRoom();
+        const a = await getActiveRoom('principles');
         if (!stop && a.code) setCode(a.code);
       } catch { /* no poll yet */ }
     };
@@ -44,7 +44,7 @@ export function GroupPriorities() {
   // Restore lock if this browser already voted in this room
   useEffect(() => {
     if (!code) return;
-    const locked = readVotedCode() === code;
+    const locked = readVotedCode('principles') === code;
     set({ pollLocked: locked });
   }, [code, set]);
 
@@ -71,9 +71,9 @@ export function GroupPriorities() {
     setBusy(true);
     setMsg('');
     try {
-      const r = await createRoom(password.trim());
+      const r = await createRoom(password.trim(), 'principles');
       try { sessionStorage.setItem('aiw.pollPassword', password.trim()); } catch { /* ignore */ }
-      writeVotedCode(null);
+      writeVotedCode(null, 'principles');
       set({ pollLocked: false });
       setCode(r.code);
       setMsg('Poll open — pick three, write why, then Submit.');
@@ -101,7 +101,7 @@ export function GroupPriorities() {
     try {
       const s = await postVote(code, pri, defenses);
       setLive(s);
-      writeVotedCode(code);
+      writeVotedCode(code, 'principles');
       set({ pollLocked: true });
       setMsg('Submitted — your vote and defenses are locked.');
     } catch (e) {

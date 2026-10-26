@@ -1,5 +1,6 @@
-import { AFTER, BEFORE, FINALS, NEG_WHO, POLICIES, PRINCIPLES } from '../data/policies';
+import { AFTER, BEFORE, NEG_WHO, POLICIES, PRINCIPLES } from '../data/policies';
 import { useAppStore } from '../store/useAppStore';
+import { FinalVotePoll } from './FinalVotePoll';
 import { GroupPriorities } from './GroupPriorities';
 
 const STEPS = ['1 Principles', '2 Policy', '3 Negotiation', '4 Final vote', '5 Before and after'];
@@ -8,7 +9,6 @@ export function EthicsCouncil() {
   const { cStep: stp, cPri, cDef, cPol, cNeg, cFinal, cls, vote, pollLocked, set } = useAppStore();
   const pol = POLICIES.find((p) => p.id === cPol);
   const neg = POLICIES.find((p) => p.id === cNeg)!;
-  const tot = FINALS.reduce((a, b) => a + b[1], 0) + (cFinal ? 1 : 0);
   const covered = pol ? cPri.filter((p) => pol.sup.includes(p)) : [];
   const ok = [cPri.length === 3, !!cPol, true, !!cFinal, true][stp - 1];
   const toggle = (n: string) => {
@@ -88,13 +88,7 @@ export function EthicsCouncil() {
       {stp === 4 && (
         <>
           <h2 className="disp h2">Final vote: should this system ship?</h2>
-          <div className="g4" role="group" aria-label="Final vote">
-            {FINALS.map((v) => {
-              const pct = Math.round(((v[1] + (cFinal === v[0] ? 1 : 0)) / tot) * 100);
-              return <button key={v[0]} className={'vote' + (cFinal === v[0] ? ' on' : '')} aria-pressed={cFinal === v[0]} onClick={() => set({ cFinal: v[0] })}><b>{v[0]}</b><span className="bar"><i className="b-o" style={{ width: pct + '%' }} /></span><span className="mono small">{pct}%</span></button>;
-            })}
-          </div>
-          <div className="small muted">Sample results (illustrative, n=100) plus your local vote.</div>
+          <FinalVotePoll />
         </>
       )}
 

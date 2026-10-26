@@ -1,5 +1,14 @@
 import { PRINCIPLES, VALID } from './principles.js';
 
+/** Final vote options (Ethics Council step 4). */
+export const FINALS = [
+  'Deploy',
+  'Deploy with restrictions',
+  'Redesign',
+  'Do not deploy',
+];
+export const VALID_FINAL = new Set(FINALS);
+
 /**
  * Validate a vote: exactly three distinct known principles.
  * @param {unknown} principles
@@ -56,10 +65,49 @@ export function tallyVotes(votes) {
 export function snapshot(votes, open) {
   return {
     open: !!open,
+    kind: 'principles',
     votes: votes.length,
     tally: tallyVotes(votes),
     defenses: votes.flatMap((v) =>
       Object.entries(v.defenses || {}).map(([principle, text]) => ({ principle, text })),
     ),
   };
+}
+
+/** @param {unknown} choice */
+export function parseFinalChoice(choice) {
+  const c = String(choice || '').trim();
+  return VALID_FINAL.has(c) ? c : null;
+}
+
+/** @param {{ choice: string }[]} votes */
+export function tallyFinals(votes) {
+  const counts = Object.fromEntries(FINALS.map((n) => [n, 0]));
+  for (const v of votes) {
+    if (v.choice in counts) counts[v.choice] += 1;
+  }
+  const n = votes.length;
+  return FINALS.map((name) => ({
+    name,
+    count: counts[name],
+    pct: n ? Math.round((counts[name] / n) * 100) : 0,
+  }));
+}
+
+/** @param {{ choice: string }[]} votes */
+export function snapshotFinal(votes, open) {
+  return {
+    open: !!open,
+    kind: 'final',
+    votes: votes.length,
+    tally: tallyFinals(votes),
+    defenses: [],
+  };
+}
+
+/** @param {{ kind?: string, votes: any[], open: boolean }} room */
+export function snapshotRoom(room) {
+  return room.kind === 'final'
+    ? snapshotFinal(room.votes, room.open)
+    : snapshot(room.votes, room.open);
 }

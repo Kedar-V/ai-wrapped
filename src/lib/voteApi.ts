@@ -16,18 +16,20 @@ export interface LiveSnapshot {
   defenses?: LiveDefense[];
 }
 
+export type PollKind = 'principles' | 'final';
+
 const DEFAULT = 'http://localhost:8787';
 const ROOM_KEY = 'aiw.voteRoom';
-const VOTED_KEY = 'aiw.votedCode';
 
-export function readVotedCode(): string | null {
-  try { return sessionStorage.getItem(VOTED_KEY); } catch { return null; }
+export function readVotedCode(kind: PollKind = 'principles'): string | null {
+  try { return sessionStorage.getItem(`aiw.votedCode.${kind}`); } catch { return null; }
 }
 
-export function writeVotedCode(code: string | null) {
+export function writeVotedCode(code: string | null, kind: PollKind = 'principles') {
   try {
-    if (code) sessionStorage.setItem(VOTED_KEY, code);
-    else sessionStorage.removeItem(VOTED_KEY);
+    const k = `aiw.votedCode.${kind}`;
+    if (code) sessionStorage.setItem(k, code);
+    else sessionStorage.removeItem(k);
   } catch { /* ignore */ }
 }
 
@@ -100,17 +102,23 @@ async function json<T>(path: string, init?: RequestInit): Promise<T> {
   return body;
 }
 
-export const createRoom = (password: string) =>
-  json<{ code: string }>('/rooms', {
+export const createRoom = (password: string, kind: PollKind = 'principles') =>
+  json<{ code: string; kind: PollKind }>('/rooms', {
     method: 'POST',
-    body: JSON.stringify({ password }),
+    body: JSON.stringify({ password, kind }),
   });
-export const getActiveRoom = () => json<{ code: string; open: boolean }>('/active');
+export const getActiveRoom = (kind: PollKind = 'principles') =>
+  json<{ code: string; open: boolean; kind: PollKind }>(`/active?kind=${kind}`);
 export const getRoom = (code: string) => json<LiveSnapshot>(`/rooms/${code.toUpperCase()}`);
 export const postVote = (code: string, principles: string[], defenses?: Record<string, string>) =>
   json<LiveSnapshot>(`/rooms/${code.toUpperCase()}/votes`, {
     method: 'POST',
     body: JSON.stringify({ principles, defenses: defenses || {} }),
+  });
+export const postFinalVote = (code: string, choice: string) =>
+  json<LiveSnapshot>(`/rooms/${code.toUpperCase()}/votes`, {
+    method: 'POST',
+    body: JSON.stringify({ choice }),
   });
 export const stopRoom = (code: string) =>
   json<LiveSnapshot>(`/rooms/${code.toUpperCase()}/stop`, { method: 'POST' });
