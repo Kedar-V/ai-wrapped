@@ -78,7 +78,7 @@ src/data/        personas, stakeholders, matrix, disclosure, policies, scripts
 src/lib/         scoring.ts, hours.ts (+ tests)
 src/store/       useAppStore.ts (Zustand; initState and reset)
 src/components/  PersonaSelector, WrappedReveal, InferenceCard, ExplanationViewer, ConfidenceInput,
-                 ComprehensionTest, StakeholderSwitcher, Listener/Engineer/Advertiser/Executive/Auditor dashboards,
+                 ComprehensionTest, StakeholderSwitcher, Listener/Engineer/Executive/Auditor dashboards,
                  AccessMatrix, DataLineageGraph, DisclosureSimulator, RevealController, EthicsCouncil, InstructorControls
 src/screens/     one per screen
 project/         original design-canvas sources (spec)
