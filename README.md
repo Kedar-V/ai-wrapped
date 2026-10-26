@@ -17,7 +17,30 @@ npm test        # Vitest
 
 `welcome → persona → wrapped → think → explain → lab → matrix → trap → disclosure → council`, plus Instructor mode. Routes are hash based (`#/welcome`, `#/trap`, …) and stay in sync with the store. Use **Instructor mode** in the top bar for stage jumps, persona/stakeholder switching, trap reveals, discussion questions and the facilitator script. **Classroom view** scales the UI ~12% and requests fullscreen. **Reset demo** restores the initial state.
 
-## Group priorities (Ethics Council)
+## Live voting (Ethics Council)
+
+A tiny Node server aggregates principle votes across browsers and pushes live tallies over Server-Sent Events.
+
+```bash
+# terminal 1 — vote API (default http://localhost:8787)
+npm run vote-server
+
+# terminal 2 — the React app
+npm run dev
+```
+
+1. On the Council page, open **Live voting**.
+2. Instructor clicks **Start voting** and shares the 4-letter code (or projects it).
+3. Students enter the code, click **Join**, pick three principles. Each cast is appended; duplicates count.
+4. The bar chart updates live for everyone in the room. **Stop voting** freezes the room; **Clear votes** empties it.
+
+The frontend talks to `VITE_VOTE_API` (or the URL field / `localStorage`). Deploy the React app to GitHub Pages as before, and host `server/` on any Node host (Railway, Render, Fly, a classroom laptop). Set `CORS_ORIGIN` on the server if you want to lock origins.
+
+API sketch: `POST /rooms`, `POST /rooms/:code/votes`, `GET /rooms/:code/stream`, `POST /rooms/:code/stop`, `POST /rooms/:code/clear`. In-memory only; rooms expire after 6 hours.
+
+Offline fallback: switch to **CSV / local** on the same panel.
+
+## Group priorities (Ethics Council) / offline CSV
 
 There is no backend, so group results are pooled with files instead of a server:
 
