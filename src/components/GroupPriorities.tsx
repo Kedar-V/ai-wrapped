@@ -56,10 +56,16 @@ export function GroupPriorities() {
   }, [code]);
 
   const startPoll = async () => {
+    let password = '';
+    try { password = sessionStorage.getItem('aiw.pollPassword') || ''; } catch { /* ignore */ }
+    const entered = window.prompt('Instructor password (required to start or reset a poll)', password);
+    if (entered === null) return; // cancelled
+    password = entered;
     setBusy(true);
     setMsg('');
     try {
-      const r = await createRoom();
+      const r = await createRoom(password);
+      try { sessionStorage.setItem('aiw.pollPassword', password); } catch { /* ignore */ }
       writeVotedCode(null);
       set({ pollLocked: false });
       setCode(r.code);

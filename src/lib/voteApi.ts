@@ -100,7 +100,11 @@ async function json<T>(path: string, init?: RequestInit): Promise<T> {
   return body;
 }
 
-export const createRoom = () => json<{ code: string }>('/rooms', { method: 'POST' });
+export const createRoom = (password: string) =>
+  json<{ code: string }>('/rooms', {
+    method: 'POST',
+    body: JSON.stringify({ password }),
+  });
 export const getActiveRoom = () => json<{ code: string; open: boolean }>('/active');
 export const getRoom = (code: string) => json<LiveSnapshot>(`/rooms/${code.toUpperCase()}`);
 export const postVote = (code: string, principles: string[], defenses?: Record<string, string>) =>

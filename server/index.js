@@ -2,21 +2,23 @@
  * Tiny in-memory voting API for the Ethics Council.
  *
  * POST   /rooms                 → { code, open: true }   start a session (becomes active)
+ *                             body { password } required; must match POLL_PASSWORD
  * GET    /active                → { code, open }         latest open poll, or 404
  * GET    /rooms/:code           → { open, votes, tally }
- * POST   /rooms/:code/votes     → body { principles: [a,b,c] }; appends (duplicates ok)
+ * POST   /rooms/:code/votes     → body { principles, defenses }; appends (duplicates ok)
  * GET    /rooms/:code/stream    → Server-Sent Events of the same snapshot
  * POST   /rooms/:code/stop      → closes the room (votes still readable)
  * POST   /rooms/:code/clear     → empties votes, keeps the room open
  * GET    /health                → { ok: true }
  *
- * No auth, no persistence. Fine for a classroom of ~8. Set CORS_ORIGIN or leave * .
+ * No auth on votes. Starting/resetting a poll needs POLL_PASSWORD. Set CORS_ORIGIN or leave * .
  */
 import http from 'node:http';
 import { parseDefenses, parsePrinciples, snapshot } from './tally.js';
 
 const PORT = Number(process.env.PORT || 8787);
 const CORS = process.env.CORS_ORIGIN || '*';
+const POLL_PASSWORD = String(process.env.POLL_PASSWORD || '');
 const ROOM_TTL_MS = Number(process.env.ROOM_TTL_MS || 6 * 60 * 60 * 1000);
 const CORS_HEADERS = 'Content-Type, ngrok-skip-browser-warning';
 
@@ -109,8 +111,16 @@ const server = http.createServer(async (req, res) => {
     return sendJson(res, 200, { code: activeCode, open: true, votes: r.votes.length });
   }
 
-  // Start poll
+  // Start / reset poll (instructor only)
   if (req.method === 'POST' && path === '/rooms') {
+    if (!POLL_PASSWORD) {
+      return sendJson(res, 503, { error: 'POLL_PASSWORD is not set on the vote server' });
+    }
+    const body = await readBody(req);
+    if (body === null) return sendJson(res, 400, { error: 'invalid json' });
+    if (String(body.password || '') !== POLL_PASSWORD) {
+      return sendJson(res, 403, { error: 'wrong instructor password' });
+    }
     prune();
     let code = makeCode();
     while (rooms.has(code)) code = makeCode();
@@ -180,4 +190,5 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`AI Wrapped vote server on http://localhost:${PORT}`);
+  if (!POLL_PASSWORD) console.warn('POLL_PASSWORD unset — Start/New poll will fail until it is set.');
 });

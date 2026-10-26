@@ -5,6 +5,7 @@
  *
  * Requires: ngrok installed and logged in (`ngrok config add-authtoken …`).
  */
+import { randomBytes } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { setTimeout as sleep } from 'node:timers/promises';
@@ -13,6 +14,9 @@ const PORT = Number(process.env.PORT || 8787);
 const PAGES =
   process.env.PAGES_URL || 'https://kedar-v.github.io/ai-wrapped/';
 const NGROK_API = 'http://127.0.0.1:4040/api/tunnels';
+// Instructor-only; not committed. Override with POLL_PASSWORD=… npm run vote:demo
+const POLL_PASSWORD = process.env.POLL_PASSWORD || randomBytes(4).toString('hex');
+
 
 function run(cmd, args, opts = {}) {
   const child = spawn(cmd, args, { stdio: ['ignore', 'pipe', 'pipe'], ...opts });
@@ -62,7 +66,7 @@ process.on('SIGTERM', () => { killAll(); process.exit(0); });
 
 const server = run(process.execPath, ['index.js'], {
   cwd: fileURLToPath(new URL('../server/', import.meta.url)),
-  env: { ...process.env, PORT: String(PORT), CORS_ORIGIN: '*' },
+  env: { ...process.env, PORT: String(PORT), CORS_ORIGIN: '*', POLL_PASSWORD },
 });
 kids.push(server);
 
@@ -100,10 +104,14 @@ console.log(`
 │  Vote API (local):  http://127.0.0.1:${PORT}
 │  Vote API (public): ${publicUrl}
 │
+│  Instructor password (keep private — needed for Start/New poll):
+│  ${POLL_PASSWORD}
+│
 │  Share this with the class (GitHub Pages + your tunnel):
 │  ${share}
 │
-│  Instructor: open the link → Start poll. Class joins automatically.
+│  You: Start/New poll → enter the password above.
+│  Class: joins automatically; they cannot reset the poll.
 │  Keep this process running until the demo ends. Ctrl+C to stop.
 └─────────────────────────────────────────────────────────────
 `);
