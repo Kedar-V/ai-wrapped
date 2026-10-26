@@ -1,0 +1,20 @@
+{
+  "v": 3,
+  "createdOnFiles": { "v": 1, "at": "2026-10-26T21:56:00Z" },
+  "title": "AI Wrapped: The Explanation Trap",
+  "launch": { "view": "canvas" },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": { "x": 0, "y": 0, "w": 1360, "h": 1200, "title": "1 · Interactive prototype (press Play)", "expand": "fill", "is_interactive": true },
+    "Architecture.dc.html": { "x": 1440, "y": 0, "w": 1360, "h": 2900, "title": "2 · Architecture, journeys, data model, coverage", "expand": "fill" },
+    "DesignSystem.dc.html": { "x": 2880, "y": 0, "w": 1360, "h": 1700, "title": "3 · Design system", "expand": "fill" }
+  },
+  "order": ["Main.dc.html", "Architecture.dc.html", "DesignSystem.dc.html"],
+  "notes": {
+    "t1": { "x": 0, "y": -320, "text": "AI Wrapped: The Explanation Trap", "kind": "title1", "maxW": 4240 },
+    "n1": { "x": 0, "y": -190, "w": 460, "text": "Start here. One continuous, playable prototype: Welcome → Wrapped → Explain → Stakeholder Lab → Trap → Disclosure → Council, plus Instructor mode (top bar). Use Play for the full experience. Pick The Midnight Romantic for the intended walkthrough.", "fill": "purple" },
+    "n2": { "x": 1440, "y": -190, "w": 460, "text": "Static reference: experience map, participant and stakeholder journeys, shared data model and state rules, Q1–Q7 coverage table, React component map.", "fill": "teal" },
+    "n3": { "x": 2880, "y": -190, "w": 460, "text": "Tokens, type, motion and reusable components, including the tone shift from playful (Act I) to investigative (Acts II–III) to unsettling (Acts IV–V).", "fill": "orange" }
+  },
+  "designSystems": []
+}

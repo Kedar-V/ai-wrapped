@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI Wrapped architecture</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.a{background:#120A24;color:#F6F1FF;font-family:'DM Sans',system-ui,sans-serif;font-size:16px;line-height:1.45;min-height:100vh;box-sizing:border-box}
+.a *{box-sizing:border-box}
+.wrap{max-width:1280px;margin:0 auto;padding:48px 40px;display:flex;flex-direction:column;gap:56px}
+.disp{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.03em;line-height:.98;margin:0}
+.ey{font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.12em;font-size:13px;color:#1DF08A}
+.sec{display:flex;flex-direction:column;gap:20px}
+.h1{font-size:72px}.h2{font-size:40px}
+.lead{font-size:20px;color:#D9CCF2;margin:0;max-width:70ch}
+.flow{display:flex;flex-wrap:wrap;gap:12px;align-items:stretch}
+.arrow{align-self:center;font-size:28px;color:#1DF08A}
+.box{background:#1F1338;border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:8px;flex:1 1 220px;min-width:200px}
+.box b{font-size:18px}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:12px;padding:3px 9px;border-radius:6px;border:1px solid #1DF08A;color:#1DF08A;margin-right:6px}
+.mut{color:#C4B5E3;font-size:14px}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th,.tbl td{text-align:left;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.14);vertical-align:top}
+.tbl th{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#C4B5E3;font-weight:400}
+.sc{overflow-x:auto}
+.q{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.g5{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.ok{color:#1DF08A}.pk{color:#FF9DC6}.or{color:#FFB46B}
+</style>
+</helmet>
+<div class="a"><div class="wrap">
+
+<div class="sec"><div class="ey">Phase 1 · Experience architecture</div><h1 class="disp h1">AI Wrapped: how the experience hangs together</h1>
+<p class="lead">One fictional listener, one shared model, five acts. Every screen derives from the same listening features and the same rule, so nothing is a one-off number.</p></div>
+
+<div class="sec"><div class="ey">Experience map · 25 minutes</div>
+<div class="flow"><sc-for list="{{acts}}" as="x" hint-placeholder-count="5"><div class="box"><span class="ey">{{x.time}}</span><b>{{x.n}} · {{x.name}}</b><span>{{x.screens}}</span><span class="mut">Course questions: {{x.q}}</span><span class="mut">Hand-off: {{x.hand}}</span></div><span class="arrow">→</span></sc-for></div></div>
+
+<div class="sec"><div class="ey">Participant journey</div><h2 class="disp h2">From fun quiz to “should it be judging at all?”</h2>
+<div class="flow"><sc-for list="{{beats}}" as="b" hint-placeholder-count="5"><div class="box"><span class="ey">{{b.where}}</span><span class="q">{{b.thought}}</span><span class="mut">Mood: {{b.mood}}</span><span class="mut">Design move: {{b.move}}</span></div><span class="arrow">→</span></sc-for></div></div>
+
+<div class="sec"><div class="ey">Five stakeholder journeys · same profile, different power</div>
+<div class="g5"><sc-for list="{{stks}}" as="s" hint-placeholder-count="5"><div class="box" style="border-color: {{s.col}}"><b style="color: {{s.col}}">{{s.name}}</b><span class="mut">Goal</span><span>{{s.goal}}</span><span class="mut">Sees</span><span>{{s.sees}}</span><span class="mut">Main interaction</span><span>{{s.does}}</span><span class="mut">Authority</span><span>{{s.power}}</span><span class="mut">Discussion</span><span>{{s.q}}</span></div></sc-for></div></div>
+
+<div class="sec"><div class="ey">Six concepts students must not conflate</div>
+<div class="g5"><sc-for list="{{concepts}}" as="c" hint-placeholder-count="6"><div class="box"><b>{{c.n}}</b><span>{{c.q}}</span><span class="mut">Where it shows up: {{c.where}}</span></div></sc-for></div></div>
+
+<div class="sec"><div class="ey">Q1–Q7 coverage · every question has an interaction, visible output and discussion moment</div>
+<div class="sc"><table class="tbl"><tr><th>Q</th><th>Question</th><th>Required interaction</th><th>Where</th><th>Visible output</th><th>Discussion moment</th></tr>
+<sc-for list="{{cov}}" as="r" hint-placeholder-count="7"><tr><td class="ok"><b>{{r.q}}</b></td><td>{{r.text}}</td><td>{{r.inter}}</td><td>{{r.where}}</td><td>{{r.out}}</td><td>{{r.disc}}</td></tr></sc-for></table></div></div>
+
+<div class="sec"><div class="ey">Shared data model · one state, many views</div>
+<p class="lead">Reversible actions can be undone in the prototype. “Purge” is deliberately one-way until Reset, to show that deletion needs authority and cannot be wished away by the listener.</p>
+<div class="sc"><table class="tbl"><tr><th>State</th><th>Set by</th><th>Changes these views</th><th>Reversible</th><th>Hidden until</th></tr>
+<sc-for list="{{state}}" as="r" hint-placeholder-count="12"><tr><td class="mono"><b>{{r.k}}</b></td><td>{{r.by}}</td><td>{{r.views}}</td><td>{{r.rev}}</td><td>{{r.hidden}}</td></tr></sc-for></table></div></div>
+
+<div class="sec"><div class="ey">Phase 5 · Validation walkthrough with The Midnight Romantic</div>
+<div class="sc"><table class="tbl"><tr><th>Layer</th><th>Value</th><th>Derived from</th></tr>
+<sc-for list="{{walk}}" as="r" hint-placeholder-count="10"><tr><td><b>{{r.l}}</b></td><td>{{r.v}}</td><td class="mut">{{r.d}}</td></tr></sc-for></table></div>
+<p class="lead">The prediction test is deterministic: dropping night listening from 61% to 15% moves the score from 99 to 73, still above the threshold of 70. Most people predict the label disappears.</p></div>
+
+<div class="sec"><div class="ey">React-ready component map</div>
+<div class="sc"><table class="tbl"><tr><th>Component</th><th>Screen</th><th>Reads</th><th>Writes</th></tr>
+<sc-for list="{{comps}}" as="r" hint-placeholder-count="18"><tr><td class="mono">{{r.n}}</td><td>{{r.s}}</td><td>{{r.r}}</td><td>{{r.w}}</td></tr></sc-for></table></div></div>
+
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1360,"height":2900}}'>
+class Component extends DCLogic{
+renderVals(){
+return {
+acts:[
+{n:'I',name:'Your AI Wrapped',time:'0–3 min',screens:'Welcome → Persona → Wrapped reveal → What AI thinks it knows',q:'Q1 · Q2',hand:'“Request explanation” on the vulnerability inference'},
+{n:'II',name:'Explain My Profile',time:'3–7 min',screens:'Confidence slider → four explanation levels → format comparison → prediction → result',q:'Q2 · Q5',hand:'“Who else sees this?” opens the Stakeholder Lab'},
+{n:'III',name:'Stakeholder Lab',time:'7–13 min',screens:'Five dashboards → asymmetry reveal → access matrix with editable proposed column',q:'Q1 · Q2 · Q3',hand:'Gaps panel leads into the Explanation Trap'},
+{n:'IV',name:'Explanation Trap + Disclosure',time:'13–18 min',screens:'Six reveals → final vote → disclosure simulator',q:'Q3 · Q4 · Q6',hand:'“Public is not the answer” leads into the Council'},
+{n:'V',name:'Ethics Council',time:'18–25 min',screens:'Principles → policy → negotiation → vote → before and after',q:'Q4 · Q6 · Q7',hand:'Closing question: who deserves an explanation?'}],
+beats:[
+{where:'Welcome → Wrapped',thought:'This is a fun AI personality quiz.',mood:'Playful, saturated, rounded',move:'Floating persona cards, animated stats, bright gradients'},
+{where:'What AI thinks → Explain',thought:'Wait, how does it know that about me?',mood:'Curious, slightly exposed',move:'Observed vs speculative tags; confidence slider before any explanation'},
+{where:'Lab → Matrix',thought:'Who else can see this information?',mood:'Investigative, technical',move:'Dark ground, dense data, five-role switcher, asymmetry rows reveal one at a time'},
+{where:'Explanation Trap',thought:'Does this explanation actually prove anything?',mood:'Unsettled',move:'Palette cools toward ink and alarm pink; one reveal at a time'},
+{where:'Disclosure → Council',thought:'Even if the AI explains everything, should it be making these judgments at all?',mood:'Consequential',move:'Warm ember ground; students must defend three principles'}],
+stks:[
+{name:'Listener',col:'#1DF08A',goal:'Know what was concluded and contest it',sees:'Label, supporting behavior, recommendation and ad consequences',does:'Dispute label; opt out; request downstream deletion',power:'Edit own label; cannot purge exported segment',q:'Should a platform know what you never told it?'},
+{name:'ML Engineer',col:'#A78BFA',goal:'Make the model work',sees:'Rule, weights, features, diagnostics',does:'Move feature sliders, watch the prediction',power:'Change model with review',q:'Is a correct implementation of an unjustified rule a success?'},
+{name:'Advertiser',col:'#FF8A1F',goal:'Reach the right audience',sees:'Segments, size, estimated reach and CTR',does:'Choose campaign and targeting strategy',power:'Choose targeting, not data',q:'Should they access inferences users cannot verify?'},
+{name:'Executive',col:'#FF4FA3',goal:'Growth within acceptable risk',sees:'Engagement, retention, revenue, complaints, corrections',does:'Pick one of four predefined strategies; can purge a segment',power:'Approve deployment',q:'Can a system be commercially successful and ethically unacceptable?'},
+{name:'Auditor',col:'#22D3EE',goal:'Test the platform’s claims',sees:'Provenance chain, audit trail, missing evidence',does:'Trace the inference; classify four findings',power:'Recommend; cannot block',q:'What evidence would justify the inference, and what is missing?'}],
+concepts:[
+{n:'Transparency',q:'What is known about the system, its data, objectives and governance?',where:'Governance record, disclosure simulator'},
+{n:'Explainability',q:'Why did the system produce this output?',where:'Explanation levels 1–4'},
+{n:'Interpretability',q:'Can a human meaningfully understand the mechanism?',where:'Level 4 rule; engineer view'},
+{n:'Faithfulness',q:'Does the explanation match what the model actually did?',where:'Engineer check, Trap reveal 3'},
+{n:'Validity',q:'Does the evidence justify the inferred characteristic?',where:'Trap reveal 4, auditor findings'},
+{n:'Accountability',q:'Can someone correct, challenge or stop the system?',where:'Listener lanes, matrix, trap reveal 6'}],
+cov:[
+{q:'Q1',text:'Who is owed transparency, explainability or interpretability?',inter:'Stakeholder Access Matrix',where:'Matrix screen; Lab switcher',out:'Current vs proposed access, power gaps, info-flow graph',disc:'Who decides without understanding? Who is affected without power?'},
+{q:'Q2',text:'What kind or level of explanation does each stakeholder need?',inter:'Explanation Selector',where:'Explain: levels and compare-by-stakeholder',out:'Fit dots per format, reveals / does not reveal',disc:'Did more detail help?'},
+{q:'Q3',text:'Who actually has access, and why does that matter?',inter:'Information Asymmetry Reveal',where:'Matrix: four-layer reveal; Lab default views',out:'Exists / disclosed / understandable / authority',disc:'What exists that this role cannot see?'},
+{q:'Q4',text:'What are the trade-offs and risks of transparency?',inter:'Disclosure Simulator',where:'Disclosure screen',out:'Six qualitative indicators, four disclosure kinds, rule-triggered notes',disc:'Why is “make it all public” not the answer?'},
+{q:'Q5',text:'How do we know people understand explanations?',inter:'Explanation Comprehension Experiment',where:'Explain: slider → prediction → result',out:'Confidence before/after, correctness, actionable issue',disc:'More confident or more correct?'},
+{q:'Q6',text:'Would problems remain with a perfectly interpretable model?',inter:'Perfect Explanation Trap',where:'Trap reveals 3–6 and final vote',out:'Faithful + transparent + invalid + exported segment',disc:'Was the system ethical?'},
+{q:'Q7',text:'What principles should guide a responsible team?',inter:'Ethics Council',where:'Council steps 1–5',out:'Three defended principles, policy fit, before/after',disc:'Who deserves an explanation, and when is it not enough?'}],
+state:[
+{k:'persona',by:'Persona selector, Instructor',views:'Every screen: features, labels, ads, score',rev:'Yes',hidden:'—'},
+{k:'cls',by:'What AI thinks screen',views:'Council before/after',rev:'Yes',hidden:'Sample cohort bars appear after answering'},
+{k:'conf0, conf1, pred, act',by:'Explain',views:'Perceived vs demonstrated panel',rev:'Yes (rerun)',hidden:'Explanation hidden until conf0 is set'},
+{k:'corrected',by:'Listener dashboard, Trap lane 1',views:'Listener lanes, auditor records, executive corrections tile, trap lane',rev:'Yes',hidden:'—'},
+{k:'restricted',by:'Listener, Trap lane 2',views:'Listener lanes, auditor records, trap lane',rev:'Yes',hidden:'—'},
+{k:'delReq',by:'Listener',views:'Executive complaints and open items, auditor records',rev:'Yes (withdraw)',hidden:'—'},
+{k:'purged',by:'Executive only',views:'Advertiser segment note, listener ads, trap lane 3, auditor chain',rev:'No, only Reset',hidden:'Requires executive authority'},
+{k:'eng overrides',by:'Engineer sliders',views:'Engineer sandbox only; live model unchanged',rev:'Yes',hidden:'—'},
+{k:'adCamp, adStrat',by:'Advertiser',views:'Advertiser reach, CTR and evidence status',rev:'Yes',hidden:'Sensitive strategy shows warning'},
+{k:'exStrat',by:'Executive',views:'Executive tiles and governance status',rev:'Yes',hidden:'—'},
+{k:'mProp, mView, asym',by:'Matrix',views:'Gaps panel, info-flow graph, asymmetry rows',rev:'Yes',hidden:'Asymmetry layers 1–4 revealed in order'},
+{k:'trapStep, vote',by:'Trap, Instructor',views:'Reveal cards, final question, vote bars',rev:'Hide last / Restart',hidden:'Reveals 1–6; final question after 6'},
+{k:'dGrid',by:'Disclosure simulator',views:'Meters, mode counts, notes',rev:'Yes (presets)',hidden:'—'},
+{k:'cPri, cDef, cPol, cFinal',by:'Council',views:'Policy fit, before/after path',rev:'Yes',hidden:'Steps unlock in order'}],
+walk:[
+{l:'Listening behavior',v:'61% night · 48% low-energy · 35% romantic · 72% replay · 28,450 min',d:'Persona A data'},
+{l:'Rule score',v:'99 of 100, threshold 70, flagged',d:'100 × (0.35·1.00 + 0.30·0.96 + 0.20·1.00 + 0.15·1.00)'},
+{l:'Inferred label',v:'Potentially emotionally vulnerable',d:'Persona A inference card, same score'},
+{l:'Explanation levels 1–4',v:'Same four numbers, same rule text',d:'Explain screen uses the live feature object'},
+{l:'Engineer view',v:'Sliders default to the same four values',d:'Same scoring function'},
+{l:'Advertiser view',v:'Wellness campaign, sensitive strategy: 0.35M reach, 3.4% est. CTR (unverified)',d:'Predefined table; segment size 412,000'},
+{l:'Executive view',v:'Engagement-first: highest revenue, High privacy risk, escalated governance',d:'Predefined strategy states; corrections tile +1 if listener corrects'},
+{l:'Auditor findings',v:'Validity missing, consent missing, deletion gap, minimization question',d:'Trace chain reflects listener actions'},
+{l:'Trap reveals',v:'Faithful and transparent, but invalid and exported',d:'Reveal 6 lanes mirror the listener lanes'},
+{l:'Council',v:'Policy fit checked against the three principles the student chose',d:'Principles → policy supported-principles map'}],
+comps:[
+{n:'PersonaSelector',s:'Persona',r:'PERSONAS',w:'persona'},{n:'WrappedReveal',s:'Wrapped',r:'persona, hours()',w:'wStep'},{n:'InferenceCard',s:'What AI thinks',r:'persona.infs, score',w:'cls'},{n:'ExplanationViewer',s:'Explain',r:'scoreOf(features)',w:'level, featSel'},{n:'ConfidenceInput',s:'Explain',r:'—',w:'conf0, conf1'},{n:'ComprehensionTest',s:'Explain',r:'scoreOf(night=15)',w:'pred, act'},{n:'StakeholderSwitcher',s:'Lab, Instructor',r:'STK',w:'stk'},{n:'ListenerDashboard',s:'Lab',r:'persona, flags',w:'corrected, restricted, delReq'},{n:'EngineerDashboard',s:'Lab',r:'scoreOf(eng)',w:'eng'},{n:'AdvertiserDashboard',s:'Lab',r:'CAMP × STR table',w:'adCamp, adStrat'},{n:'ExecutiveDashboard',s:'Lab',r:'EX states, flags',w:'exStrat, purged'},{n:'AuditorDashboard',s:'Lab',r:'chain, flags',w:'audStep, audCls'},{n:'AccessMatrix',s:'Matrix',r:'MXC, MXP',w:'mProp, mView'},{n:'DataLineageGraph',s:'Explain L4, Matrix',r:'lineage, matrix',w:'—'},{n:'DisclosureSimulator',s:'Disclosure',r:'ITEMS × RECS',w:'dGrid'},{n:'RevealController',s:'Trap, Instructor',r:'trapStep',w:'trapStep, vote'},{n:'EthicsCouncil',s:'Council',r:'PRINCIPLES, POLICIES',w:'cStep, cPri, cPol, cFinal'},{n:'InstructorControls',s:'Instructor',r:'SCR scripts',w:'screen, discuss, ans, present'}]
+};
+}
+}
+</script>
+</body>
+</html>

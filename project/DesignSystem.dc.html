@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI Wrapped design system</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.d{background:#120A24;color:#F6F1FF;font-family:'DM Sans',system-ui,sans-serif;font-size:16px;line-height:1.45;min-height:100vh;box-sizing:border-box}
+.d *{box-sizing:border-box}
+.wrap{max-width:1280px;margin:0 auto;padding:48px 40px;display:flex;flex-direction:column;gap:48px}
+.disp{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-.03em;line-height:.98;margin:0}
+.mono{font-family:'JetBrains Mono',monospace}
+.ey{font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.12em;font-size:13px;color:#1DF08A}
+.sec{display:flex;flex-direction:column;gap:18px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.sw{border-radius:16px;padding:16px;min-height:110px;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;border:1px solid rgba(255,255,255,.2)}
+.card{background:#1F1338;border:1px solid rgba(255,255,255,.16);border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.mut{color:#C4B5E3;font-size:14px}
+.btn{font:inherit;font-weight:700;padding:12px 20px;border-radius:999px;border:2px solid transparent;min-height:44px;cursor:pointer}
+.pri{background:#1DF08A;color:#0B2417}.alt{background:#7C3AED;color:#fff}.pink{background:#FF4FA3;color:#2A0618}.ghost{background:transparent;color:#F6F1FF;border-color:rgba(255,255,255,.35)}
+.chip{font:inherit;font-size:14px;padding:8px 14px;min-height:40px;border-radius:999px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#F6F1FF}
+.chip.on{background:#F6F1FF;color:#120A24;font-weight:700}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:12px;padding:3px 9px;border-radius:6px;text-transform:uppercase;border:1px solid}
+.t1{color:#1DF08A;border-color:#1DF08A}.t2{color:#FFB46B;border-color:#FF8A1F}.t3{color:#FF9DC6;border-color:#FF4FA3}
+.cellb{font:inherit;font-size:13px;font-weight:700;min-height:44px;border-radius:10px;border:1px solid;padding:6px 12px}
+.ca{background:rgba(29,240,138,.16);border-color:#1DF08A;color:#1DF08A}.cr{background:rgba(255,138,31,.16);border-color:#FF8A1F;color:#FFB46B}.cx{background:rgba(167,139,250,.18);border-color:#A78BFA;color:#CDBDFF}.cu{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.28);color:#C4B5E3}
+.bar{height:12px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden}.bar>i{display:block;height:100%;border-radius:99px}
+.lane{display:grid;grid-template-columns:180px 1fr;gap:12px;padding:12px;border-radius:12px;border:1px solid}
+.l1{border-color:#1DF08A;background:rgba(29,240,138,.1)}.l2{border-color:#FF4F7A;background:rgba(255,79,122,.12)}
+.sp{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.sp div{background:#7C3AED;border-radius:4px}
+</style>
+</helmet>
+<div class="d"><div class="wrap">
+
+<div class="sec"><div class="ey">Phase 2 · Design system</div><h1 class="disp" style="font-size:72px">Wavelength: playful first, then unsettling</h1>
+<p class="mut" style="font-size:20px;max-width:70ch;margin:0">An original music-inspired identity: electric purple, vibrant green, pink and orange on deep ink. The same tokens carry the whole arc, while the ground shifts from bright purple to cold ink to ember.</p></div>
+
+<div class="sec"><div class="ey">Color tokens</div>
+<div class="g"><sc-for list="{{colors}}" as="c" hint-placeholder-count="10"><div class="sw" style="background: {{c.hex}}; color: {{c.fg}}"><b>{{c.n}}</b><span class="mono" style="font-size:13px">{{c.hex}}</span><span style="font-size:13px">{{c.use}}</span></div></sc-for></div></div>
+
+<div class="sec"><div class="ey">Tone shift by act · the ground changes, the tokens do not</div>
+<div class="g"><sc-for list="{{moods}}" as="m" hint-placeholder-count="5"><div class="sw" style="background: {{m.bg}}; min-height:150px"><b>{{m.n}}</b><span style="font-size:13px">{{m.note}}</span></div></sc-for></div></div>
+
+<div class="sec"><div class="ey">Typography · built for a projector</div>
+<div class="card"><div class="disp" style="font-size:96px">Bricolage Display</div><div class="mut">Display · 800 · tight tracking · 48–104 px for titles, 28–40 px for section heads</div></div>
+<div class="g"><div class="card"><div style="font-size:20px">DM Sans body 20 px: the lead text students read first.</div><div class="mut">Body · 400/500/700 · 16 px minimum on screen, 20 px for leads</div></div><div class="card"><div class="mono" style="font-size:14px;color:#D9F7E8">score = 100 x (0.35n + 0.30l + ...)</div><div class="mut">JetBrains Mono · rules, code, labels, eyebrows</div></div></div></div>
+
+<div class="sec"><div class="ey">Spacing, radius, motion</div>
+<div class="g"><div class="card"><b>Spacing</b><div class="sp"><sc-for list="{{spaces}}" as="s" hint-placeholder-count="8"><div style="width:{{s}}px;height:{{s}}px"></div></sc-for></div><div class="mut">4 · 8 · 12 · 16 · 24 · 32 · 48 · 64</div></div>
+<div class="card"><b>Radius</b><div class="mut">Chips and buttons: pill. Cards: 18–20 px. Inputs and cells: 10–14 px.</div></div>
+<div class="card"><b>Motion</b><div class="mut">Reveal: 500 ms rise and fade. Bars grow in 800 ms. Floating previews 5 s, Act I only. All motion off under reduced-motion. Never animate the Trap reveals beyond the entrance.</div></div></div></div>
+
+<div class="sec"><div class="ey">Components</div>
+<div class="g">
+<div class="card"><b>Buttons and chips</b><div style="display:flex;flex-wrap:wrap;gap:10px"><button class="btn pri">Primary</button><button class="btn alt">Alt</button><button class="btn pink">Reveal</button><button class="btn ghost">Ghost</button></div><div style="display:flex;flex-wrap:wrap;gap:10px"><button class="chip on">Selected</button><button class="chip">Option</button></div></div>
+<div class="card"><b>Evidence tags</b><div style="display:flex;flex-wrap:wrap;gap:8px"><span class="tag t1">Observed</span><span class="tag t2">Speculative</span><span class="tag t3">Sensitivity: High</span></div><div class="mut">Observation and interpretation are always visually distinguished.</div></div>
+<div class="card"><b>Access cells</b><div style="display:flex;flex-wrap:wrap;gap:8px"><button class="cellb ca">Available</button><button class="cellb cr">Restricted</button><button class="cellb cx">Needs auth</button><button class="cellb cu">Unavailable</button></div><div class="mut">State is carried by label, not color alone.</div></div>
+<div class="card"><b>Inference card</b><div class="disp" style="font-size:24px">Potentially emotionally vulnerable</div><div class="bar"><i style="width:99%;background:#FF8A1F"></i></div><div class="mut">Heuristic score 99/100, not a calibrated probability</div><div style="display:flex;gap:8px"><button class="chip">Acceptable</button><button class="chip">Questionable</button><button class="chip on">Inappropriate</button></div></div>
+<div class="card"><b>Remedy lanes</b><div class="lane l1"><b>Profile correction</b><span>Done</span></div><div class="lane l2"><b>Downstream deletion</b><span>Not automatic</span></div></div>
+<div class="card"><b>Trade-off meter</b><div class="mut">Privacy exposure: High</div><div class="bar"><i style="width:72%;background:#FF8A1F"></i></div><div class="mut">Accountability gained: Strong</div><div class="bar"><i style="width:68%;background:#1DF08A"></i></div><div class="mut">Qualitative indicators, never a single ethics score.</div></div>
+</div></div>
+
+<div class="sec"><div class="ey">Accessibility and classroom rules</div>
+<div class="card"><div>• Text targets at least 4.5:1 contrast on its panel; large type at least 3:1.</div><div>• Real buttons, labels and inputs; every control at least 44 px tall.</div><div>• Status uses words as well as color (Available, Restricted, Needs auth, Unavailable).</div><div>• Classroom view scales the interface by about 12% and can request full screen.</div><div>• Sample results are always labeled illustrative; no classroom backend is simulated.</div></div></div>
+
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1360,"height":1700}}'>
+class Component extends DCLogic{
+renderVals(){
+return {
+colors:[
+{n:'Electric purple',hex:'#7C3AED',fg:'#FFFFFF',use:'Brand, selected states'},
+{n:'Violet light',hex:'#A78BFA',fg:'#120A24',use:'Engineer, secondary data'},
+{n:'Vibrant green',hex:'#1DF08A',fg:'#0B2417',use:'Primary action, observed, available'},
+{n:'Hot pink',hex:'#FF4FA3',fg:'#2A0618',use:'Night, reveals, warnings'},
+{n:'Orange',hex:'#FF8A1F',fg:'#2A1200',use:'Speculation, estimates, risk'},
+{n:'Alarm pink',hex:'#FF4F7A',fg:'#2A0618',use:'Unresolved harm, Trap'},
+{n:'Ink',hex:'#120A24',fg:'#F6F1FF',use:'Page ground'},
+{n:'Panel',hex:'#1F1338',fg:'#F6F1FF',use:'Cards'},
+{n:'Text',hex:'#F6F1FF',fg:'#120A24',use:'Primary text'},
+{n:'Muted',hex:'#C4B5E3',fg:'#120A24',use:'Secondary text'}],
+moods:[
+{n:'Act I · Bright purple',bg:'radial-gradient(400px 300px at 85% 0%,#6D28D9,#120A24)',note:'Delight'},
+{n:'Acts II–III · Ink',bg:'linear-gradient(180deg,#160D2E,#0E0919)',note:'Investigation'},
+{n:'Act IV · Alarm',bg:'radial-gradient(400px 300px at 50% 0%,#4A0F2C,#0A040A)',note:'Unease'},
+{n:'Act V · Ember',bg:'radial-gradient(400px 300px at 70% 0%,#4A2410,#0A0505)',note:'Consequence'},
+{n:'Instructor',bg:'linear-gradient(180deg,#101018,#0A0A12)',note:'Neutral console'}],
+spaces:[4,8,12,16,24,32,48,64]
+};
+}
+}
+</script>
+</body>
+</html>

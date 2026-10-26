@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI Wrapped prototype</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+.app{min-height:100vh;display:flex;flex-direction:column;color:#F6F1FF;font-family:'DM Sans',system-ui,sans-serif;font-size:16px;line-height:1.45;box-sizing:border-box}
+.app *{box-sizing:border-box}
+.disp{font-family:'Bricolage Grotesque','DM Sans',sans-serif;letter-spacing:-0.03em;line-height:.98;margin:0;font-weight:800}
+.mono{font-family:'JetBrains Mono',monospace}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;padding:14px 32px}
+.brand{font-size:28px;color:#1DF08A}
+.acts{display:flex;flex-wrap:wrap;gap:8px}
+.act{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:transparent;color:#C4B5E3;font:inherit;font-size:14px;cursor:pointer}
+.act .an{font-family:'JetBrains Mono',monospace;font-size:12px;opacity:.9}
+.act .at{font-size:12px;opacity:.75}
+.act.done{color:#1DF08A;border-color:rgba(29,240,138,.55)}
+.act.on{background:#F6F1FF;color:#120A24;border-color:#F6F1FF;font-weight:700}
+.sp{flex:1}
+.pbar{height:4px;background:rgba(255,255,255,.12)}
+.pfill{height:100%;background:linear-gradient(90deg,#1DF08A,#FF4FA3,#FF8A1F);transition:width .5s ease}
+.main{flex:1;padding:36px 40px 28px;display:flex;flex-direction:column;gap:24px;max-width:1360px;width:100%;margin:0 auto}
+.eyebrow{font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.12em;font-size:13px;color:#1DF08A}
+.h1{font-size:clamp(48px,8vw,104px)}
+.h2{font-size:clamp(30px,4vw,48px)}
+.h3{font-size:24px;line-height:1.1}
+.lead{font-size:20px;color:#D9CCF2;margin:0;max-width:62ch}
+.muted{color:#C4B5E3}
+.small{font-size:14px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.col{display:flex;flex-direction:column;gap:12px}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:20px}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.card{background:rgba(31,19,56,.92);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:12px}
+.card.hi{border-color:#1DF08A}
+.card.warn{border-color:#FF8A1F}
+.card.bad{border-color:#FF4F7A;background:rgba(60,12,34,.9)}
+.btn{font:inherit;font-weight:700;font-size:16px;padding:12px 20px;border-radius:999px;border:2px solid transparent;cursor:pointer;min-height:44px}
+.btn.big{font-size:19px;padding:16px 28px}
+.btn.pri{background:#1DF08A;color:#0B2417}
+.btn.alt{background:#7C3AED;color:#fff}
+.btn.pink{background:#FF4FA3;color:#2A0618}
+.btn.ghost{background:transparent;color:#F6F1FF;border-color:rgba(255,255,255,.35)}
+.btn.sm{font-size:14px;padding:8px 14px;min-height:40px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.chip{font:inherit;font-size:14px;padding:8px 14px;min-height:40px;border-radius:999px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#F6F1FF;cursor:pointer}
+.chip.on{background:#F6F1FF;color:#120A24;font-weight:700;border-color:#F6F1FF}
+.tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:12px;padding:3px 9px;border-radius:6px;text-transform:uppercase;letter-spacing:.05em;border:1px solid}
+.t-obs{color:#1DF08A;border-color:#1DF08A}
+.t-spec{color:#FFB46B;border-color:#FF8A1F}
+.t-low{color:#1DF08A;border-color:#1DF08A}
+.t-med{color:#FFB46B;border-color:#FF8A1F}
+.t-high{color:#FF9DC6;border-color:#FF4FA3}
+.t-fict{color:#C4B5E3;border-color:rgba(255,255,255,.35)}
+.hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:40px;align-items:center;padding-top:12px}
+.pv{border-radius:24px;padding:22px;color:#fff;animation:float 5s ease-in-out infinite}
+.pv.a{background:linear-gradient(135deg,#6D28D9,#FF4FA3)}
+.pv.b{background:linear-gradient(135deg,#0E7A4B,#1DF08A);color:#06210F}
+.pv.c{background:linear-gradient(135deg,#FF8A1F,#FF4FA3)}
+.pv .pt{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.1em;opacity:.9}
+.pv .pb{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:44px;letter-spacing:-.03em;line-height:1}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-10px) rotate(1deg)}}
+@keyframes pop{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes grow{from{width:0}}
+.pop{animation:pop .5s ease both}
+.pcard{font:inherit;text-align:left;color:#fff;border:3px solid transparent;border-radius:24px;padding:20px;min-height:340px;display:flex;flex-direction:column;gap:10px;cursor:pointer;justify-content:flex-end}
+.pcard.on{border-color:#F6F1FF;box-shadow:0 0 0 4px #1DF08A}
+.pcard .pn{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:30px;letter-spacing:-.03em;line-height:1}
+.bar{height:12px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:99px;animation:grow .8s ease both}
+.b-g{background:#1DF08A}.b-p{background:#FF4FA3}.b-o{background:#FF8A1F}.b-v{background:#A78BFA}
+.hours{display:flex;align-items:flex-end;gap:4px;height:150px}
+.hours .hb{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%}
+.hours .hb i{display:block;width:100%;border-radius:4px 4px 0 0;animation:grow .8s ease both}
+.hours .hb span{font-size:11px;color:#C4B5E3;height:14px}
+.stat{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:56px;letter-spacing:-.03em;line-height:1}
+.tbl{width:100%;border-collapse:collapse;font-size:15px}
+.tbl th,.tbl td{text-align:left;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.12);vertical-align:top}
+.tbl th{font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#C4B5E3;font-weight:400}
+.scroll{overflow-x:auto}
+.cellb{font:inherit;font-size:13px;font-weight:700;width:100%;min-height:44px;border-radius:10px;border:1px solid;cursor:pointer;padding:6px}
+.ca{background:rgba(29,240,138,.16);border-color:#1DF08A;color:#1DF08A}
+.cr{background:rgba(255,138,31,.16);border-color:#FF8A1F;color:#FFB46B}
+.cx{background:rgba(167,139,250,.18);border-color:#A78BFA;color:#CDBDFF}
+.cu{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.28);color:#C4B5E3}
+.chg{outline:3px solid #FF4FA3;outline-offset:1px}
+.foot{display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding:18px 40px;border-top:1px solid rgba(255,255,255,.16);background:rgba(10,5,22,.8)}
+.foot .q{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:22px;letter-spacing:-.02em;max-width:70ch}
+.disc{margin:0 40px;padding:20px 24px;border-radius:20px;background:#FF4FA3;color:#2A0618;display:flex;flex-direction:column;gap:8px}
+.disc .eyebrow{color:#2A0618}
+.step{display:flex;gap:14px;align-items:flex-start}
+.step .sn{flex:none;width:36px;height:36px;border-radius:50%;background:#7C3AED;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:700}
+.rev{border-radius:20px;padding:24px;border:1px solid rgba(255,255,255,.18);background:rgba(31,19,56,.92);display:flex;flex-direction:column;gap:10px}
+.rev.cur{border-color:#FF4F7A;box-shadow:0 0 0 3px rgba(255,79,122,.35)}
+.rev .rn{font-family:'JetBrains Mono',monospace;font-size:13px;color:#FF9DC6;text-transform:uppercase;letter-spacing:.1em}
+.lane{display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:center;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.16)}
+.lane.done{border-color:#1DF08A;background:rgba(29,240,138,.1)}
+.lane.todo{border-color:#FF4F7A;background:rgba(255,79,122,.12)}
+.lane.neutral{background:rgba(255,255,255,.04)}
+.node{padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);font-size:14px;text-align:center}
+.node.ok{border-color:#1DF08A}.node.weak{border-style:dashed;border-color:#FF8A1F}.node.no{border-style:dashed;border-color:#FF4F7A;color:#FF9DC6}
+.arrow{color:#C4B5E3;font-size:22px}
+.ftile{font:inherit;color:#F6F1FF;text-align:left;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:14px;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-height:44px}
+.ftile.on{border-color:#1DF08A;background:rgba(29,240,138,.12)}
+.code{font-family:'JetBrains Mono',monospace;font-size:14px;background:#0A0516;border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:16px;white-space:pre-wrap;color:#D9F7E8}
+input[type=range]{width:100%;accent-color:#1DF08A;min-height:28px}
+.inp{font:inherit;width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.3);background:#0A0516;color:#F6F1FF;min-height:44px}
+.gap{padding:12px 14px;border-radius:12px;font-size:15px;border:1px solid}
+.gap.d{border-color:#FF8A1F;background:rgba(255,138,31,.12)}
+.gap.p{border-color:#FF4F7A;background:rgba(255,79,122,.12)}
+.gap.g{border-color:#1DF08A;background:rgba(29,240,138,.1)}
+.vote{font:inherit;color:#F6F1FF;text-align:left;border-radius:14px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.05);padding:14px;cursor:pointer;min-height:44px;display:flex;flex-direction:column;gap:8px;width:100%}
+.vote.on{border-color:#1DF08A;background:rgba(29,240,138,.14)}
+a{color:#1DF08A}
+@media (prefers-reduced-motion:reduce){.pv,.pop,.bar>i,.hours .hb i,.pfill{animation:none;transition:none}}
+@media (max-width:760px){.main{padding:24px 16px}.top{padding:12px 16px}.foot{padding:16px}.lane{grid-template-columns:1fr}.disc{margin:0 16px}}
+</style>
+</helmet>
+
+<div class="app" style="background: {{bg}}; zoom: {{zoom}}">
+
+<header class="top">
+<div class="brand disp">AI Wrapped</div>
+<nav class="acts" aria-label="Experience progress">
+<sc-for list="{{acts}}" as="a" hint-placeholder-count="5"><button class="{{a.cls}}" onClick="{{a.go}}"><span class="an">{{a.n}}</span><span>{{a.label}}</span><span class="at">{{a.time}}</span></button></sc-for>
+</nav>
+<div class="sp"></div>
+<button class="btn ghost sm" onClick="{{togglePresent}}">{{presentLabel}}</button>
+<button class="btn ghost sm" onClick="{{go.instructor}}">Instructor mode</button>
+<button class="btn ghost sm" onClick="{{reset}}">Reset demo</button>
+</header>
+<div class="pbar"><div class="pfill" style="width: {{progW}}%"></div></div>
+
+<sc-if value="{{discussOn}}" hint-placeholder-val="{{false}}">
+<div class="disc" style="margin-top:20px">
+<div class="eyebrow">Discussion question · launched from Instructor mode</div>
+<div class="disp h2">{{prompt}}</div>
+<sc-if value="{{ansOn}}" hint-placeholder-val="{{false}}"><p class="lead" style="color:#2A0618">Example answers: {{ansText}}</p></sc-if>
+</div>
+</sc-if>
+
+<!-- ============ WELCOME ============ -->
+<sc-if value="{{s.welcome}}" hint-placeholder-val="{{true}}">
+<section class="main">
+<div class="hero">
+<div class="col" style="gap:24px">
+<div class="eyebrow">Wavelength presents · a fictional streaming platform</div>
+<h1 class="disp h1">AI Wrapped <span style="color:#1DF08A">2026</span></h1>
+<p class="lead"><em>We know what you listen to. But how much do we think we know about you?</em></p>
+<div class="row">
+<button class="btn pri big" onClick="{{go.persona}}">Discover My AI Persona</button>
+<button class="btn ghost big" onClick="{{toggleRoadmap}}">Explore the Experience</button>
+</div>
+<sc-if value="{{roadmapOn}}" hint-placeholder-val="{{false}}">
+<div class="card pop">
+<div class="eyebrow">25 minutes · five acts</div>
+<sc-for list="{{roadmap}}" as="r" hint-placeholder-count="5"><div class="row" style="justify-content:space-between;gap:8px"><span><b>{{r.n}} · {{r.label}}</b></span><span class="muted small">{{r.time}} · {{r.q}}</span></div></sc-for>
+<p class="small muted" style="margin:0">All listeners, labels, scores and metrics are fictional and produced by one shared data model.</p>
+</div>
+</sc-if>
+</div>
+<div class="col" style="gap:16px">
+<sc-for list="{{previews}}" as="p" hint-placeholder-count="3"><div class="{{p.cls}}" style="animation-delay: {{p.delay}}"><div class="pt">{{p.title}}</div><div class="pb">{{p.big}}</div><div>{{p.sub}}</div></div></sc-for>
+</div>
+</div>
+</section>
+</sc-if>
+
+<!-- ============ PERSONA ============ -->
+<sc-if value="{{s.persona}}" hint-placeholder-val="{{false}}">
+<section class="main">
+<div class="eyebrow">Act I · Select persona</div>
+<h2 class="disp h2">Whose year do you want to unwrap?</h2>
+<p class="lead">Choose a listener. Every screen after this is derived from their listening data, one shared model, no hardcoded one-offs.</p>
+<div class="g4">
+<sc-for list="{{personaCards}}" as="p" hint-placeholder-count="4">
+<button class="{{p.cls}}" style="{{p.art}}" onClick="{{p.pick}}" aria-pressed="{{p.sel}}">
+<span class="tag t-fict" style="align-self:flex-start;background:rgba(0,0,0,.25);color:#fff;border-color:#fff">Persona {{p.id}}</span>
+<span class="pn">{{p.name}}</span>
+<span>{{p.tag}}</span>
+<span class="small">{{p.genres}}</span>
+<span class="bar"><i class="b-g" style="width: {{p.i1}}%"></i></span><span class="small">{{p.l1}}</span>
+<span class="bar"><i class="b-o" style="width: {{p.i2}}%"></i></span><span class="small">{{p.l2}}</span>
+</button>
+</sc-for>
+</div>
+<div class="row"><button class="btn pri" onClick="{{go.wrapped}}">Reveal my Wrapped</button><span class="muted">Selected: <b>{{personaName}}</b></span></div>
+</section>
+</sc-if>
+
+<!-- ============ WRAPPED ============ -->
+<sc-if value="{{s.wrapped}}" hint-placeholder-val="{{false}}">
+<section class="main">
+<div class="eyebrow">Act I · Your Wrapped · {{personaName}}</div>
+<h2 class="disp h2">Here is your 2026, counted.</h2>
+<div class="row"><button class="btn pri" onClick="{{wNext}}">{{wLabel}}</button><button class="btn ghost" onClick="{{wReplay}}">Replay</button><span class="tag t-obs">Observed counts</span><span class="tag t-spec">Interpretation (speculative)</span></div>
+<div class="g2">
+<sc-if value="{{w.s1}}" hint-placeholder-val="{{true}}">
+<div class="card pop"><span class="tag t-obs" style="align-self:flex-start">Observed</span><div class="stat" style="color:#1DF08A">{{wMin}}</div><div class="h3">minutes listened</div><div class="muted">That is about {{wHrs}} hours of sound.</div></div>
+</sc-if>
+<sc-if value="{{w.s2}}" hint-placeholder-val="{{true}}">
+<div class="card pop"><span class="tag t-obs" style="align-self:flex-start">Observed</span><div class="h3">Top genres</div>
+<sc-for list="{{wGenres}}" as="g" hint-placeholder-count="5"><div><div class="row" style="justify-content:space-between"><span>{{g.n}}</span><span class="mono small">{{g.p}}%</span></div><div class="bar"><i class="b-v" style="width: {{g.w}}%"></i></div></div></sc-for>
+</div>
+</sc-if>
+<sc-if value="{{w.s3}}" hint-placeholder-val="{{true}}">
+<div class="card pop" style="grid-column:1/-1"><span class="tag t-obs" style="align-self:flex-start">Observed</span><div class="h3">When you listen (share of minutes by hour, pink = 22:00–05:59)</div>
+<div class="hours"><sc-for list="{{wHours}}" as="h" hint-placeholder-count="24"><div class="hb"><i style="height: {{h.pct}}%; background: {{h.col}}"></i><span>{{h.tick}}</span></div></sc-for></div>
+<div class="g4"><sc-for list="{{wTiles}}" as="t" hint-placeholder-count="4"><div><div class="stat" style="font-size:40px">{{t.v}}</div><div class="small muted">{{t.l}}</div></div></sc-for></div>
+<div class="small muted">{{wLine}}</div>
+</div>
+</sc-if>
+<sc-if value="{{w.s4}}" hint-placeholder-val="{{true}}">
+<div class="card hi pop" style="grid-column:1/-1;background:linear-gradient(135deg,rgba(124,58,237,.55),rgba(255,79,164,.35))"><span class="tag t-spec" style="align-self:flex-start">AI-generated · speculative</span><div class="eyebrow" style="color:#fff">Your AI personality</div><div class="disp h1" style="font-size:clamp(40px,6vw,80px)">{{personaName}}</div><p class="lead">{{personaTag}}. Fun, until you ask: <b>how much of this is a count, and how much is a conclusion?</b></p></div>
+</sc-if>
+</div>
+</section>
+</sc-if>
+
+<!-- ============ THINK ============ -->
+<sc-if value="{{s.think}}" hint-placeholder-val="{{false}}">
+<section class="main">
+<div class="eyebrow">Act I · What the AI thinks it knows</div>
+<h2 class="disp h2">Four things we now believe about you.</h2>
+<p class="lead">Which of these assumptions should the platform be allowed to make? Classify each. Your answers stay in this prototype only.</p>
+<div class="g2">
+<sc-for list="{{infCards}}" as="c" hint-placeholder-count="4">
+<div class="card {{c.card}}">
+<div class="row" style="justify-content:space-between"><span class="h3">{{c.name}}</span><span class="{{c.sensCls}} tag">Sensitivity: {{c.sens}}</span></div>
+<div>{{c.short}}</div>
+<div class="small muted"><span class="tag t-obs">Observed</span> {{c.obs}}</div>
+<div><div class="row small" style="justify-content:space-between"><span>Heuristic score (not a calibrated probability)</span><span class="mono">{{c.conf}}/100</span></div><div class="bar"><i class="b-o" style="width: {{c.conf}}%"></i></div></div>
+<div class="row"><sc-for list="{{c.btns}}" as="b" hint-placeholder-count="3"><button class="{{b.cls}}" onClick="{{b.pick}}">{{b.label}}</button></sc-for></div>
+<sc-if value="{{c.answered}}" hint-placeholder-val="{{false}}"><div class="small muted pop">Sample cohort (illustrative, n=100): <b>{{c.dist}}</b></div></sc-if>
+<button class="btn ghost sm" style="align-self:flex-start" onClick="{{c.explain}}">Request explanation</button>
+</div>
+</sc-for>
+</div>
+<div class="small muted">{{answeredCount}} of 4 classified · sample cohort bars are labeled, illustrative values, not real classroom votes.</div>
+</section>
+</sc-if>
+
+<!-- ============ EXPLAIN ============ -->
+<sc-if value="{{s.explain}}" hint-placeholder-val="{{false}}">
+<section class="main">
+<div class="eyebrow">Act II · Explain my profile · 4 min · Q2 · Q5</div>
+<h2 class="disp h2">Potentially emotionally vulnerable. Why?</h2>
+<sc-if value="{{notFlagged}}" hint-placeholder-val="{{false}}">
+<div class="gap d">{{personaName}} scores <b>{{score}}</b> on this rule, below the threshold of {{thr}}, so no vulnerability label is created. The instructor example is The Midnight Romantic. <button class="btn sm pink" onClick="{{usePersonaA}}">Switch to The Midnight Romantic</button></div>
+</sc-if>
+
+<sc-if value="{{x.pre}}" hint-placeholder-val="{{true}}">
+<div class="card hi pop">
+<div class="eyebrow">Step 1 · Before any explanation</div>
+<div class="disp h2">“Potentially Emotionally Vulnerable”</div>
+<p class="lead">{{labelNote}}</p>
+<label for="c0" class="h3">How confident are you that you understand why this inference was produced?</label>
+<input id="c0" type="range" min="0" max="100" value="{{conf0}}" onInput="{{onConf0}}">
+<div class="row" style="justify-content:space-between"><span class="muted small">0 · no idea</span><span class="stat" style="font-size:48px;color:#1DF08A">{{conf0}}</span><span class="muted small">100 · completely</span></div>
+<button class="btn pri" style="align-self:flex-start" onClick="{{showExplain}}">Show me the explanation</button>
+</div>
+</sc-if>
+
+<sc-if value="{{x.explain}}" hint-placeholder-val="{{false}}">
+<div class="row"><button class="{{modeLevels.cls}}" onClick="{{modeLevels.pick}}">Explanation levels</button><button class="{{modeCompare.cls}}" onClick="{{modeCompare.pick}}">Compare formats by stakeholder</button></div>
+
+<sc-if value="{{x.levels}}" hint-placeholder-val="{{true}}">
+<div class="row"><sc-for list="{{levelTabs}}" as="t" hint-placeholder-count="4"><button class="{{t.cls}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for></div>
+
+<sc-if value="{{lv.l1}}" hint-placeholder-val="{{true}}">
+<div class="g2">
+<div class="card pop"><div class="eyebrow">Level 1 · plain language</div><div class="disp h2">“You frequently listen to low-energy music late at night, which contributed to this classification.”</div></div>
+<div class="card"><div class="h3">What this explains</div><div>An association between your listening and a label. Your numbers: {{night}}% night, {{low}}% low-energy.</div><div class="h3">What it does not explain</div><div>It says nothing about your actual emotional state. It names a correlation the platform chose to treat as a conclusion.</div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{lv.l2}}" hint-placeholder-val="{{false}}">
+<div class="g2">
+<div class="card pop"><div class="eyebrow">Level 2 · supporting evidence (tap a feature)</div>
+<div class="g2" style="gap:12px"><sc-for list="{{fTiles}}" as="f" hint-placeholder-count="4"><button class="{{f.cls}}" onClick="{{f.pick}}"><span class="small muted">{{f.label}}</span><span class="stat" style="font-size:36px">{{f.val}}</span></button></sc-for></div></div>
+<div class="card"><div class="h3">{{fSel.label}}</div><div><b>Definition:</b> {{fSel.def}}</div><div><b>Raw value:</b> {{fSel.val}}</div><div><b>Normalized for the rule:</b> {{fSel.norm}} of 1.00</div><div><b>Points contributed:</b> {{fSel.pts}} of {{fSel.max}} possible</div><div class="small muted">Observed behavior is accurate. Whether it signals vulnerability is a separate question.</div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{lv.l3}}" hint-placeholder-val="{{false}}">
+<div class="card pop"><div class="eyebrow">Level 3 · technical explanation · {{model}}</div>
+<div class="scroll"><table class="tbl"><tr><th>Input</th><th>Raw</th><th>Transform</th><th>Normalized</th><th>Weight</th><th>Points</th><th style="min-width:160px">Contribution</th></tr>
+<sc-for list="{{cRows}}" as="r" hint-placeholder-count="4"><tr><td>{{r.label}}</td><td class="mono">{{r.raw}}</td><td class="mono">{{r.tf}}</td><td class="mono">{{r.norm}}</td><td class="mono">{{r.w}}</td><td class="mono">{{r.pts}}</td><td><div class="bar"><i class="b-o" style="width: {{r.bar}}%"></i></div></td></tr></sc-for></table></div>
+<div class="row"><span class="stat" style="font-size:44px;color:#1DF08A">{{score}}</span><span>total score vs decision threshold <b>{{thr}}</b> → <b>{{decisionText}}</b></span></div></div>
+</sc-if>
+
+<sc-if value="{{lv.l4}}" hint-placeholder-val="{{false}}">
+<div class="g2">
+<div class="card pop"><div class="eyebrow">Level 4 · the complete rule (fully understandable)</div><div class="code">{{ruleText}}</div></div>
+<div class="card"><div class="h3">Data lineage</div><sc-for list="{{lineage}}" as="n" hint-placeholder-count="5"><div class="row"><span class="node">{{n.t}}</span></div></sc-for>
+<div class="h3">Intended use</div><div>{{intended}}</div>
+<div class="h3">Known limitations</div><sc-for list="{{limits}}" as="l" hint-placeholder-count="4"><div class="small">• {{l}}</div></sc-for>
+<div class="h3">Downstream recipients</div><sc-for list="{{recips}}" as="l" hint-placeholder-count="3"><div class="small">→ {{l}}</div></sc-for></div>
+</div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{x.compare}}" hint-placeholder-val="{{false}}">
+<div class="card pop"><div class="eyebrow">Q2 · explanation selector · more detail is not always better</div>
+<div class="row"><sc-for list="{{stkChips}}" as="c" hint-placeholder-count="5"><button class="{{c.cls}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div>
+<div class="gap g"><b>{{stkNeedName}} needs:</b> {{stkNeed}}</div>
+<div class="scroll"><table class="tbl"><tr><th>Format</th><th>Reveals</th><th>Does not reveal</th><th>Useful to</th><th>Supports action?</th><th>Fit for {{stkNeedName}}</th></tr>
+<sc-for list="{{cmpRows}}" as="r" hint-placeholder-count="6"><tr><td><b>{{r.f}}</b></td><td>{{r.rev}}</td><td>{{r.hide}}</td><td>{{r.who}}</td><td>{{r.act}}</td><td><span class="mono" style="color:#1DF08A;font-size:18px" aria-label="{{r.fitLabel}}">{{r.fit}}</span><div class="small muted">{{r.fitLabel}}</div></td></tr></sc-for></table></div></div>
+</sc-if>
+
+<div class="row"><button class="btn pri" onClick="{{toPredict}}">I have studied it · test my understanding</button></div>
+</sc-if>
+
+<sc-if value="{{x.predict}}" hint-placeholder-val="{{false}}">
+<div class="card hi pop">
+<div class="eyebrow">Step 3 · Predict the model</div>
+<div class="disp h2">If nighttime listening drops from {{night}}% to 15%, will the model still infer emotional vulnerability?</div>
+<div class="row"><sc-for list="{{predOpts}}" as="o" hint-placeholder-count="3"><button class="{{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+<div class="h3">Which is the most actionable issue this explanation reveals?</div>
+<div class="col"><sc-for list="{{actOpts}}" as="o" hint-placeholder-count="3"><button class="vote {{o.on}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div>
+<label for="c1" class="h3">Confidence that you now understand the inference</label>
+<input id="c1" type="range" min="0" max="100" value="{{conf1}}" onInput="{{onConf1}}">
+<div class="row" style="justify-content:space-between"><span class="muted small">Before: {{conf0}}</span><span class="stat" style="font-size:48px;color:#1DF08A">{{conf1}}</span><span class="muted small">After</span></div>
+<button class="btn pri" style="align-self:flex-start" onClick="{{toResult}}" disabled="{{cantSubmit}}">Run the model</button>
+</div>
+</sc-if>
+
+<sc-if value="{{x.result}}" hint-placeholder-val="{{false}}">
+<div class="g2">
+<div class="card pop"><div class="eyebrow">Actual model output (same rule, night = 15%)</div>
+<div class="row"><div><div class="small muted">Before</div><div class="stat">{{score}}</div></div><span class="arrow">→</span><div><div class="small muted">After</div><div class="stat" style="color:#FF8A1F">{{score1}}</div></div></div>
+<div class="bar"><i class="b-o" style="width: {{score1}}%"></i></div>
+<div class="{{outcomeCls}}" style="padding:12px;border-radius:12px"><b>{{outcomeText}}</b></div>
+<div class="small">{{whyText}}</div></div>
+<div class="card"><div class="eyebrow">Perceived vs demonstrated understanding</div>
+<div class="g2" style="gap:12px">
+<div><div class="small muted">Confidence before → after</div><div class="stat" style="font-size:40px">{{conf0}} → {{conf1}}</div></div>
+<div><div class="small muted">Prediction correct?</div><div class="stat" style="font-size:40px;color:{{predColor}}">{{predText}}</div></div>
+<div><div class="small muted">Found the actionable issue?</div><div class="stat" style="font-size:40px;color:{{actColor}}">{{actText}}</div></div>
+</div>
+<div class="gap {{calCls}}">{{calMsg}}</div>
+<div class="small muted">Confidence is a feeling. The prediction and the actionable issue are the evidence. They can diverge.</div>
+<button class="btn ghost sm" style="align-self:flex-start" onClick="{{xRestart}}">Run the experiment again</button></div>
+</div>
+</sc-if>
+</section>
+</sc-if>
+
+<!-- ============ LAB ============ -->
+<sc-if value="{{s.lab}}" hint-placeholder-val="{{false}}">
+<section class="main">
+<div class="eyebrow">Act III · Stakeholder Lab · 6 min · Q1 · Q2 · Q3</div>
+<h2 class="disp h2">One profile. Five people. Five different truths.</h2>
+<div class="row"><sc-for list="{{stkTabs}}" as="t" hint-placeholder-count="5"><button class="{{t.cls}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for></div>
+<div class="card" style="border-color:{{stkColor}}"><div class="eyebrow">{{stkRole}}</div><div class="disp h2">{{stkHeadline}}</div></div>
+
+<!-- Listener -->
+<sc-if value="{{k.listener}}" hint-placeholder-val="{{true}}">
+<div class="g2">
+<div class="card pop"><div class="h3">Your AI profile · {{personaName}}</div>
+<sc-for list="{{lInfs}}" as="i" hint-placeholder-count="4"><div class="row" style="justify-content:space-between"><span class="{{i.cls}}">{{i.name}}</span><span class="{{i.tagCls}} tag">{{i.tag}}</span></div></sc-for>
+<div class="h3">Supporting behavior</div><div class="small muted">{{night}}% night · {{low}}% low-energy · {{rom}}% romantic playlists · {{repeat}}% replays</div>
+<div class="h3">Recommendation consequences</div><sc-for list="{{lRecs}}" as="r" hint-placeholder-count="2"><div class="small">• {{r}}</div></sc-for>
+<div class="h3">Advertising consequences</div><sc-for list="{{lAds}}" as="r" hint-placeholder-count="2"><div class="small">• {{r}}</div></sc-for></div>
+<div class="card"><div class="h3">Your controls</div>
+<button class="btn pink" onClick="{{lCorrect}}" disabled="{{notFlagged}}">{{lCorrectLabel}}</button>
+<button class="btn alt" onClick="{{lRestrict}}">{{lRestrictLabel}}</button>
+<button class="btn ghost" onClick="{{lDelete}}" disabled="{{notFlagged}}">{{lDeleteLabel}}</button>
+<button class="btn ghost" onClick="{{go.explain}}">Request explanation</button>
+<div class="h3">What each action actually changes</div>
+<sc-for list="{{lLanes}}" as="l" hint-placeholder-count="4"><div class="lane {{l.cls}}"><b>{{l.name}}</b><span class="small">{{l.note}}</span></div></sc-for></div>
+</div>
+</sc-if>
+
+<!-- Engineer -->
+<sc-if value="{{k.engineer}}" hint-placeholder-val="{{false}}">
+<div class="g2">
+<div class="card pop"><div class="h3">Sensitivity testing · change a feature, watch the prediction</div>
+<sc-for list="{{eSliders}}" as="e" hint-placeholder-count="4"><div><label class="row" style="justify-content:space-between"><span>{{e.label}}</span><span class="mono">{{e.val}}%</span></label><input type="range" min="0" max="100" value="{{e.val}}" onInput="{{e.on}}" aria-label="{{e.label}}"></div></sc-for>
+<button class="btn ghost sm" style="align-self:flex-start" onClick="{{eReset}}">Reset to {{personaName}}</button>
+<div class="row"><span class="stat" style="color:{{eColor}}">{{eScore}}</span><span>score · threshold {{thr}} · <b>{{eDecision}}</b><br><span class="small muted">{{eDelta}}</span></span></div>
+<sc-for list="{{eBars}}" as="b" hint-placeholder-count="4"><div><div class="row small" style="justify-content:space-between"><span>{{b.label}}</span><span class="mono">{{b.pts}} pts</span></div><div class="bar"><i class="b-o" style="width: {{b.w}}%"></i></div></div></sc-for>
+<div class="code">{{eRule}}</div></div>
+<div class="card"><div class="h3">Four different questions</div>
+<sc-for list="{{eChecks}}" as="c" hint-placeholder-count="4"><div class="gap {{c.cls}}"><b>{{c.name}}:</b> {{c.status}}<div class="small">{{c.note}}</div></div></sc-for>
+<div class="small muted">Model {{model}} · diagnostics: unit tests 14/14 pass · calibration against labeled ground truth: <b>not available</b></div></div>
+</div>
+</sc-if>
+
+<!-- Advertiser -->
+<sc-if value="{{k.advertiser}}" hint-placeholder-val="{{false}}">
+<div class="g2">
+<div class="card pop"><div class="h3">Campaign</div><div class="row"><sc-for list="{{adCamps}}" as="c" hint-placeholder-count="4"><button class="{{c.cls}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div>
+<div class="h3">Targeting strategy</div><div class="row"><sc-for list="{{adStrats}}" as="c" hint-placeholder-count="4"><button class="{{c.cls}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div>
+<div class="g2" style="gap:12px"><div><div class="small muted">Estimated reach</div><div class="stat" style="font-size:44px">{{adReach}}</div></div><div><div class="small muted">Estimated click-through</div><div class="stat" style="font-size:44px;color:#FF8A1F">{{adCtr}}</div></div></div>
+<div class="gap {{adEvCls}}"><b>Evidence status:</b> {{adEvidence}}</div>
+<sc-if value="{{adSens}}" hint-placeholder-val="{{false}}"><div class="gap p">This strategy targets an inferred emotional state that listeners cannot verify. {{adYou}}</div></sc-if></div>
+<div class="card"><div class="h3">Audience segments you can see</div>
+<sc-for list="{{adSegs}}" as="g" hint-placeholder-count="4"><div class="gap g"><b>{{g.name}}</b> · {{g.size}} listeners<div class="small">{{g.desc}}</div></div></sc-for>
+<div class="h3">Data access restrictions</div><sc-for list="{{adBlocked}}" as="b" hint-placeholder-count="4"><div class="small">✕ {{b}}</div></sc-for>
+<div class="small muted">All reach and engagement figures are hypothetical commercial estimates, not verified results.</div></div>
+</div>
+</sc-if>
+
+<!-- Executive -->
+<sc-if value="{{k.executive}}" hint-placeholder-val="{{false}}">
+<div class="g2">
+<div class="card pop"><div class="h3">Platform strategy</div><div class="row"><sc-for list="{{exStrats}}" as="c" hint-placeholder-count="4"><button class="{{c.cls}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div>
+<div class="g2" style="gap:12px"><sc-for list="{{exTiles}}" as="t" hint-placeholder-count="6"><div><div class="small muted">{{t.l}}</div><div class="stat" style="font-size:36px;color:{{t.col}}">{{t.v}}</div><div class="small muted">{{t.sub}}</div></div></sc-for></div></div>
+<div class="card"><div class="h3">Governance status</div><div class="gap {{exGovCls}}">{{exGov}}</div>
+<div class="h3">Open items from the listener</div><sc-for list="{{exOpen}}" as="o" hint-placeholder-count="2"><div class="small">• {{o}}</div></sc-for>
+<button class="btn pink" onClick="{{exPurge}}" disabled="{{purgeOff}}">{{purgeLabel}}</button>
+<div class="small muted">Only the executive role holds authority to purge an exported segment. A listener’s correction does not do this automatically.</div></div>
+</div>
+</sc-if>
+
+<!-- Auditor -->
+<sc-if value="{{k.auditor}}" hint-placeholder-val="{{false}}">
+<div class="g2">
+<div class="card pop"><div class="h3">Trace the inference to its origin</div>
+<div class="row"><sc-for list="{{audChain}}" as="c" hint-placeholder-count="6"><button class="{{c.cls}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div>
+<div class="h3">{{audTitle}}</div><div>{{audText}}</div>
+<div class="gap g"><b>Evidence present</b><sc-for list="{{audHave}}" as="x" hint-placeholder-count="2"><div class="small">✓ {{x}}</div></sc-for></div>
+<div class="gap p"><b>Evidence missing</b><sc-for list="{{audMiss}}" as="x" hint-placeholder-count="2"><div class="small">✕ {{x}}</div></sc-for></div></div>
+<div class="card"><div class="h3">Classify the findings</div>
+<sc-for list="{{audFinds}}" as="f" hint-placeholder-count="4"><div class="gap d"><b>{{f.title}}</b><div class="small">{{f.text}}</div><div class="row" style="margin-top:8px"><sc-for list="{{f.opts}}" as="o" hint-placeholder-count="4"><button class="{{o.cls}}" onClick="{{o.pick}}">{{o.label}}</button></sc-for></div></div></sc-for>
+<div class="h3">User correction records</div><sc-for list="{{audRecords}}" as="r" hint-placeholder-count="2"><div class="small">• {{r}}</div></sc-for></div>
+</div>
+</sc-if>
+</section>
+</sc-if>
+
+<!-- ============ MATRIX ============ -->
+<sc-if value="{{s.matrix}}" hint-placeholder-val="{{false}}">
+<section class="main">
+<div class="eyebrow">Act III · Cross-stakeholder view · Q1 · Q3</div>
+<h2 class="disp h2">One Profile. Five Stakeholders. Different Explanations.</h2>
+
+<div class="card pop"><div class="h3">Information asymmetry reveal</div>
+<div class="row"><button class="btn pri sm" onClick="{{asymNext}}">{{asymLabel}}</button><button class="btn ghost sm" onClick="{{asymAll}}">Reveal all</button><button class="btn ghost sm" onClick="{{asymHide}}">Hide</button></div>
+<div class="scroll"><table class="tbl"><tr><th>Layer</th><sc-for list="{{stkCols}}" as="c" hint-placeholder-count="5"><th>{{c}}</th></sc-for></tr>
+<sc-for list="{{asymRows}}" as="r" hint-placeholder-count="4"><sc-if value="{{r.show}}" hint-placeholder-val="{{true}}"><tr><td><b>{{r.layer}}</b></td><sc-for list="{{r.cells}}" as="c" hint-placeholder-count="5"><td>{{c}}</td></sc-for></tr></sc-if></sc-for></table></div>
+<div class="small muted">Information that exists ≠ disclosed ≠ understandable ≠ authority to change the system.</div></div>
+
+<div class="card"><div class="row"><sc-for list="{{mViews}}" as="v" hint-placeholder-count="3"><button class="{{v.cls}}" onClick="{{v.pick}}">{{v.label}}</button></sc-for><span class="small muted">{{mHint}}</span></div>
+<div class="scroll"><table class="tbl"><tr><th>Information / authority</th><sc-for list="{{stkCols}}" as="c" hint-placeholder-count="5"><th>{{c}}</th></sc-for></tr>
+<sc-for list="{{mRows}}" as="r" hint-placeholder-count="11"><tr><td>{{r.name}}</td><sc-for list="{{r.cells}}" as="c" hint-placeholder-count="5"><td><button class="cellb {{c.cls}}" onClick="{{c.pick}}">{{c.label}}</button></td></sc-for></tr></sc-for></table></div></div>
+
+<div class="g2">
+<div class="card"><div class="h3">Where power and understanding come apart</div><sc-for list="{{gaps}}" as="g" hint-placeholder-count="3"><div class="{{g.cls}}">{{g.t}}</div></sc-for></div>
+<div class="card"><div class="h3">Information flow ({{mViewName}})</div>
+<div class="row"><sc-for list="{{gNodes}}" as="n" hint-placeholder-count="5"><span class="node {{n.cls}}">{{n.t}}</span><span class="arrow">{{n.a}}</span></sc-for></div>
+<div class="gap {{gRetCls}}"><b>Listener dispute reaches:</b> {{gRet}}</div>
+<sc-for list="{{gSide}}" as="n" hint-placeholder-count="3"><div class="small"><b>{{n.who}}</b> {{n.t}}</div></sc-for></div>
+</div>
+</section>
+</sc-if>
+
+<!-- ============ TRAP ============ -->
+<sc-if value="{{s.trap}}" hint-placeholder-val="{{false}}">
+<section class="main">
+<div class="eyebrow" style="color:#FF9DC6">Act IV · The Explanation Trap · 5 min · Q3 · Q6</div>
+<sc-if value="{{notFlagged}}" hint-placeholder-val="{{false}}">
+<div class="card bad"><div class="h3">This walkthrough needs a flagged listener.</div><div>{{personaName}} scores {{score}}, below the threshold of {{thr}}. The Explanation Trap is built around The Midnight Romantic (score {{scoreA}}).</div><button class="btn pink" style="align-self:flex-start" onClick="{{usePersonaA}}">Switch to The Midnight Romantic</button></div>
+</sc-if>
+<sc-if value="{{flagged}}" hint-placeholder-val="{{true}}">
+<h2 class="disp h2">Everything was disclosed. Something is still wrong.</h2>
+<div class="row"><button class="btn pink" onClick="{{trapNext}}" disabled="{{trapDone}}">{{trapLabel}}</button><button class="btn ghost" onClick="{{trapBack}}">Hide last reveal</button><button class="btn ghost" onClick="{{trapRestart}}">Restart sequence</button><span class="muted small">Reveal {{trapStep}} of 6 · controlled by the instructor</span></div>
+<div class="col">
+<sc-for list="{{trapCards}}" as="r" hint-placeholder-count="6"><sc-if value="{{r.show}}" hint-placeholder-val="{{true}}">
+<div class="rev pop {{r.cur}}"><div class="rn">Reveal {{r.n}} · {{r.title}}</div><div class="h3" style="font-size:28px">{{r.head}}</div><div>{{r.body}}</div>
+<sc-if value="{{r.lanes}}" hint-placeholder-val="{{false}}"><div class="col"><sc-for list="{{trapLanes}}" as="l" hint-placeholder-count="4"><div class="lane {{l.cls}}"><b>{{l.name}}</b><span class="small">{{l.note}}</span></div></sc-for></div>
+<div class="row"><button class="btn sm pink" onClick="{{lCorrect}}">{{lCorrectLabel}}</button><button class="btn sm alt" onClick="{{lRestrict}}">{{lRestrictLabel}}</button><span class="small muted">Try them: the exported segment lane stays red until someone with authority purges it.</span></div></sc-if>
+</div></sc-if></sc-for>
+</div>
+<sc-if value="{{trapDone}}" hint-placeholder-val="{{false}}">
+<div class="card hi pop" style="border-color:#FF4F7A"><div class="eyebrow" style="color:#FF9DC6">Final reveal question</div>
+<div class="disp h2" style="font-size:clamp(32px,5vw,64px)">The algorithm was transparent. The explanation was faithful. Was the system ethical?</div>
+<div class="g4"><sc-for list="{{voteOpts}}" as="v" hint-placeholder-count="4"><button class="vote {{v.on}}" onClick="{{v.pick}}"><b>{{v.label}}</b><span class="bar"><i class="b-p" style="width: {{v.pct}}%"></i></span><span class="mono small">{{v.pct}}%</span></button></sc-for></div>
+<div class="small muted">Sample results (illustrative, n=100) plus your local vote. No classroom backend exists in this prototype.</div></div>
+</sc-if>
+</sc-if>
+</section>
+</sc-if>
+
+<!-- ============ DISCLOSURE ============ -->
+<sc-if value="{{s.disclosure}}" hint-placeholder-val="{{false}}">
+<section class="main">
+<div class="eyebrow" style="color:#FF9DC6">Act IV · Disclosure simulator · Q3 · Q4</div>
+<h2 class="disp h2">Transparency is not the same as publishing everything.</h2>
+<div class="row"><sc-for list="{{dPresets}}" as="p" hint-placeholder-count="4"><button class="{{p.cls}}" onClick="{{p.pick}}">{{p.label}}</button></sc-for></div>
+<div class="card"><div class="scroll"><table class="tbl"><tr><th>Information</th><sc-for list="{{dRecs}}" as="c" hint-placeholder-count="5"><th>{{c.label}}<br><span style="text-transform:none;letter-spacing:0">{{c.kind}}</span></th></sc-for></tr>
+<sc-for list="{{dRows}}" as="r" hint-placeholder-count="8"><tr><td>{{r.name}}</td><sc-for list="{{r.cells}}" as="c" hint-placeholder-count="5"><td><button class="cellb {{c.cls}}" onClick="{{c.pick}}">{{c.label}}</button></td></sc-for></tr></sc-for></table></div></div>
+<div class="g2">
+<div class="card"><div class="h3">Trade-off indicators (explanatory, not an ethics score)</div>
+<sc-for list="{{dMeters}}" as="m" hint-placeholder-count="6"><div><div class="row small" style="justify-content:space-between"><span>{{m.name}}</span><b>{{m.level}}</b></div><div class="bar"><i class="{{m.bar}}" style="width: {{m.w}}%"></i></div></div></sc-for>
+<div class="h3">Four kinds of disclosure</div><sc-for list="{{dModes}}" as="m" hint-placeholder-count="4"><div class="small"><b>{{m.name}}:</b> {{m.n}} items open</div></sc-for></div>
+<div class="card"><div class="h3">What your choices mean</div><sc-for list="{{dNotes}}" as="n" hint-placeholder-count="3"><div class="gap {{n.cls}}">{{n.t}}</div></sc-for></div>
+</div>
+</section>
+</sc-if>
+
+<!-- ============ COUNCIL ============ -->
+<sc-if value="{{s.council}}" hint-placeholder-val="{{false}}">
+<section class="main">
+<div class="eyebrow" style="color:#FFB46B">Act V · Ethics Council · 7 min · Q4 · Q6 · Q7</div>
+<div class="row"><sc-for list="{{cSteps}}" as="t" hint-placeholder-count="5"><button class="{{t.cls}}" onClick="{{t.pick}}">{{t.label}}</button></sc-for></div>
+
+<sc-if value="{{c.s1}}" hint-placeholder-val="{{true}}">
+<h2 class="disp h2">Choose your top three principles.</h2>
+<p class="lead">You can only hold three. Then defend each one in a sentence. {{cPriCount}} of 3 chosen.</p>
+<div class="g3"><sc-for list="{{principles}}" as="p" hint-placeholder-count="10"><button class="vote {{p.on}}" onClick="{{p.pick}}"><b>{{p.name}}</b><span class="small muted">{{p.def}}</span></button></sc-for></div>
+<sc-if value="{{cHasPri}}" hint-placeholder-val="{{false}}"><div class="card"><div class="h3">Defend your priorities</div><sc-for list="{{defenses}}" as="d" hint-placeholder-count="3"><div><label class="small muted">Why {{d.name}} matters most in this case</label><input class="inp" value="{{d.val}}" onInput="{{d.on}}"></div></sc-for></div></sc-if>
+</sc-if>
+
+<sc-if value="{{c.s2}}" hint-placeholder-val="{{false}}">
+<h2 class="disp h2">Choose a deployment policy.</h2>
+<div class="g2"><sc-for list="{{policies}}" as="p" hint-placeholder-count="4"><button class="vote {{p.on}}" onClick="{{p.pick}}"><b style="font-size:20px">{{p.name}}</b><span>{{p.desc}}</span><span class="small muted">{{p.fit}}</span></button></sc-for></div>
+</sc-if>
+
+<sc-if value="{{c.s3}}" hint-placeholder-val="{{false}}">
+<h2 class="disp h2">Stakeholder negotiation: {{negName}}</h2>
+<div class="row"><sc-for list="{{negChips}}" as="c" hint-placeholder-count="4"><button class="{{c.cls}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div>
+<div class="g2"><sc-for list="{{negRows}}" as="r" hint-placeholder-count="5"><div class="card"><div class="h3">{{r.who}}</div><div class="gap g"><b>Strongest case for:</b> {{r.pro}}</div><div class="gap p"><b>Strongest case against:</b> {{r.con}}</div></div></sc-for></div>
+<div class="small muted">No stakeholder holds one fixed view: each can value the benefit and fear the cost.</div>
+</sc-if>
+
+<sc-if value="{{c.s4}}" hint-placeholder-val="{{false}}">
+<h2 class="disp h2">Final vote: should this system ship?</h2>
+<div class="g4"><sc-for list="{{finalOpts}}" as="v" hint-placeholder-count="4"><button class="vote {{v.on}}" onClick="{{v.pick}}"><b>{{v.label}}</b><span class="bar"><i class="b-o" style="width: {{v.pct}}%"></i></span><span class="mono small">{{v.pct}}%</span></button></sc-for></div>
+<div class="small muted">Sample results (illustrative, n=100) plus your local vote.</div>
+</sc-if>
+
+<sc-if value="{{c.s5}}" hint-placeholder-val="{{false}}">
+<h2 class="disp h2">How your view moved.</h2>
+<div class="g2">
+<div class="card"><div class="eyebrow">Your path</div>
+<div>1. Classified “emotionally vulnerable”: <b>{{pathClass}}</b></div><div>2. Trap vote: <b>{{pathTrap}}</b></div><div>3. Priorities: <b>{{pathPri}}</b></div><div>4. Policy: <b>{{pathPolicy}}</b></div><div>5. Final decision: <b>{{pathFinal}}</b></div>
+<div class="gap {{covCls}}">{{covMsg}}</div></div>
+<div class="card"><div class="eyebrow">Sample cohort: persona reveal → governance decision (illustrative)</div>
+<sc-for list="{{shiftRows}}" as="r" hint-placeholder-count="4"><div><div class="small">{{r.label}}</div><div class="row small"><span style="width:60px">Before</span><div class="bar" style="flex:1"><i class="b-v" style="width: {{r.b}}%"></i></div><span class="mono">{{r.b}}%</span></div><div class="row small"><span style="width:60px">After</span><div class="bar" style="flex:1"><i class="b-o" style="width: {{r.a}}%"></i></div><span class="mono">{{r.a}}%</span></div></div></sc-for></div>
+</div>
+<div class="card hi"><div class="disp h2">Who deserves an explanation, and when is an explanation simply not enough?</div></div>
+</sc-if>
+
+<div class="row"><button class="btn ghost" onClick="{{cBack}}" disabled="{{cFirst}}">Previous step</button><button class="btn pri" onClick="{{cNext}}" disabled="{{cNextOff}}">{{cNextLabel}}</button></div>
+</section>
+</sc-if>
+
+<!-- ============ INSTRUCTOR ============ -->
+<sc-if value="{{s.instructor}}" hint-placeholder-val="{{false}}">
+<section class="main">
+<div class="eyebrow">Instructor mode · not visible to students unless projected</div>
+<h2 class="disp h2">Facilitation console</h2>
+<div class="g2">
+<div class="card"><div class="h3">Stage navigation · ≈25 minutes</div>
+<sc-for list="{{iStages}}" as="t" hint-placeholder-count="10"><button class="{{t.cls}}" style="text-align:left;border-radius:12px" onClick="{{t.pick}}"><b>{{t.label}}</b> · {{t.time}} · {{t.q}}</button></sc-for>
+<div class="small muted">Current stage: <b>{{iCurrent}}</b> · approx. {{iMins}} min</div></div>
+<div class="card"><div class="h3">Controls</div>
+<div class="small muted">Persona</div><div class="row"><sc-for list="{{iPersonas}}" as="c" hint-placeholder-count="4"><button class="{{c.cls}}" onClick="{{c.pick}}">{{c.label}}</button></sc-for></div>
+<div class="small muted">Stakeholder perspective</div><div class="row"><sc-for list="{{stkTabs}}" as="c" hint-placeholder-count="5"><button class="{{c.cls}}" onClick="{{c.pickJump}}">{{c.label}}</button></sc-for></div>
+<div class="small muted">Explanation Trap</div><div class="row"><button class="btn pink sm" onClick="{{iTrigger}}">Trigger Explanation Trap</button><button class="btn ghost sm" onClick="{{trapNext}}">Reveal next</button><button class="btn ghost sm" onClick="{{trapBack}}">Hide last</button><span class="small muted">at {{trapStep}} of 6</span></div>
+<div class="small muted">Classroom</div><div class="row"><button class="{{iDiscuss.cls}}" onClick="{{iDiscuss.pick}}">{{iDiscuss.label}}</button><button class="{{iAns.cls}}" onClick="{{iAns.pick}}">{{iAns.label}}</button><button class="btn alt sm" onClick="{{togglePresent}}">{{presentLabel}}</button><button class="btn ghost sm" onClick="{{reset}}">Reset entire demo</button></div></div>
+</div>
+<div class="g2">
+<div class="card hi"><div class="eyebrow">Facilitator script · {{iCurrent}}</div>
+<div><b>Demonstrate:</b> {{iDemo}}</div><div><b>Ask:</b> {{iAsk}}</div><div><b>Anticipate:</b> {{iExpect}}</div><div><b>Reveal next:</b> {{iNext}}</div><div><b>Principle illustrated:</b> {{iPrinciple}}</div></div>
+<div class="card"><div class="h3">Stage → course question map</div>
+<div class="scroll"><table class="tbl"><tr><th>Stage</th><sc-for list="{{qHead}}" as="q" hint-placeholder-count="7"><th>{{q}}</th></sc-for></tr>
+<sc-for list="{{qRows}}" as="r" hint-placeholder-count="10"><tr><td>{{r.name}}</td><sc-for list="{{r.cells}}" as="c" hint-placeholder-count="7"><td style="color:#1DF08A">{{c}}</td></sc-for></tr></sc-for></table></div></div>
+</div>
+</section>
+</sc-if>
+
+<footer class="foot">
+<div><div class="eyebrow" style="font-size:12px">Discussion prompt</div><div class="q">{{prompt}}</div></div>
+<div class="row"><button class="btn ghost" onClick="{{goBack}}" disabled="{{noBack}}">Back</button><button class="btn pri" onClick="{{goNext}}">{{nextLabel}}</button></div>
+</footer>
+</div>
+</x-dc>
+
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1360,"height":1200}}'>
+const SCREENS=['welcome','persona','wrapped','think','explain','lab','matrix','trap','disclosure','council'];
+const FE=['night','low','rom','repeat'];
+const FL={night:'Nighttime listening',low:'Low-energy tracks',rom:'Romantic playlists',repeat:'Repeat listening'};
+const FD={night:'Share of listening minutes between 22:00 and 05:59 local time.',low:'Share of plays with an audio-energy score below 0.35.',rom:'Share of minutes from playlists tagged “romantic”.',repeat:'Share of plays that are re-listens within 14 days.'};
+const W={night:0.35,low:0.30,rom:0.20,repeat:0.15};
+const REF={night:60,low:50,rom:35,repeat:70};
+const TH=70, MODEL='vuln-heuristic v0.3 (Feb 2026)';
+const clamp=(x)=>Math.min(Math.max(x,0),1);
+function scoreOf(f){const c=FE.map(k=>{const n=clamp(f[k]/REF[k]);return {k,raw:f[k],norm:n,w:W[k],pts:100*W[k]*n};});const total=c.reduce((a,b)=>a+b.pts,0);return {c,total,flag:total>=TH};}
+const PERSONAS={
+A:{id:'A',name:'The Midnight Romantic',tag:'Slow, late, on repeat',min:28450,genres:[['Dream pop',31],['Indie R&B',26],['Acoustic',19],['Synth ballads',14],['Lo-fi',10]],night:61,low:48,rom:35,repeat:72,work:14,wknd:31,c1:'#5B21B6',c2:'#FF4FA3',pk:{c:21,w:3,b:.4},
+recs:['More slow acoustic mixes after 10 pm','“Late night feels” playlist pinned on your home screen'],
+ads:[['Night Listening & Audio Gear','Pulse Buds headphones promotion']],
+infs:[{id:'owl',name:'Night owl',short:'Most of your listening happens after 10 pm.',conf:94,sens:'Low',obs:'61% of minutes fall between 22:00 and 05:59.'},{id:'refl',name:'Emotionally reflective',short:'Slow, introspective tracks dominate your replays.',conf:71,sens:'Medium',obs:'48% low-energy tracks; 72% replay rate.'},{id:'rel',name:'Possibly romantically involved',short:'Romantic playlists make up a large share of your listening.',conf:58,sens:'High',obs:'35% of minutes come from romantic-themed playlists.'},{id:'vuln',name:'Potentially emotionally vulnerable',short:'Late-night, low-energy, repeated listening matches a pattern we associate with vulnerability.',conf:null,sens:'High',obs:'Rule score from four listening features (see Explain).'}]},
+B:{id:'B',name:'The Productivity Machine',tag:'Heads down, headphones on',min:21300,genres:[['Instrumental focus',38],['Lo-fi',27],['Ambient',17],['Classical',11],['Jazz',7]],night:22,low:41,rom:5,repeat:38,work:64,wknd:8,c1:'#0E7A4B',c2:'#1DF08A',pk:{c:13,w:3,b:.8},
+recs:['Longer focus sessions queued for 9–5','Instrumental mixes ranked above vocals'],
+ads:[['Study & Focus','FocusLoop study-product subscription']],
+infs:[{id:'disc',name:'Highly disciplined',short:'Long, unbroken sessions with almost no skipping.',conf:88,sens:'Low',obs:'4% skip rate; sessions average 2.4 hours.'},{id:'car',name:'Career-focused',short:'Your listening follows the workday closely.',conf:76,sens:'Medium',obs:'64% of minutes fall on workdays 09:00–17:00.'},{id:'stress',name:'Possibly experiencing work-related stress',short:'Dense focus listening with few breaks resembles a stress pattern.',conf:54,sens:'High',obs:'Long focus blocks; minimal variety.'},{id:'tool',name:'Productivity-product shopper',short:'Likely receptive to focus and study products.',conf:67,sens:'Low',obs:'38% instrumental-focus minutes.'}]},
+C:{id:'C',name:'The Weekend Extrovert',tag:'Friday to Sunday, volume up',min:24900,genres:[['Pop',29],['Dance',24],['Hip-hop',20],['Latin',15],['EDM',12]],night:44,low:9,rom:12,repeat:25,work:12,wknd:58,c1:'#FF8A1F',c2:'#FF4FA3',pk:{c:19,w:2.5,b:.9},
+recs:['Friday “Pre-game” mix auto-built','High-energy discovery stations on weekends'],
+ads:[['Live Events','Encore Live concert-ticket promotion']],
+infs:[{id:'soc',name:'Socially outgoing',short:'High-energy party playlists dominate your weekends.',conf:83,sens:'Medium',obs:'58% of minutes fall on weekends.'},{id:'nl',name:'Frequent nightlife participant',short:'Late weekend listening suggests going out.',conf:69,sens:'Medium',obs:'44% night listening; 31% skip rate.'},{id:'promo',name:'Interested in entertainment promotions',short:'Likely receptive to event and entertainment offers.',conf:77,sens:'Low',obs:'Party and dance playlists: 53% of minutes.'},{id:'tix',name:'Likely concert-ticket buyer',short:'You follow many live-performing artists.',conf:62,sens:'Low',obs:'Diverse popular genres; 12% romantic.'}]},
+D:{id:'D',name:'The Nostalgic Explorer',tag:'Old songs, new corners',min:19700,genres:[['Classic rock',24],['80s synth-pop',21],['Soul',18],['Folk',15],['Disco',12]],night:31,low:33,rom:21,repeat:68,work:18,wknd:27,c1:'#1D4ED8',c2:'#FF8A1F',pk:{c:15,w:4,b:.5},
+recs:['“Throwback Thursday” mixes surfaced','Frequent playlist refreshes weighted toward the 70s–90s'],
+ads:[['Retro & Vinyl','Groove Archive retro-products promotion']],
+infs:[{id:'nos',name:'Nostalgic personality',short:'Most of your plays are songs older than 25 years.',conf:85,sens:'Medium',obs:'71% older music; 68% replay rate.'},{id:'sent',name:'Emotionally sentimental',short:'Heavy replay of familiar songs.',conf:64,sens:'Medium',obs:'68% repeat listening.'},{id:'retro',name:'Interested in retro products',short:'Likely receptive to vintage and retro offers.',conf:79,sens:'Low',obs:'Disco, soul and 80s synth-pop lead your genres.'},{id:'age',name:'Likely over 35',short:'Your catalog suggests an age bracket.',conf:72,sens:'High',obs:'Older-music share and genre mix.'}]}
+};
+const ACTS=[{id:'I',label:'Your AI Wrapped',screens:['welcome','persona','wrapped','think'],time:'0–3 min',q:'Q1 · Q2'},{id:'II',label:'Explain My Profile',screens:['explain'],time:'3–7 min',q:'Q2 · Q5'},{id:'III',label:'Stakeholder Lab',screens:['lab','matrix'],time:'7–13 min',q:'Q1 · Q2 · Q3'},{id:'IV',label:'Explanation Trap',screens:['trap','disclosure'],time:'13–18 min',q:'Q3 · Q4 · Q6'},{id:'V',label:'Ethics Council',screens:['council'],time:'18–25 min',q:'Q4 · Q6 · Q7'}];
+const SCR={
+welcome:{label:'Welcome',time:'0:00',mins:0.5,q:[1,2],prompt:'Before we start: what do you expect a music app to infer about you from listening alone?',next:'Pick a persona',demo:'Open on the playful hero. Let the cards float; do not explain anything yet.',ask:'What would you guess a music app can infer from your listening?',expect:'Taste, mood, time of day, maybe age. Few will say emotional state or relationships.',reveal:'Persona selection.',principle:'Expectation setting (transparency)'},
+persona:{label:'Select persona',time:'0:30',mins:0.5,q:[1],prompt:'Which of these listeners would you feel most uncomfortable being profiled as, and why?',next:'Reveal my Wrapped',demo:'Pick The Midnight Romantic for the intended walkthrough.',ask:'Which persona would you least want labeled?',expect:'Midnight Romantic and Productivity Machine (stress) attract the most concern.',reveal:'The Wrapped recap.',principle:'Autonomy'},
+wrapped:{label:'Wrapped reveal',time:'1:00',mins:1,q:[2],prompt:'Everything on this page is a count. Where does counting end and concluding begin?',next:'What does the AI think it knows?',demo:'Reveal tiles one at a time. Point out observed counts versus the final AI personality.',ask:'Which of these cards is a fact and which is an interpretation?',expect:'Counts are facts; the personality is the platform’s story.',reveal:'The four inferences.',principle:'Validity of inferences'},
+think:{label:'What AI thinks it knows',time:'2:00',mins:1,q:[1,2],prompt:'Which of these assumptions should the platform be allowed to make?',next:'Explain my profile',demo:'Have students classify each inference, then compare with the sample cohort.',ask:'Which inference is inappropriate, and who gets to decide?',expect:'Relationship status and emotional vulnerability usually land as inappropriate.',reveal:'Request an explanation for “emotionally vulnerable”.',principle:'Meaningful consent'},
+explain:{label:'Explain My Profile',time:'3:00',mins:4,q:[2,5],prompt:'Did the explanation make you more confident, or more correct? Are those the same thing?',next:'Enter the Stakeholder Lab',demo:'Take the confidence reading, show the four levels, then the 61% → 15% prediction.',ask:'If night listening drops to 15%, does the label disappear?',expect:'Most predict it disappears. It stays: the rule is a weighted sum and other features compensate.',reveal:'Same profile through five different roles.',principle:'Explainability is not understanding'},
+lab:{label:'Stakeholder Lab',time:'7:00',mins:4,q:[1,2,3],prompt:'Should an AI platform know something about you that you never told it? Who among these five can act on it?',next:'Compare access side by side',demo:'Walk Listener → Engineer → Advertiser → Executive → Auditor. Use the listener controls and watch the executive and auditor views change.',ask:'Who can change the system and who is only affected by it?',expect:'Listener can edit a label but not the segment; executive holds deployment authority.',reveal:'Access matrix and information asymmetry.',principle:'Accountability'},
+matrix:{label:'Access matrix',time:'11:00',mins:2,q:[1,3],prompt:'Who can decide without understanding, and who is affected without the power to challenge?',next:'Trigger the Explanation Trap',demo:'Reveal asymmetry layers, then edit the proposed permissions and read the gaps panel.',ask:'What would you change first in the proposed column?',expect:'Give listeners provenance and real correction authority; give auditors protected access.',reveal:'The Explanation Trap.',principle:'Effective recourse'},
+trap:{label:'Explanation Trap',time:'13:00',mins:3,q:[3,6],prompt:'The algorithm was transparent. The explanation was faithful. Was the system ethical?',next:'Set disclosure rules',demo:'Reveal one step at a time, letting the room react. Pause on reveal 4 (validity) and reveal 6 (accountability gap).',ask:'What changed between reveal 3 and reveal 4?',expect:'Faithfulness is not validity. Perfect interpretability does not justify the use.',reveal:'Disclosure simulator.',principle:'Validity and purpose limitation'},
+disclosure:{label:'Disclosure simulator',time:'16:00',mins:2,q:[3,4],prompt:'Who should see what, and why is “make it all public” not the answer?',next:'Convene the Ethics Council',demo:'Start from Maximum public, then move to Balanced. Read the trade-off notes aloud.',ask:'What does public release risk that protected auditor access does not?',expect:'Gaming, privacy exposure, proprietary leakage.',reveal:'Ethics Council.',principle:'Proportionate transparency'},
+council:{label:'Ethics Council',time:'18:00',mins:7,q:[4,6,7],prompt:'Who deserves an explanation, and when is an explanation simply not enough?',next:'Back to start',demo:'Principles → policy → negotiation → vote → before/after.',ask:'Defend your top two or three priorities against someone who chose differently.',expect:'Validity, recourse and data minimization often outrank transparency once the trap is understood.',reveal:'Close with the final question.',principle:'Responsible data science design'},
+instructor:{label:'Instructor mode',time:'',mins:0,q:[],prompt:'Pick a stage, a persona and a stakeholder, then launch a discussion question.',next:'Return to the experience',demo:'',ask:'',expect:'',reveal:'',principle:''}
+};
+const BGS={welcome:'radial-gradient(1100px 700px at 85% -10%,#6D28D9 0%,#1B0E3B 55%,#120A24 100%)',persona:'radial-gradient(1000px 600px at 15% -10%,#5B21B6 0%,#1B0E3B 55%,#120A24 100%)',wrapped:'radial-gradient(1000px 600px at 50% -20%,#7C3AED 0%,#1B0E3B 55%,#120A24 100%)',think:'radial-gradient(900px 500px at 80% -10%,#4C1D95 0%,#17092F 60%,#120A24 100%)',explain:'linear-gradient(180deg,#160D2E,#0F0A1E)',lab:'linear-gradient(180deg,#140B28,#0E0919)',matrix:'linear-gradient(180deg,#130A26,#0D0817)',trap:'radial-gradient(900px 500px at 50% -10%,#4A0F2C 0%,#12060F 60%,#0A040A 100%)',disclosure:'radial-gradient(900px 500px at 20% -10%,#3A0E26 0%,#12060F 60%,#0A040A 100%)',council:'radial-gradient(900px 500px at 70% -10%,#4A2410 0%,#140A08 60%,#0A0505 100%)',instructor:'linear-gradient(180deg,#101018,#0A0A12)'};
+const STK=[{id:'listener',label:'Listener',col:'#1DF08A',role:'Stakeholder A · affected person',head:'What Does AI Think It Knows About Me?',need:'to know what was concluded, why, and how to contest it, not the formula.'},{id:'engineer',label:'ML Engineer',col:'#A78BFA',role:'Stakeholder B · builds the model',head:'Is the Profiling Model Actually Working?',need:'the mechanism, in enough detail to debug and test it.'},{id:'advertiser',label:'Advertiser',col:'#FF8A1F',role:'Stakeholder C · buys the audience',head:'Find Your Ideal Audience',need:'only what is permissible to target, plus honest evidence of performance.'},{id:'executive',label:'Executive',col:'#FF4FA3',role:'Stakeholder D · approves deployment',head:'Personalization Performance',need:'risk and accountability alongside revenue, so decisions are made with understanding.'},{id:'auditor',label:'Auditor',col:'#22D3EE',role:'Stakeholder E · independent oversight',head:'What Is the Platform Not Telling Us?',need:'evidence, provenance and authority to compare the platform’s claims with reality.'}];
+const FORMATS=[
+{f:'1 · Simple statement',rev:'The label itself',hide:'Why, data, rule',who:'Listener (glance), Executive',act:'None',fit:[2,0,1,2,0]},
+{f:'2 · Plain-language rationale',rev:'The behavior associated with the label',hide:'Weights, threshold, validity',who:'Listener, Executive, Auditor (first pass)',act:'Low: can dispute, cannot test',fit:[3,1,1,2,1]},
+{f:'3 · Evidence & data lineage',rev:'Actual values and where they came from',hide:'How they are combined',who:'Listener, Auditor',act:'Medium: fix data errors',fit:[3,2,0,1,3]},
+{f:'4 · Feature attribution',rev:'Contribution of each feature to the score',hide:'Whether those features should count',who:'Engineer, Auditor',act:'Medium: tune or challenge',fit:[1,3,0,1,2]},
+{f:'5 · Exact model rules',rev:'The complete logic',hide:'Whether the inference is valid or appropriate',who:'Engineer, Auditor',act:'High for professionals, low for lay readers',fit:[0,3,0,1,3]},
+{f:'6 · Governance & accountability record',rev:'Purpose, approvals, recipients, limitations, corrections',hide:'Individual evidence unless linked',who:'Auditor, Executive, Listener (summary)',act:'High: enables oversight',fit:[2,1,0,3,3]}];
+const MXN=['Individual listening history','Inferred personal characteristics','Plain-language explanation','Feature contributions','Full model rules','Data provenance','Advertiser targeting criteria','Aggregate performance','Governance and audit records','Correction authority','Deployment authority'];
+const MXC=[['A','A','U','U','X'],['A','A','R','R','X'],['R','A','U','U','A'],['U','A','U','U','X'],['U','A','U','R','X'],['U','A','U','R','X'],['U','R','A','A','X'],['U','R','R','A','X'],['U','R','U','R','X'],['R','U','U','R','U'],['U','R','U','A','U']];
+const MXP=[['A','R','U','U','X'],['A','R','U','R','X'],['A','A','R','A','A'],['R','A','U','R','A'],['U','A','U','R','X'],['R','A','U','R','A'],['R','R','A','A','A'],['U','A','R','A','A'],['R','R','U','A','A'],['A','R','U','A','R'],['U','R','U','R','R']];
+const MXS={A:{l:'Available',c:'ca'},R:{l:'Restricted',c:'cr'},X:{l:'Needs auth',c:'cx'},U:{l:'Unavailable',c:'cu'}};
+const ASYM=[
+{layer:'1 · What each sees by default',cells:['A personality label card','The inference rule and its inputs','An audience segment: name and size','Commercial performance dashboards','Data-use and governance record (on request)']},
+{layer:'2 · Exists but is not disclosed to them',cells:['The rule, the weights, the segment export, the buyer','What happens to users after the segment leaves the platform','Why any individual is in the segment; any validity evidence','Individual inferences and their explanations','Live model internals and raw histories without authorization']},
+{layer:'3 · Understandable to the recipient',cells:['Reads the label easily; cannot evaluate the claim','Fully understands the mechanism; limited view of consequences','Understands reach and CTR; cannot judge the inference','Understands revenue; weak on how the inference is produced','Understands the record; needs engineering help for the rule']},
+{layer:'4 · Authority to change the system',cells:['Edit own label only','Change model with review','Choose targeting, not the data','Approve deployment and strategy','Recommend only; cannot block']}];
+const ITEMS=[{k:'raw',n:'Raw listening history',w:[3,1,0,2,1,1]},{k:'inf',n:'Personal inferences',w:[2,0,0,1,2,3]},{k:'rule',n:'Technical decision rules',w:[0,3,3,2,3,1]},{k:'seg',n:'Audience-segment definitions',w:[1,2,1,1,2,1]},{k:'agg',n:'Aggregate validation metrics',w:[0,1,1,0,3,1]},{k:'aud',n:'Audit records',w:[1,1,0,1,3,0]},{k:'cor',n:'Individual correction rights',w:[0,0,0,1,2,2]},{k:'del',n:'Downstream deletion authority',w:[-2,0,0,1,3,0]}];
+const RECS=[{k:'pub',label:'Public',kind:'Public disclosure',m:[3,3,3,3,1.2,.5]},{k:'lis',label:'Listener',kind:'Individual access',m:[.3,.5,.5,.5,1.5,2]},{k:'adv',label:'Advertiser',kind:'Commercial partner',m:[2,1,2,1.5,.3,.3]},{k:'stf',label:'Staff',kind:'Role-restricted access',m:[1,.5,.5,1,1,1.2]},{k:'adt',label:'Auditor',kind:'Independent oversight',m:[.5,.5,.2,.5,2.5,1]}];
+const DIMS=[{n:'Privacy exposure',risk:true},{n:'Proprietary exposure',risk:true},{n:'Model-gaming risk',risk:true},{n:'Security risk',risk:true},{n:'Accountability gained',risk:false},{n:'Meaningful user understanding',risk:false}];
+const DCUR={lis:['inf','cor'],adv:['seg'],stf:['raw','inf','rule','agg','del'],adt:['agg'],pub:[]};
+const DPRE={current:DCUR,public:{pub:ITEMS.map(i=>i.k),lis:ITEMS.map(i=>i.k),adv:ITEMS.map(i=>i.k),stf:ITEMS.map(i=>i.k),adt:ITEMS.map(i=>i.k)},lock:{pub:[],lis:[],adv:[],stf:['raw','inf','rule','agg','aud','cor','del'],adt:[]},balanced:{pub:['agg'],lis:['inf','cor','del'],adv:['seg'],stf:['inf','rule','agg','cor','del'],adt:['inf','rule','agg','aud']}};
+const PRINCIPLES=[['Privacy','Keep personal data from unnecessary exposure.'],['Autonomy','People control how they are profiled and treated.'],['Fairness','Avoid unjustified differences in treatment.'],['Transparency','Disclose how the system and its data work.'],['Validity','Inferences must be justified by evidence.'],['Accountability','Someone can answer for, and stop, the system.'],['Meaningful consent','Informed, specific, revocable permission.'],['Human oversight','People review consequential automated decisions.'],['User correction rights','Individuals can fix and contest conclusions.'],['Data minimization','Collect and infer only what is needed.']];
+const POLICIES=[
+{id:'A',name:'Policy A · Full profiling + maximum disclosure',desc:'Continue profiling and disclose extensive explanations to everyone.',sup:['Transparency'],neg:{Listener:['Gets full explanations and keeps personalized recommendations.','Disclosure does not stop the targeting; knowing is not controlling.'],Engineer:['The model keeps running and can be inspected.','Publishing the rule invites gaming and still does not make the inference valid.'],Advertiser:['Maximum data and targeting flexibility.','Unverifiable psychological inputs create brand and legal risk.'],Executive:['Highest engagement and ad revenue.','Highest complaint and regulatory exposure.'],Auditor:['Everything is visible.','Visibility without authority to stop use is not oversight.']}},
+{id:'B',name:'Policy B · Privacy-first personalization',desc:'Allow music-preference recommendations; prohibit unsupported sensitive psychological targeting.',sup:['Privacy','Data minimization','Validity','Autonomy'],neg:{Listener:['Keeps useful recommendations without being profiled emotionally.','Less personalization on wellness-type content.'],Engineer:['A cleaner, defensible objective.','Loses a feature the team spent months building.'],Advertiser:['Stays out of a legal gray area.','Loses a high-CTR (estimated) segment.'],Executive:['Lower complaint volume and regulatory risk.','Some ad revenue is forgone.'],Auditor:['A clear, checkable boundary.','Needs ongoing verification that the ban holds.']}},
+{id:'C',name:'Policy C · Opt-in psychological profiling',desc:'Allow specified sensitive inferences only when valid, lawful, explicitly authorized, independently reviewed and revocable.',sup:['Meaningful consent','Validity','Human oversight','Accountability','User correction rights','Autonomy'],neg:{Listener:['Choice, plus real wellness features if wanted.','Consent screens are easy to click through without understanding.'],Engineer:['A path to build a validated model with oversight.','Validation burden and review slow shipping.'],Advertiser:['Higher-quality, consented audiences.','Smaller audiences; strict use limits.'],Executive:['Keeps a differentiated product with defensible governance.','Costly review and revocation infrastructure.'],Auditor:['Review and revocation create real leverage.','Needs authority and protected access to be real.']}},
+{id:'D',name:'Policy D · Prohibit sensitive profiling',desc:'Remove sensitive psychological inferences entirely.',sup:['Privacy','Fairness','Data minimization','Validity'],neg:{Listener:['No emotional profile exists to misuse.','Loses opt-in wellness features some would value.'],Engineer:['Eliminates the hardest validity problem.','Removes an area of legitimate research and product value.'],Advertiser:['Simple, safe rules.','Loses sensitive-interest targeting entirely.'],Executive:['Lowest risk profile.','Biggest revenue sacrifice.'],Auditor:['Easiest to audit: absence is checkable.','Needs checks that proxies do not recreate the same inference.']}}];
+const TRAPVOTES=[['Yes',8],['No',31],['Only with safeguards',44],['Need more information',17]];
+const FINALS=[['Deploy',6],['Deploy with restrictions',38],['Redesign',31],['Do not deploy',25]];
+const BEFORE=[['Deploy',54],['Deploy with restrictions',30],['Redesign',11],['Do not deploy',5]];
+const AFTER=FINALS.map(f=>[f[0],f[1]]);
+function hoursOf(P){const nH=[22,23,0,1,2,3,4,5],nw=[1.3,1.5,1.4,1.1,.8,.5,.3,.3],ns=nw.reduce((a,b)=>a+b,0);const dH=[6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21];const dw=dH.map(h=>1+P.pk.b*4*Math.exp(-Math.pow(h-P.pk.c,2)/(2*P.pk.w*P.pk.w)));const ds=dw.reduce((a,b)=>a+b,0);const o=[];for(let h=0;h<24;h++){const ni=nH.indexOf(h);o.push({h,v:ni>=0?P.night*nw[ni]/ns:(100-P.night)*dw[dH.indexOf(h)]/ds});}const mx=Math.max(...o.map(x=>x.v));return o.map(x=>({pct:Math.max(4,Math.round(x.v/mx*100)),col:(x.h>=22||x.h<6)?'#FF4FA3':'#A78BFA',tick:x.h%6===0?(x.h===0?'12a':x.h===12?'12p':(x.h<12?x.h+'a':(x.h-12)+'p')):''}));}
+function initState(){return {screen:'welcome',from:'welcome',persona:'A',roadmap:false,present:false,wStep:0,cls:{},xStage:'pre',conf0:50,conf1:50,pred:'',act:'',xMode:'levels',level:1,xStk:'listener',featSel:'night',stk:'listener',corrected:false,restricted:false,delReq:false,purged:false,eng:null,adCamp:'wellness',adStrat:'behavioral',exStrat:'engagement',audStep:0,audCls:{},mView:'current',mProp:null,asym:0,trapStep:0,vote:'',dGrid:null,dPre:'current',cStep:1,cPri:[],cDef:{},cPol:'',cNeg:'B',cFinal:'',discuss:false,ans:false};}
+class Component extends DCLogic{
+constructor(props){super(props);this.state=initState();}
+renderVals(){
+const st=this.state,set=(o)=>this.setState(o),P=PERSONAS[st.persona];
+const F={night:P.night,low:P.low,rom:P.rom,repeat:P.repeat};
+const B=scoreOf(F),flagged=B.flag,score=Math.round(B.total);
+const scoreA=Math.round(scoreOf({night:61,low:48,rom:35,repeat:72}).total);
+const cur=st.screen,idx=SCREENS.indexOf(cur),meta=SCR[cur];
+const s={};Object.keys(SCR).forEach(k=>{s[k]=cur===k;});
+const go={};Object.keys(SCR).forEach(k=>{go[k]=()=>set({screen:k,from:k==='instructor'?(cur==='instructor'?st.from:cur):st.from});});
+const baseIdx=idx<0?Math.max(0,SCREENS.indexOf(st.from)):idx;
+const nextI=idx<0?SCREENS.indexOf(st.from):idx+1;
+const common={s,go,bg:BGS[cur],zoom:st.present?1.12:1,presentLabel:st.present?'Exit classroom view':'Classroom view',
+togglePresent:()=>{const n=!st.present;set({present:n});try{if(n&&document.documentElement.requestFullscreen){document.documentElement.requestFullscreen();}else if(!n&&document.fullscreenElement&&document.exitFullscreen){document.exitFullscreen();}}catch(e){}},
+reset:()=>set(initState()),
+acts:ACTS.map(a=>({cls:'act'+(a.screens.indexOf(SCREENS[baseIdx])>=0&&cur!=='instructor'?' on':'')+(SCREENS.indexOf(a.screens[a.screens.length-1])<baseIdx?' done':''),n:a.id,label:a.label,time:a.time,go:()=>set({screen:a.screens[0]})})),
+progW:Math.round((baseIdx+1)/SCREENS.length*100),
+prompt:meta.prompt,nextLabel:meta.next,noBack:cur==='welcome',
+goNext:()=>{if(cur==='instructor'){set({screen:st.from});}else if(cur==='council'){set(initState());}else{set({screen:SCREENS[idx+1]});}},
+goBack:()=>{if(cur==='instructor'){set({screen:st.from});}else if(idx>0){set({screen:SCREENS[idx-1]});}},
+discussOn:st.discuss,ansOn:st.ans,ansText:SCR[cur==='instructor'?st.from:cur].expect,
+personaName:P.name,personaTag:P.tag,score,scoreA,thr:TH,flagged,notFlagged:!flagged,model:MODEL,night:P.night,low:P.low,rom:P.rom,repeat:P.repeat,
+usePersonaA:()=>set({persona:'A',eng:null})};
+return Object.assign(common,this.vWelcome(st,set),this.vWrapped(st,set,P),this.vThink(st,set,P,score),this.vExplain(st,set,P,F,B,flagged,score),this.vLab(st,set,P,F,B,flagged,score,go),this.vMatrix(st,set),this.vTrap(st,set,P,F,flagged,go),this.vDisc(st,set),this.vCouncil(st,set,P),this.vInstr(st,set,cur,go));
+}
+vWelcome(st,set){const A=PERSONAS.A;return {roadmapOn:st.roadmap,toggleRoadmap:()=>set({roadmap:!st.roadmap}),roadmap:ACTS,previews:[{cls:'pv a',delay:'0s',title:'Minutes listened',big:A.min.toLocaleString('en-US'),sub:'Your year in sound'},{cls:'pv b',delay:'.6s',title:'Your AI persona',big:A.name,sub:'Fun, until you ask how it knows'},{cls:'pv c',delay:'1.2s',title:'Night owl',big:A.night+'%',sub:'of your minutes after 10 pm'}],
+personaCards:Object.keys(PERSONAS).map(k=>{const p=PERSONAS[k];return {id:p.id,name:p.name,tag:p.tag,genres:p.genres.slice(0,3).map(g=>g[0]).join(' · '),art:'background: linear-gradient(160deg,'+p.c1+','+p.c2+')',cls:'pcard'+(st.persona===k?' on':''),sel:st.persona===k,pick:()=>set({persona:k,eng:null,cls:{},xStage:'pre',pred:'',act:'',corrected:false,restricted:false,delReq:false,purged:false}),i1:p.night,l1:p.night+'% night listening',i2:p.repeat,l2:p.repeat+'% replays'};})};}
+vWrapped(st,set,P){const w=st.wStep;return {w:{s1:w>=1,s2:w>=2,s3:w>=3,s4:w>=4},wNext:()=>set({wStep:Math.min(4,w+1)}),wReplay:()=>set({wStep:0}),wLabel:w>=4?'All revealed':(w===0?'Start the reveal':'Reveal next'),wMin:P.min.toLocaleString('en-US'),wHrs:Math.round(P.min/60).toLocaleString('en-US'),wGenres:P.genres.map(g=>({n:g[0],p:g[1],w:g[1]*2.5})),wHours:hoursOf(P),wTiles:FE.map(k=>({v:P[k]+'%',l:FL[k]})),wLine:'Workdays '+P.work+'% of minutes · weekends '+P.wknd+'% of minutes.'};}
+vThink(st,set,P,score){const dist={Low:[78,18,4],Medium:[34,46,20],High:[8,32,60]};const names=['Acceptable','Questionable','Inappropriate'];let n=0;const cards=P.infs.map(i=>{const v=st.cls[i.id];if(v)n++;const d=dist[i.sens];return {card:i.id==='vuln'?'bad':'',name:i.name,short:i.short,obs:i.obs,sens:i.sens,sensCls:'t-'+(i.sens==='Low'?'low':i.sens==='Medium'?'med':'high'),conf:i.id==='vuln'?score:i.conf,answered:!!v,dist:names.map((x,j)=>x+' '+d[j]+'%').join(' · '),btns:names.map(x=>({label:x,cls:'chip'+(v===x?' on':''),pick:()=>set({cls:Object.assign({},st.cls,{[i.id]:x})})})),explain:()=>set({screen:'explain'})};});return {infCards:cards,answeredCount:n};}
+vExplain(st,set,P,F,B,flagged,score){
+const B1=scoreOf(Object.assign({},F,{night:15})),score1=Math.round(B1.total);const stg=st.xStage;
+const pts=(r)=>(Math.round(r*10)/10).toFixed(1);
+const fSelK=st.featSel,fc=B.c.find(c=>c.k===fSelK);
+const predOk=st.pred!==''&&((st.pred==='yes')===B1.flag);const actOk=st.act==='b';
+const nb=B.c[0].pts,na=B1.c[0].pts,rest=B.total-nb;
+const ruleText=['RULE vuln_flag  '+MODEL,'','n = min(night_pct / 60, 1)','l = min(lowenergy_pct / 50, 1)','r = min(romantic_playlist_pct / 35, 1)','p = min(repeat_pct / 70, 1)','','score = 100 x (0.35*n + 0.30*l + 0.20*r + 0.15*p)','','IF score >= 70 THEN','  label   = "Potentially Emotionally Vulnerable"','  segment = "Evening Reflective · Wellness"  (exported)','  weights chosen by hand; no clinical validation'].join('\n');
+let calMsg,calCls;const up=st.conf1>st.conf0;
+if(up&&(!predOk||!actOk)){calMsg='Your confidence rose but your demonstrated understanding did not match it. The explanation raised perceived understanding more than actual understanding.';calCls='p';}else if(predOk&&actOk){calMsg='Confidence and performance line up here: you predicted the model and spotted the real issue, which is the rule, not your habits.';calCls='g';}else{calMsg='Mixed result: part of your understanding held up. Use the gap to ask what the explanation did and did not prove.';calCls='d';}
+const levelDefs=[[1,'1 · Plain language'],[2,'2 · Evidence'],[3,'3 · Technical'],[4,'4 · Full transparency']];
+const stkNeed=STK.find(x=>x.id===st.xStk);const stkIdx=STK.findIndex(x=>x.id===st.xStk);
+const fitL=['Poor fit','Partial fit','Good fit','Best fit'];
+return {x:{pre:stg==='pre',explain:stg==='explain',predict:stg==='predict',result:stg==='result',levels:stg==='explain'&&st.xMode==='levels',compare:stg==='explain'&&st.xMode==='compare'},
+labelNote:flagged?'Your profile now carries this label. Before we explain it, we ask what you think you know.':'Your profile is not flagged by this rule, but the same rule runs on every listener. We will explain how it would evaluate you.',
+conf0:st.conf0,conf1:st.conf1,onConf0:(e)=>set({conf0:Number(e.target.value)}),onConf1:(e)=>set({conf1:Number(e.target.value)}),showExplain:()=>set({xStage:'explain',conf1:st.conf0}),
+modeLevels:{cls:'chip'+(st.xMode==='levels'?' on':''),pick:()=>set({xMode:'levels'})},modeCompare:{cls:'chip'+(st.xMode==='compare'?' on':''),pick:()=>set({xMode:'compare'})},
+levelTabs:levelDefs.map(d=>({label:d[1],cls:'chip'+(st.level===d[0]?' on':''),pick:()=>set({level:d[0]})})),lv:{l1:st.level===1,l2:st.level===2,l3:st.level===3,l4:st.level===4},
+fTiles:FE.map(k=>({label:FL[k],val:F[k]+'%',cls:'ftile'+(fSelK===k?' on':''),pick:()=>set({featSel:k})})),
+fSel:{label:FL[fSelK],def:FD[fSelK],val:F[fSelK]+'%',norm:fc.norm.toFixed(2),pts:pts(fc.pts),max:(W[fSelK]*100).toFixed(0)},
+cRows:B.c.map(c=>({label:FL[c.k],raw:c.raw+'%',tf:'min(x/'+REF[c.k]+', 1)',norm:c.norm.toFixed(2),w:'x'+W[c.k].toFixed(2),pts:pts(c.pts),bar:Math.round(c.pts/35*100)})),
+decisionText:B.flag?'label applied':'no label',ruleText,
+lineage:[{t:'Player events'},{t:'Feature extraction (nightly)'},{t:'Rule vuln_flag v0.3'},{t:'Profile label'},{t:'Segment export → ad platform'}],
+intended:'Content personalization and wellness-category ad targeting.',limits:['No clinical or empirical validation of the weights or threshold','Weights set by hand from product intuition (Feb 2026)','Confounds: shift work, genre taste, playlists made for others, time zone','No labeled ground truth exists to test accuracy'],recips:['Recommendation engine','Ad platform segment “Evening Reflective · Wellness”','Calm Harbor wellness subscription campaign (fictional)'],
+stkChips:STK.map(x=>({label:x.label,cls:'chip'+(st.xStk===x.id?' on':''),pick:()=>set({xStk:x.id})})),stkNeedName:stkNeed.label,stkNeed:stkNeed.need,
+cmpRows:FORMATS.map(f=>({f:f.f,rev:f.rev,hide:f.hide,who:f.who,act:f.act,fit:'●'.repeat(f.fit[stkIdx])+'○'.repeat(3-f.fit[stkIdx]),fitLabel:fitL[f.fit[stkIdx]]})),
+toPredict:()=>set({xStage:'predict'}),
+predOpts:[['yes','Yes, the label stays'],['no','No, the label goes away'],['unsure','Cannot tell from the explanation']].map(o=>({label:o[1],cls:'chip'+(st.pred===o[0]?' on':''),pick:()=>set({pred:o[0]})})),
+actOpts:[['a','Change my listening habits so the label goes away'],['b','Challenge the rule: its weights and threshold have no validation behind them'],['c','Report a bug in the scoring code']].map(o=>({label:o[1],on:st.act===o[0]?'on':'',pick:()=>set({act:o[0]})})),
+cantSubmit:!(st.pred!==''&&st.act!==''),toResult:()=>set({xStage:'result'}),xRestart:()=>set({xStage:'pre',pred:'',act:'',conf0:50,conf1:50}),
+score1,outcomeCls:B1.flag?'gap p':'gap g',outcomeText:B1.flag?'Still labeled: '+score1+' ≥ '+TH:'Label removed: '+score1+' < '+TH,
+whyText:'Night listening contributes '+pts(nb)+' points before and '+pts(na)+' after. The other three features still contribute '+pts(rest)+' points, '+(B1.flag?'enough to stay at or above the threshold. The rule is a weighted sum, so one feature does not decide it.':'which is not enough to reach the threshold.'),
+predText:predOk?'Correct':'Incorrect',predColor:predOk?'#1DF08A':'#FF4F7A',actText:actOk?'Yes':'No',actColor:actOk?'#1DF08A':'#FF4F7A',calMsg,calCls};}
+vLab(st,set,P,F,B,flagged,score,go){
+const stk=STK.find(x=>x.id===st.stk);const eV=Object.assign({},F,st.eng||{});const EB=scoreOf(eV);const eScore=Math.round(EB.total);
+const k={};STK.forEach(x=>{k[x.id]=st.stk===x.id;});
+const segYou=flagged&&!st.purged;
+const lInfs=P.infs.map(i=>{const isV=i.id==='vuln';return {name:i.name,cls:isV&&st.corrected?'muted':'',tag:isV?(st.corrected?'removed from profile':'inferred'):'inferred',tagCls:isV&&st.corrected?'t-fict':'t-spec'};});
+const ads=P.ads.map(a=>a[0]+' → '+a[1]);if(segYou){ads.push('Evening Reflective · Wellness → Calm Harbor wellness subscription (exported)');}
+const aud=STK.find(x=>x.id==='auditor');
+const lanes=[{name:'Profile label',cls:st.corrected&&flagged?'done':(flagged?'neutral':'neutral'),note:!flagged?'No vulnerability label on this profile.':(st.corrected?'Removed from your dashboard.':'Shown on your dashboard.')},{name:'Future-use restriction',cls:st.restricted?'done':'todo',note:st.restricted?'You have opted out of future psychological profiling and exports.':'Not set. New exports can still use this inference.'},{name:'Exported advertising segment',cls:!flagged||st.purged?'done':'todo',note:!flagged?'No segment membership.':(st.purged?'Purged by the platform. Your record no longer appears in the segment.':'Still active in the segment “Evening Reflective · Wellness”. Your correction did not remove it.')},{name:'Underlying profiling policy',cls:'neutral',note:'Not affected by any individual action. Needs Ethics Council or executive review.'}];
+const engDelta=(eScore-score===0)?'Same as baseline ('+score+').':'Baseline '+score+', now '+eScore+' ('+(eScore>score?'+':'')+(eScore-score)+').';
+const CAMP=[{id:'headphones',label:'Pulse Buds headphones',base:2.4,ctr:[0.9,1.2,1.5,1.6]},{id:'concert',label:'Encore Live concert tickets',base:1.9,ctr:[1.0,1.4,1.9,2.1]},{id:'wellness',label:'Calm Harbor wellness subscription',base:1.6,ctr:[0.8,1.1,1.6,3.4]},{id:'study',label:'FocusLoop study subscription',base:1.1,ctr:[0.7,1.0,1.4,1.3]}];
+const STR=[{id:'contextual',label:'Contextual',m:1,ev:'Observed aggregate benchmark',cls:'g'},{id:'interest',label:'Interest-based',m:.72,ev:'Observed clicks on declared interests',cls:'g'},{id:'behavioral',label:'Behavioral',m:.5,ev:'Modeled from listening behavior; not independently verified',cls:'d'},{id:'sensitive',label:'Sensitive psychological',m:.22,ev:'Vendor estimate with no holdout test and no way for users to verify the inference. Hypothetical.',cls:'p'}];
+const camp=CAMP.find(c=>c.id===st.adCamp),strat=STR.find(c=>c.id===st.adStrat),si=STR.indexOf(strat);
+const EX={engagement:{label:'Engagement-first',eng:12,ret:86.4,rev:18.2,cmp:1840,cor:310,risk:'High',gov:'Escalated: no validity evidence; segment exported without clear disclosure.',gc:'p'},satisfaction:{label:'User satisfaction-first',eng:5,ret:88.1,rev:2.1,cmp:920,cor:410,risk:'Medium',gov:'Under review: complaint trend flagged.',gc:'d'},privacy:{label:'Privacy-first',eng:-3,ret:88.9,rev:-6.4,cmp:410,cor:520,risk:'Low',gov:'Compliant with review: sensitive targeting disabled.',gc:'g'},control:{label:'User-controlled personalization',eng:2,ret:90.2,rev:-1.8,cmp:260,cor:640,risk:'Low',gov:'Compliant: opt-in consent records required and audited.',gc:'g'}};
+const ex=EX[st.exStrat];
+const finds=[['Inference validity','The link from listening pattern to emotional vulnerability is unvalidated.'],['Notice and consent','The listener was not clearly told the inference would feed wellness advertising.'],['Downstream deletion gap','Correcting the label does not remove an exported segment.'],['Data minimization','Is an emotional-state inference necessary for music recommendations?']];
+const copts=[['ok','Acceptable'],['mit','Needs mitigation'],['inv','Invalid inference'],['pro','Prohibited use']];
+const chain=[{l:'1 Raw events',t:'Raw listening events',text:'Timestamped plays for '+P.name+': '+P.min.toLocaleString('en-US')+' minutes.',have:['Event logs are retained and complete in the synthetic dataset'],miss:['Retention and access policy for individual histories']},{l:'2 Features',t:'Feature extraction',text:'Four features computed nightly: '+P.night+'% night, '+P.low+'% low-energy, '+P.rom+'% romantic, '+P.repeat+'% replay.',have:['Feature definitions documented','Values reproducible from events'],miss:['Check that “romantic” tagging does not reflect gifts or shared playlists']},{l:'3 Rule',t:'Rule vuln_flag v0.3',text:'Weighted sum scored '+score+' against threshold '+TH+'.',have:['Rule text and unit tests (14/14)'],miss:['Any clinical or empirical validation','Source for the weights and threshold']},{l:'4 Label',t:'Profile label',text:flagged?'“Potentially Emotionally Vulnerable” applied'+(st.corrected?' then removed from the profile by the listener.':'.'):'No label applied for this profile.',have:['Label is visible to the listener'],miss:['Evidence the label is true for this person']},{l:'5 Export',t:'Segment export',text:flagged?'Added to “Evening Reflective · Wellness”'+(st.purged?'; purged by the executive.':(st.corrected?'; remained after the label was corrected.':'.')):'Not exported.',have:['Export log shows date and recipient'],miss:['Disclosure to the listener','Mechanism that propagates corrections downstream']},{l:'6 Campaign',t:'Campaign use',text:flagged?'Offered to Calm Harbor’s wellness subscription campaign.':'Not used.',have:['Campaign brief exists'],miss:['Review of whether targeting emotional vulnerability is acceptable for this advertiser category']}];
+const aSel=chain[st.audStep];
+const recs=[];if(st.corrected)recs.push('Label removed on profile at listener request.');if(st.restricted)recs.push('Listener opted out of psychological profiling.');if(st.delReq)recs.push('Downstream deletion requested. No automatic mechanism exists; pending executive action.');if(st.purged)recs.push('Exported segment purged by executive.');if(!recs.length)recs.push('No correction records yet.');
+const open=[];if(st.delReq&&!st.purged)open.push('1 pending downstream deletion request');if(st.corrected)open.push('1 profile correction logged');if(!open.length)open.push('No open items');
+return {k,stkTabs:STK.map(x=>({label:x.label,cls:'chip'+(st.stk===x.id?' on':''),pick:()=>set({stk:x.id}),pickJump:()=>set({stk:x.id,screen:'lab'})})),stkColor:stk.col,stkRole:stk.role,stkHeadline:stk.head,
+lInfs,lRecs:P.recs,lAds:ads,lanes,lLanes:lanes,
+lCorrect:()=>set({corrected:!st.corrected}),lCorrectLabel:st.corrected?'Undo correction':'Dispute and correct this label',
+lRestrict:()=>set({restricted:!st.restricted}),lRestrictLabel:st.restricted?'Opt-out active (tap to undo)':'Opt out of psychological profiling',
+lDelete:()=>set({delReq:!st.delReq}),lDeleteLabel:st.delReq?'Deletion requested (tap to withdraw)':'Request deletion from advertising systems',
+eSliders:FE.map(f=>({label:FL[f],val:eV[f],on:(e)=>set({eng:Object.assign({},eV,{[f]:Number(e.target.value)})})})),eReset:()=>set({eng:null}),eScore,eColor:EB.flag?'#FF8A1F':'#1DF08A',eDecision:EB.flag?'label applied':'no label',eDelta:engDelta,
+eBars:EB.c.map(c=>({label:FL[c.k],pts:(Math.round(c.pts*10)/10).toFixed(1),w:Math.round(c.pts/35*100)})),eRule:'score = 100 x (0.35n + 0.30l + 0.20r + 0.15p)\nflag if score >= 70',
+eChecks:[{name:'Implementation correctness',status:'Verified',cls:'g',note:'Code computes exactly the written rule; unit tests pass.'},{name:'Explanation faithfulness',status:'Verified',cls:'g',note:'The explanation shown is the computation that ran.'},{name:'Empirical validity',status:'Not established',cls:'p',note:'No labeled ground truth; weights and threshold are unvalidated guesses.'},{name:'Ethical acceptability',status:'Unresolved',cls:'d',note:'Correct code can implement an unjustified inference.'}],
+adCamps:CAMP.map(c=>({label:c.label,cls:'chip'+(st.adCamp===c.id?' on':''),pick:()=>set({adCamp:c.id})})),adStrats:STR.map(c=>({label:c.label,cls:'chip'+(st.adStrat===c.id?' on':''),pick:()=>set({adStrat:c.id})})),
+adReach:(camp.base*strat.m).toFixed(2)+'M',adCtr:camp.ctr[si].toFixed(1)+'%',adEvidence:strat.ev,adEvCls:strat.cls,adSens:st.adStrat==='sensitive',adYou:flagged?(st.purged?'The selected listener has been purged from this segment.':'The selected listener is in this audience and does not know it.'):'The selected listener is not in this audience.',
+adSegs:[{name:'Evening Reflective · Wellness',size:'412,000',desc:'Users with frequent late-night, low-energy listening. Individual histories and the rule are hidden from you.'},{name:'Night Listening & Audio Gear',size:'1.1M',desc:'Heavy after-10pm listeners.'},{name:'Live Events',size:'0.9M',desc:'Weekend high-energy listeners.'},{name:'Study & Focus',size:'0.8M',desc:'Workday instrumental listeners.'}],
+adBlocked:['Raw listening histories','Individual user identities','The decision rule and weights','Evidence that the wellness inference is valid'],
+exStrats:Object.keys(EX).map(id=>({label:EX[id].label,cls:'chip'+(st.exStrat===id?' on':''),pick:()=>set({exStrat:id})})),
+exTiles:[{l:'Engagement',v:(ex.eng>0?'+':'')+ex.eng+'%',sub:'vs baseline',col:'#1DF08A'},{l:'Retention',v:ex.ret+'%',sub:'12-month',col:'#1DF08A'},{l:'Ad revenue',v:(ex.rev>0?'+':'')+'$'+ex.rev+'M',sub:'annualized, illustrative',col:ex.rev>0?'#FF8A1F':'#A78BFA'},{l:'Complaints / month',v:String(ex.cmp+(st.delReq?1:0)),sub:st.delReq?'includes 1 from this listener':'volume',col:'#FF4FA3'},{l:'Profile corrections',v:String(ex.cor+(st.corrected?1:0)),sub:st.corrected?'includes 1 from this listener':'per month',col:'#F6F1FF'},{l:'Privacy risk',v:ex.risk,sub:'qualitative',col:ex.risk==='High'?'#FF4F7A':ex.risk==='Medium'?'#FF8A1F':'#1DF08A'}],
+exGov:ex.gov,exGovCls:ex.gc,exOpen:open,exPurge:()=>set({purged:true}),purgeOff:!(flagged&&!st.purged),purgeLabel:!flagged?'No exported segment for this listener':(st.purged?'Exported segment purged':'Purge exported segment (executive authority)'),
+audChain:chain.map((c,i)=>({label:c.l,cls:'chip'+(st.audStep===i?' on':''),pick:()=>set({audStep:i})})),audTitle:aSel.t,audText:aSel.text,audHave:aSel.have,audMiss:aSel.miss,
+audFinds:finds.map((f,i)=>({title:f[0],text:f[1],opts:copts.map(o=>({label:o[1],cls:'chip'+(st.audCls[i]===o[0]?' on':''),pick:()=>set({audCls:Object.assign({},st.audCls,{[i]:o[0]})})}))})),audRecords:recs};}
+vMatrix(st,set){
+const cur=MXC,prop=st.mProp||MXP.map(r=>r.slice());const view=st.mView;const M=view==='current'?cur:prop;
+const cyc=['A','R','X','U'];
+const rows=MXN.map((n,r)=>({name:n,cells:[0,1,2,3,4].map(c=>{const v=M[r][c];const chg=view==='diff'&&cur[r][c]!==prop[r][c];return {label:MXS[v].l,cls:MXS[v].c+(chg?' chg':''),pick:()=>{if(view==='current')return;const np=prop.map(x=>x.slice());np[r][c]=cyc[(cyc.indexOf(np[r][c])+1)%4];set({mProp:np,mView:view==='diff'?'proposed':view});}};})}));
+const notA=(r,c)=>M[r][c]!=='A';const gaps=[];
+const exU=[2,3,4,5].filter(r=>notA(r,3)).length;
+if(M[10][3]!=='U'&&exU>=2)gaps.push({cls:'gap d',t:'Executive can influence deployment but lacks full access to '+exU+' of 4 understanding layers (explanation, features, rules, provenance). Decides without understanding.'});
+if(M[6][2]==='A'&&M[2][2]==='U')gaps.push({cls:'gap d',t:'Advertisers can set targeting criteria but cannot see why users belong to a segment. Acts on an inference they cannot assess.'});
+if(M[9][0]!=='A')gaps.push({cls:'gap p',t:'Listener correction authority is “'+MXS[M[9][0]].l+'”: they can dispute a label but not stop its downstream use.'});
+if(M[5][0]==='U')gaps.push({cls:'gap p',t:'Listener cannot see data provenance. Affected without being able to check where the conclusion came from.'});
+if(M[10][0]==='U')gaps.push({cls:'gap p',t:'Listener has no voice in deployment of the system that profiles them.'});
+if(!gaps.length)gaps.push({cls:'gap g',t:'No major power-versus-understanding gaps in this configuration.'});
+const asym=st.asym;const corrA=M[9][0]==='A';
+const gRet=corrA?'Label → segment → partner copies (full recourse path)':'Label only. Segment and partner copies are out of reach';
+return {stkCols:STK.map(x=>x.label),mViews:[['current','Current simulated access'],['proposed','Proposed ethical access'],['diff','Show changes']].map(v=>({label:v[1],cls:'chip'+(view===v[0]?' on':''),pick:()=>set({mView:v[0]})})),mHint:view==='current'?'Read-only baseline':'Tap a cell to change a proposed permission',mRows:rows,gaps,mViewName:view==='current'?'current':'proposed',
+asymRows:ASYM.map((r,i)=>({layer:r.layer,cells:r.cells,show:asym>i})),asymLabel:asym>=4?'All layers shown':(asym===0?'Start: what each sees':'Reveal next layer'),asymNext:()=>set({asym:Math.min(4,asym+1)}),asymAll:()=>set({asym:4}),asymHide:()=>set({asym:0}),
+gNodes:[{t:'Listener',a:'→',cls:'ok'},{t:'Listening history',a:'→',cls:'ok'},{t:'Rule v0.3',a:'→',cls:'ok'},{t:'Profile label',a:'→',cls:'ok'},{t:'Segment export',a:'→',cls:'weak'},{t:'Advertiser',a:'',cls:'weak'}],gRet,gRetCls:corrA?'g':'p',
+gSide:[{who:'ML Engineer',t:'reads the rule and features ('+MXS[M[4][1]].l+').'},{who:'Executive',t:'approves deployment ('+MXS[M[10][3]].l+') with '+MXS[M[4][3]].l+' access to rules.'},{who:'Auditor',t:'reaches governance records ('+MXS[M[8][4]].l+'); correction authority '+MXS[M[9][4]].l+'.'}]};}
+vTrap(st,set,P,F,flagged,go){
+const t=st.trapStep;const sc=Math.round(scoreOf(F).total);
+const lanes=[{name:'Profile correction',cls:st.corrected?'done':'todo',note:st.corrected?'Done: label removed from the listener’s dashboard.':'Available to the listener: remove the label from their own dashboard.'},{name:'Future-use restriction',cls:st.restricted?'done':'todo',note:st.restricted?'Done: opted out of future psychological profiling.':'Not set: new exports can still use this inference.'},{name:'Deletion from downstream systems',cls:st.purged?'done':'todo',note:st.purged?'Done: segment purged by the platform.':'Not automatic: the exported segment persists until someone with authority purges it.'},{name:'Review of the profiling policy',cls:'todo',note:'Not triggered by individual action. Needs governance review.'}];
+const cards=[
+{n:1,title:'The persona',head:'“Potentially Emotionally Vulnerable”',body:'A polished card, a calm gradient and a gentle explanation: “You listen to low-energy music late at night.” Heuristic score '+sc+'/100. It feels like care.',lanes:false},
+{n:2,title:'The evidence',head:'The observations are accurate',body:F.night+'% nighttime listening, '+F.low+'% low-energy tracks, '+F.rom+'% romantic playlists, '+F.repeat+'% replays. All true in this dataset. But shift work, taste, a playlist made for someone else or a different time zone produce the same pattern.',lanes:false},
+{n:3,title:'The technical truth',head:'The model did exactly what it was written to do',body:'Rule v0.3 was applied correctly. The rule is fully inspectable and the explanation matches the computation. Implementation is correct; the explanation is faithful.',lanes:false},
+{n:4,title:'The validity problem',head:'Nobody established that this measures vulnerability',body:'The weights and threshold were chosen by hand; there are no clinician-labeled examples. The explanation describes a computation, not a psychological truth.',lanes:false},
+{n:5,title:'The downstream consequence',head:'The label became an advertising audience',body:'The inferred segment (“Evening Reflective · Wellness”, 412,000 listeners) was offered to Calm Harbor’s wellness subscription campaign. The listener was not clearly told a personal inference would be used this way.',lanes:false},
+{n:6,title:'The accountability gap',head:'Fixing the label does not fix the harm',body:'The listener can remove the label from their dashboard, but a previously exported advertising segment is not automatically removed. These are four different remedies:',lanes:true}];
+const tot=TRAPVOTES.reduce((a,b)=>a+b[1],0)+(st.vote?1:0);
+return {trapStep:t,trapDone:t>=6,trapLabel:t>=6?'All reveals shown':(t===0?'Start the reveal':'Reveal next'),trapNext:()=>set({trapStep:Math.min(6,t+1)}),trapBack:()=>set({trapStep:Math.max(0,t-1)}),trapRestart:()=>set({trapStep:0,vote:''}),
+trapCards:cards.map(c=>({n:c.n,title:c.title,head:c.head,body:c.body,lanes:c.lanes,show:t>=c.n,cur:t===c.n?'cur':''})),trapLanes:lanes,
+voteOpts:TRAPVOTES.map(v=>({label:v[0],on:st.vote===v[0]?'on':'',pct:Math.round((v[1]+(st.vote===v[0]?1:0))/tot*100),pick:()=>set({vote:v[0]})}))};}
+vDisc(st,set){
+const grid=st.dGrid||DPRE.current;const has=(r,i)=>(grid[r]||[]).indexOf(i)>=0;
+const rows=ITEMS.map(it=>({name:it.n,cells:RECS.map(r=>{const on=has(r.k,it.k);return {label:on?'Open':'Closed',cls:on?'ca':'cu',pick:()=>{const g={};RECS.forEach(x=>{g[x.k]=(grid[x.k]||[]).slice();});if(on){g[r.k]=g[r.k].filter(z=>z!==it.k);}else{g[r.k].push(it.k);}set({dGrid:g,dPre:''});}};})}));
+const sums=DIMS.map(()=>0),maxs=DIMS.map(()=>0);
+ITEMS.forEach(it=>RECS.forEach(r=>{DIMS.forEach((d,j)=>{const v=it.w[j]*r.m[j];if(v>0)maxs[j]+=v;if(has(r.k,it.k))sums[j]+=v;});}));
+const meters=DIMS.map((d,j)=>{const x=Math.max(0,sums[j])/maxs[j];const L=d.risk?(x<.12?'Low':x<.35?'Moderate':'High'):(x<.12?'Little':x<.35?'Some':'Strong');return {name:d.n,level:L,w:Math.round(x*100),bar:d.risk?'b-o':'b-g'};});
+const cnt=(k)=>(grid[k]||[]).length;
+const notes=[];const N=(cls,t)=>notes.push({cls:'gap '+cls,t});
+if(has('adv','raw'))N('p','Advertisers can access raw listening histories: more targeting flexibility, but a large increase in privacy exposure and re-identification risk.');
+if(has('pub','rule'))N('d','Publishing exact rules lets anyone game the model and exposes proprietary logic. It also supports outside scrutiny. Role-restricted and auditor access often achieves most of the accountability with less risk.');
+if(has('pub','inf')||has('pub','raw'))N('p','Public release of personal inferences or histories is a privacy harm regardless of intent.');
+if(has('pub','agg'))N('g','Aggregate validation metrics carry low privacy risk and high accountability value: a good candidate for public disclosure.');
+if(cnt('adt')===0)N('d','Without protected access, independent auditors cannot verify the platform’s claims. Oversight becomes self-attestation.');
+if(cnt('pub')+cnt('lis')+cnt('adv')+cnt('adt')===0)N('d','Restricting all external access protects individual data, but nobody outside the company can check the system.');
+if(!has('lis','cor'))N('p','The listener cannot challenge a label. Affected without recourse.');
+if(has('lis','inf')&&!has('lis','rule'))N('d','The listener sees the conclusion but not the logic. Disclosure is not the same as understanding.');
+if(has('lis','del'))N('g','The listener can request erasure downstream: strongest recourse, but requires the platform to build propagation to partners.');
+if(!has('stf','del')&&!has('lis','del'))N('p','No one holds authority to delete from downstream systems: label corrections never reach exported segments.');
+if(has('adt','aud'))N('g','Auditors can inspect audit records under protected access: independent oversight without public release.');
+if(!notes.length)N('g','No flagged trade-offs in this configuration. Compare with the other presets.');
+const P2=[['current','Current'],['public','Maximum public'],['lock','Lock everything down'],['balanced','Balanced (suggested)']];
+return {dPresets:P2.map(p=>({label:p[1],cls:'chip'+(st.dPre===p[0]?' on':''),pick:()=>set({dGrid:JSON.parse(JSON.stringify(DPRE[p[0]])),dPre:p[0]})})),dRecs:RECS.map(r=>({label:r.label,kind:r.kind})),dRows:rows,dMeters:meters,dModes:[{name:'Public disclosure',n:cnt('pub')},{name:'Individual access',n:cnt('lis')},{name:'Role-restricted professional access',n:cnt('stf')+cnt('adv')},{name:'Independent oversight access',n:cnt('adt')}],dNotes:notes};}
+vCouncil(st,set,P){
+const stp=st.cStep;const pol=POLICIES.find(p=>p.id===st.cPol);const tot=FINALS.reduce((a,b)=>a+b[1],0)+(st.cFinal?1:0);
+const toggle=(n)=>{const has=st.cPri.indexOf(n)>=0;if(has){set({cPri:st.cPri.filter(x=>x!==n)});}else if(st.cPri.length<3){set({cPri:st.cPri.concat([n])});}};
+const neg=POLICIES.find(p=>p.id===st.cNeg);
+const covered=pol?st.cPri.filter(p=>pol.sup.indexOf(p)>=0):[];
+const names=['Listener','Engineer','Advertiser','Executive','Auditor'];
+const ok=[st.cPri.length===3,!!st.cPol,true,!!st.cFinal,true][stp-1];
+const fin=FINALS.find(f=>f[0]===st.cFinal);
+const sh=BEFORE.map((b,i)=>({label:b[0],b:b[1],a:AFTER[i][1]}));
+return {c:{s1:stp===1,s2:stp===2,s3:stp===3,s4:stp===4,s5:stp===5},cSteps:['1 Principles','2 Policy','3 Negotiation','4 Final vote','5 Before and after'].map((l,i)=>({label:l,cls:'chip'+(stp===i+1?' on':''),pick:()=>set({cStep:i+1})})),
+cPriCount:st.cPri.length,cHasPri:st.cPri.length>0,principles:PRINCIPLES.map(p=>({name:p[0],def:p[1],on:st.cPri.indexOf(p[0])>=0?'on':'',pick:()=>toggle(p[0])})),
+defenses:st.cPri.map(n=>({name:n,val:st.cDef[n]||'',on:(e)=>set({cDef:Object.assign({},st.cDef,{[n]:e.target.value})})})),
+policies:POLICIES.map(p=>({name:p.name,desc:p.desc,on:st.cPol===p.id?'on':'',fit:'Serves: '+p.sup.join(', '),pick:()=>set({cPol:p.id,cNeg:p.id})})),
+negName:neg.name,negChips:POLICIES.map(p=>({label:'Policy '+p.id,cls:'chip'+(st.cNeg===p.id?' on':''),pick:()=>set({cNeg:p.id})})),negRows:names.map(n=>({who:n,pro:neg.neg[n][0],con:neg.neg[n][1]})),
+finalOpts:FINALS.map(f=>({label:f[0],on:st.cFinal===f[0]?'on':'',pct:Math.round((f[1]+(st.cFinal===f[0]?1:0))/tot*100),pick:()=>set({cFinal:f[0]})})),
+pathClass:st.cls.vuln||'not answered',pathTrap:st.vote||'not voted',pathPri:st.cPri.length?st.cPri.join(', '):'none chosen',pathPolicy:pol?pol.name:'none chosen',pathFinal:st.cFinal||'not decided',
+covCls:pol&&st.cPri.length?(covered.length>=2?'g':'d'):'d',covMsg:pol&&st.cPri.length?('Your policy serves '+covered.length+' of your 3 priorities'+(covered.length?' ('+covered.join(', ')+')':'')+'. '+(covered.length<2?'Consider whether the policy matches what you said matters most.':'Good alignment.')):'Choose priorities and a policy to see how well they align.',shiftRows:sh,
+cFirst:stp===1,cBack:()=>set({cStep:Math.max(1,stp-1)}),cNext:()=>set({cStep:Math.min(5,stp+1)}),cNextOff:stp===5||!ok,cNextLabel:stp===5?'Done':(stp===1?'Choose policy':stp===2?'Hear the stakeholders':stp===3?'Final vote':'See how views moved')};}
+vInstr(st,set,cur,go){
+const showing=cur==='instructor'?st.from:cur;const m=SCR[showing];
+const qs=[1,2,3,4,5,6,7];
+const stages=SCREENS.map(k=>({label:SCR[k].label,time:SCR[k].time+' min',q:SCR[k].q.map(n=>'Q'+n).join(' '),cls:'chip'+(showing===k?' on':''),pick:()=>set({screen:k,from:k})}));
+const P=Object.keys(PERSONAS).map(k=>({label:PERSONAS[k].name,cls:'chip'+(st.persona===k?' on':''),pick:()=>set({persona:k,eng:null})}));
+return {iStages:stages,iCurrent:m.label,iMins:m.mins,iPersonas:P,iDemo:m.demo,iAsk:m.ask,iExpect:m.expect,iNext:m.reveal,iPrinciple:m.principle,
+iTrigger:()=>set({screen:'trap',from:'trap',persona:'A',trapStep:1}),
+iDiscuss:{label:st.discuss?'Hide discussion question':'Launch discussion question',cls:st.discuss?'btn pink sm':'btn ghost sm',pick:()=>set({discuss:!st.discuss})},
+iAns:{label:st.ans?'Hide example answers':'Reveal example answers',cls:st.ans?'btn pink sm':'btn ghost sm',pick:()=>set({ans:!st.ans,discuss:st.discuss||!st.ans})},
+qHead:qs.map(n=>'Q'+n),qRows:SCREENS.map(k=>({name:SCR[k].label,cells:qs.map(n=>SCR[k].q.indexOf(n)>=0?'●':'·')}))};}
+}
+</script>
+</body>
+</html>
