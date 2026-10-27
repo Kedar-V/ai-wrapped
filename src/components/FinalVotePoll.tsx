@@ -129,7 +129,6 @@ export function FinalVotePoll({ kind = 'final' }: { kind?: ShipKind }) {
 
   const liveRows = live?.tally ?? [];
   const voteCount = live?.votes ?? 0;
-  const useLive = !!code && voteCount > 0;
   const canSubmit = !!code && live?.open !== false && !!choice && !locked && !busy;
   const pwId = `${kind}-poll-password`;
 
@@ -139,11 +138,10 @@ export function FinalVotePoll({ kind = 'final' }: { kind?: ShipKind }) {
       <div className="h3" id={`${kind}-vote-title`}>Should this system ship?</div>
 
       <div className="g4" role="group" aria-label={meta.eyebrow}>
-        {FINALS.map(([name, sample]) => {
+        {FINALS.map(([name]) => {
           const row = liveRows.find((r) => r.name === name);
-          const pct = useLive
-            ? (row?.pct ?? 0)
-            : Math.round(((sample + (choice === name ? 1 : 0)) / (100 + (choice ? 1 : 0))) * 100);
+          const count = voteCount > 0 ? (row?.count ?? 0) : 0;
+          const pct = voteCount > 0 ? (row?.pct ?? 0) : 0;
           return (
             <button
               key={name}
@@ -154,7 +152,7 @@ export function FinalVotePoll({ kind = 'final' }: { kind?: ShipKind }) {
             >
               <b>{name}</b>
               <span className="bar"><i className="b-o" style={{ width: pct + '%' }} /></span>
-              <span className="mono small">{useLive ? `${row?.count ?? 0} · ${pct}%` : `${pct}%`}</span>
+              <span className="mono small">{count} · {pct}%</span>
             </button>
           );
         })}
@@ -188,10 +186,10 @@ export function FinalVotePoll({ kind = 'final' }: { kind?: ShipKind }) {
         )}
       </div>
       <div className="small muted">
-        {useLive
+        {voteCount > 0
           ? `${voteCount} live vote${voteCount === 1 ? '' : 's'} — bars update for the room.`
           : code
-            ? 'Pick one option, then Submit vote.'
+            ? 'Pick one option, then Submit vote. Bars stay at 0 until the first submit.'
             : 'Instructor: password + Start poll. Students join automatically and submit once.'}
       </div>
       {locked && <div className="gap g">{meta.locked}</div>}

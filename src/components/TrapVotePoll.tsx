@@ -115,7 +115,6 @@ export function TrapVotePoll() {
 
   const liveRows = live?.tally ?? [];
   const voteCount = live?.votes ?? 0;
-  const useLive = !!code && voteCount > 0;
   const canSubmit = !!code && live?.open !== false && !!vote && !locked && !busy;
 
   return (
@@ -126,11 +125,10 @@ export function TrapVotePoll() {
       </div>
 
       <div className="g4" role="group" aria-label="Trap ethics vote">
-        {TRAPVOTES.map(([name, sample]) => {
+        {TRAPVOTES.map(([name]) => {
           const row = liveRows.find((r) => r.name === name);
-          const pct = useLive
-            ? (row?.pct ?? 0)
-            : Math.round(((sample + (vote === name ? 1 : 0)) / (100 + (vote ? 1 : 0))) * 100);
+          const count = voteCount > 0 ? (row?.count ?? 0) : 0;
+          const pct = voteCount > 0 ? (row?.pct ?? 0) : 0;
           return (
             <button
               key={name}
@@ -141,7 +139,7 @@ export function TrapVotePoll() {
             >
               <b>{name}</b>
               <span className="bar"><i className="b-p" style={{ width: pct + '%' }} /></span>
-              <span className="mono small">{useLive ? `${row?.count ?? 0} · ${pct}%` : `${pct}%`}</span>
+              <span className="mono small">{count} · {pct}%</span>
             </button>
           );
         })}
@@ -175,11 +173,11 @@ export function TrapVotePoll() {
         )}
       </div>
       <div className="small muted">
-        {useLive
+        {voteCount > 0
           ? `${voteCount} live vote${voteCount === 1 ? '' : 's'} — bars update for the room.`
           : code
-            ? 'Pick one option, then Submit vote.'
-            : 'Instructor: password + Start poll. Students join automatically and submit once. Sample bars show until the first live vote.'}
+            ? 'Pick one option, then Submit vote. Bars stay at 0 until the first submit.'
+            : 'Instructor: password + Start poll. Students join automatically and submit once.'}
       </div>
       {locked && <div className="gap g">Your trap vote is locked for this poll.</div>}
       {msg && <div className="small muted" role="status">{msg}</div>}
