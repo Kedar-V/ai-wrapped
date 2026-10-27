@@ -185,6 +185,11 @@ const server = http.createServer(async (req, res) => {
       if (!choice) return sendJson(res, 400, { error: 'need one valid choice for this poll' });
       r.votes.push({ choice, at: new Date().toISOString() });
     } else {
+      if (body.choice != null) {
+        return sendJson(res, 400, {
+          error: `room kind is "${r.kind}", not a choice poll — restart the vote server and Start poll again on this screen`,
+        });
+      }
       const principles = parsePrinciples(body.principles);
       if (!principles) return sendJson(res, 400, { error: 'need exactly 3 distinct known principles' });
       const defenses = parseDefenses(body.defenses, principles);

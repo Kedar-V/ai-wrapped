@@ -47,12 +47,20 @@ export function TrapVotePoll() {
   useEffect(() => {
     if (!code) return;
     let cancelled = false;
+    const accept = (s: LiveSnapshot) => {
+      setLive(s);
+      if (s.kind && s.kind !== 'trap') {
+        setMsg('This room is a “' + s.kind + '” poll, not trap. Restart the vote server, then New poll on this screen.');
+      } else {
+        setMsg('');
+      }
+    };
     void getRoom(code)
-      .then((s) => { if (!cancelled) { setLive(s); setMsg(''); } })
+      .then((s) => { if (!cancelled) accept(s); })
       .catch((e: Error) => { if (!cancelled) setMsg(e.message); });
     const stop = streamRoom(
       code,
-      (s) => { setLive(s); setMsg(''); },
+      (s) => { if (!cancelled) accept(s); },
       (e) => setMsg(e.message),
     );
     return () => { cancelled = true; stop(); };
@@ -67,6 +75,10 @@ export function TrapVotePoll() {
     setMsg('');
     try {
       const r = await createRoom(password.trim(), 'trap');
+      if (r.kind && r.kind !== 'trap') {
+        setMsg('Vote server is outdated (got kind “' + r.kind + '”). Stop it and run npm run vote:demo again, then Start poll.');
+        return;
+      }
       try { sessionStorage.setItem('aiw.pollPassword', password.trim()); } catch { /* ignore */ }
       writeVotedCode(null, 'trap');
       set({ trapLocked: false });

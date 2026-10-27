@@ -14,6 +14,7 @@ export interface LiveSnapshot {
   votes: number;
   tally: LiveTallyRow[];
   defenses?: LiveDefense[];
+  kind?: PollKind;
 }
 
 export type PollKind = 'principles' | 'final' | 'before' | 'trap';
