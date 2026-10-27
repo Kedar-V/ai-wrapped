@@ -20,7 +20,7 @@ export function WelcomeScreen() {
           <h1 className="disp h1">AI Wrapped <span style={{ color: '#1DF08A' }}>2026</span></h1>
           <p className="lead"><em>We know what you listen to. But how much do we think we know about you?</em></p>
           <div className="row">
-            <button className="btn pri big" onClick={() => go('persona')}>Discover My AI Persona</button>
+            <button className="btn pri big" onClick={() => go('wrapped')}>Discover My AI Persona</button>
             <button className="btn ghost big" onClick={() => set({ roadmap: !roadmap })} aria-expanded={roadmap}>Explore the Experience</button>
           </div>
           {roadmap && (

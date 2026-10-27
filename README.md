@@ -15,7 +15,7 @@ npm test        # Vitest
 
 ## Flow
 
-`welcome → persona → wrapped → think → explain → lab → matrix → trap → disclosure → council`, plus Instructor mode. Routes are hash based (`#/welcome`, `#/trap`, …) and stay in sync with the store. Use **Instructor mode** in the top bar for stage jumps, persona/stakeholder switching, trap reveals, discussion questions and the facilitator script. **Classroom view** scales the UI ~12% and requests fullscreen. **Reset demo** restores the initial state.
+`welcome → wrapped → think → baseline → explain → lab → matrix → trap → disclosure → council`, plus Instructor mode. Everyone uses Persona A (The Midnight Romantic). Routes are hash based (`#/welcome`, `#/trap`, …) and stay in sync with the store. Use **Instructor mode** in the top bar for stage jumps, stakeholder switching, trap reveals, discussion questions and the facilitator script. **Classroom view** scales the UI ~12% and requests fullscreen. **Reset demo** restores the initial state.
 
 ## Live voting (Ethics Council)
 
@@ -77,7 +77,7 @@ flag if score ≥ 70
 src/data/        personas, stakeholders, matrix, disclosure, policies, scripts
 src/lib/         scoring.ts, hours.ts (+ tests)
 src/store/       useAppStore.ts (Zustand; initState and reset)
-src/components/  PersonaSelector, WrappedReveal, InferenceCard, ExplanationViewer, ConfidenceInput,
+src/components/  WrappedReveal, InferenceCard, ExplanationViewer, ConfidenceInput,
                  ComprehensionTest, StakeholderSwitcher, Listener/Engineer/Executive/Auditor dashboards,
                  AccessMatrix, DataLineageGraph, DisclosureSimulator, RevealController, EthicsCouncil, InstructorControls
 src/screens/     one per screen

@@ -29,7 +29,7 @@ export function InferenceCard({ inf, score }: { inf: Inference; score: number })
         ))}
       </div>
       {v && <div className="small muted pop">Sample cohort (illustrative, n=100): <b>{CLS_NAMES.map((x, j) => `${x} ${d[j]}%`).join(' · ')}</b></div>}
-      <button className="btn ghost sm" style={{ alignSelf: 'flex-start' }} onClick={() => go('explain')}>Request explanation</button>
+      <button className="btn ghost sm" style={{ alignSelf: 'flex-start' }} onClick={() => go('baseline')}>Request explanation</button>
     </div>
   );
 }
