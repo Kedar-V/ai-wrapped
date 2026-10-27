@@ -1,10 +1,10 @@
 /**
  * Tiny in-memory voting API for the Ethics Council.
  *
- * POST   /rooms                 → start poll; body { password, kind?: 'principles'|'final' }
+ * POST   /rooms                 → start poll; body { password, kind?: 'principles'|'final'|'before' }
  * GET    /active?kind=          → { code, open, kind } for that kind, or 404
  * GET    /rooms/:code           → snapshot
- * POST   /rooms/:code/votes     → principles: { principles, defenses } | final: { choice }
+ * POST   /rooms/:code/votes     → principles: { principles, defenses } | before|final: { choice }
  * GET    /rooms/:code/stream    → SSE snapshots
  * POST   /rooms/:code/stop|clear
  * GET    /health
@@ -25,12 +25,12 @@ const POLL_PASSWORD = String(process.env.POLL_PASSWORD || '');
 const ROOM_TTL_MS = Number(process.env.ROOM_TTL_MS || 6 * 60 * 60 * 1000);
 const CORS_HEADERS = 'Content-Type, ngrok-skip-browser-warning';
 
-/** @typedef {{ kind: 'principles'|'final'; open: boolean; votes: any[]; clients: Set<import('node:http').ServerResponse>; created: number }} Room */
+/** @typedef {{ kind: 'principles'|'final'|'before'; open: boolean; votes: any[]; clients: Set<import('node:http').ServerResponse>; created: number }} Room */
 
 /** @type {Map<string, Room>} */
 const rooms = new Map();
-/** @type {Record<'principles'|'final', string|null>} */
-const active = { principles: null, final: null };
+/** @type {Record<'principles'|'final'|'before', string|null>} */
+const active = { principles: null, final: null, before: null };
 
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 function makeCode() {
@@ -51,7 +51,13 @@ function ensureRoom(code) {
 }
 
 function parseKind(v) {
-  return v === 'final' ? 'final' : 'principles';
+  if (v === 'final') return 'final';
+  if (v === 'before') return 'before';
+  return 'principles';
+}
+
+function isChoiceKind(kind) {
+  return kind === 'final' || kind === 'before';
 }
 
 function prune() {
@@ -173,7 +179,7 @@ const server = http.createServer(async (req, res) => {
     const body = await readBody(req);
     if (body === null) return sendJson(res, 400, { error: 'invalid json' });
 
-    if (r.kind === 'final') {
+    if (isChoiceKind(r.kind)) {
       const choice = parseFinalChoice(body.choice);
       if (!choice) return sendJson(res, 400, { error: 'need one valid final choice' });
       r.votes.push({ choice, at: new Date().toISOString() });

@@ -1,7 +1,5 @@
 import { Fragment } from 'react';
 import {
-  AFTER,
-  BEFORE,
   NEG_LEAN,
   NEG_WHO,
   NEG_WHY,
@@ -14,13 +12,14 @@ import {
   type PolicyId,
 } from '../data/policies';
 import { useAppStore } from '../store/useAppStore';
+import { BeforeAfterBars } from './BeforeAfterBars';
 import { FinalVotePoll } from './FinalVotePoll';
 import { GroupPriorities } from './GroupPriorities';
 
 const STEPS = ['1 Principles', '2 Policy', '3 Negotiation', '4 Final vote', '5 Before and after'];
 
 export function EthicsCouncil() {
-  const { cStep: stp, cPri, cDef, cPol, cNegSel, cFinal, cls, vote, pollLocked, set } = useAppStore();
+  const { cStep: stp, cPri, cDef, cPol, cNegSel, cFinal, cBefore, cls, vote, pollLocked, set } = useAppStore();
   const pol = POLICIES.find((p) => p.id === cPol);
   const sel = cNegSel ?? { who: 'Listener' as NegWho, pid: 'B' as PolicyId };
   const selPol = POLICIES.find((p) => p.id === sel.pid)!;
@@ -168,24 +167,22 @@ export function EthicsCouncil() {
           <div className="g2">
             <div className="card">
               <div className="eyebrow">Your path</div>
-              <div>1. Classified “emotionally vulnerable”: <b>{cls.vuln || 'not answered'}</b></div>
-              <div>2. Trap vote: <b>{vote || 'not voted'}</b></div>
-              <div>3. Priorities: <b>{cPri.length ? cPri.join(', ') : 'none chosen'}</b></div>
-              <div>4. Policy: <b>{pol ? pol.name : 'none chosen'}</b></div>
-              <div>5. Final decision: <b>{cFinal || 'not decided'}</b></div>
+              <div>1. Before (gut check): <b>{cBefore || 'not voted'}</b></div>
+              <div>2. Classified “emotionally vulnerable”: <b>{cls.vuln || 'not answered'}</b></div>
+              <div>3. Trap vote: <b>{vote || 'not voted'}</b></div>
+              <div>4. Priorities: <b>{cPri.length ? cPri.join(', ') : 'none chosen'}</b></div>
+              <div>5. Policy: <b>{pol ? pol.name : 'none chosen'}</b></div>
+              <div>6. Final decision: <b>{cFinal || 'not decided'}</b></div>
+              {cBefore && cFinal && (
+                <div className="gap g">
+                  {cBefore === cFinal
+                    ? 'Your before and after votes match.'
+                    : `You moved: ${cBefore} → ${cFinal}.`}
+                </div>
+              )}
               <div className={'gap ' + covCls}><b>Policy-to-principle check:</b> {covMsg}</div>
             </div>
-            <div className="card">
-              <div className="eyebrow">Sample cohort: persona reveal → governance decision (illustrative)</div>
-              {BEFORE.map((b, i) => (
-                <div key={b[0]}>
-                  <div className="small">{b[0]}</div>
-                  <div className="row small"><span style={{ width: 60 }}>Before</span><div className="bar" style={{ flex: 1 }}><i className="b-v" style={{ width: b[1] + '%' }} /></div><span className="mono">{b[1]}%</span></div>
-                  <div className="row small"><span style={{ width: 60 }}>After</span><div className="bar" style={{ flex: 1 }}><i className="b-o" style={{ width: AFTER[i][1] + '%' }} /></div><span className="mono">{AFTER[i][1]}%</span></div>
-                </div>
-              ))}
-              <div className="small muted">Not real classroom data; no classroom backend exists.</div>
-            </div>
+            <BeforeAfterBars />
           </div>
           <GroupPriorities />
           <div className="card hi"><div className="disp h2">Who deserves an explanation, and when is an explanation simply not enough?</div></div>

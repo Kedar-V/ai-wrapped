@@ -95,10 +95,10 @@ export function tallyFinals(votes) {
 }
 
 /** @param {{ choice: string }[]} votes */
-export function snapshotFinal(votes, open) {
+export function snapshotFinal(votes, open, kind = 'final') {
   return {
     open: !!open,
-    kind: 'final',
+    kind: kind === 'before' ? 'before' : 'final',
     votes: votes.length,
     tally: tallyFinals(votes),
     defenses: [],
@@ -107,7 +107,7 @@ export function snapshotFinal(votes, open) {
 
 /** @param {{ kind?: string, votes: any[], open: boolean }} room */
 export function snapshotRoom(room) {
-  return room.kind === 'final'
-    ? snapshotFinal(room.votes, room.open)
+  return room.kind === 'final' || room.kind === 'before'
+    ? snapshotFinal(room.votes, room.open, room.kind)
     : snapshot(room.votes, room.open);
 }

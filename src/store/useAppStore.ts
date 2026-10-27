@@ -52,12 +52,16 @@ export interface AppState {
   /** Selected cell on the negotiation matrix. */
   cNegSel: { who: NegWho; pid: PolicyId } | null;
   cFinal: string;
+  /** Act I baseline ship vote (same options as cFinal). */
+  cBefore: string;
   discuss: boolean;
   ans: boolean;
   /** True after this browser submits its principles poll vote. */
   pollLocked: boolean;
   /** True after this browser submits its final deploy vote. */
   finalLocked: boolean;
+  /** True after this browser submits its before (baseline) ship vote. */
+  beforeLocked: boolean;
 }
 
 export function initState(): AppState {
@@ -67,8 +71,8 @@ export function initState(): AppState {
     stk: 'listener', corrected: false, restricted: false, delReq: false, purged: false, eng: null,
     adCamp: 'wellness', adStrat: 'behavioral', exStrat: 'engagement', audStep: 0, audCls: {},
     mView: 'current', mProp: null, asym: 0, trapStep: 0, vote: '', dGrid: null, dPre: 'current',
-    cStep: 1, cPri: [], cDef: {}, cPol: '', cNeg: 'B', cNegSel: { who: 'Listener', pid: 'B' }, cFinal: '', discuss: false, ans: false,
-    pollLocked: false, finalLocked: false,
+    cStep: 1, cPri: [], cDef: {}, cPol: '', cNeg: 'B', cNegSel: { who: 'Listener', pid: 'B' }, cFinal: '', cBefore: '', discuss: false, ans: false,
+    pollLocked: false, finalLocked: false, beforeLocked: false,
   };
 }
 
