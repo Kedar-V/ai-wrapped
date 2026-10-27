@@ -45,8 +45,15 @@ export function AccessMatrix() {
               </tr>
             ))}
           </tbody>
+          <tfoot>
+            <tr>
+              <td><b>Where power and understanding come apart</b></td>
+              {matrixGaps(M).map((g) => <td key={g.who} className={g.cls} style={{ verticalAlign: 'top', fontSize: 12 }}>{g.t}</td>)}
+            </tr>
+          </tfoot>
         </table>
       </div>
+      <div className="small muted">Gap row: red = open gap · orange = partly closed · green = closed. Switch to proposed access to see which gaps close.</div>
     </div>
   );
 }
