@@ -18,7 +18,7 @@ export function GroupPriorities() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
   const [password, setPassword] = useState(() => {
-    try { return sessionStorage.getItem('aiw.pollPassword') || ''; } catch { return ''; }
+    try { return sessionStorage.getItem('aiw.pollPassword') || 'ethics'; } catch { return 'ethics'; }
   });
 
   // Deep link (?room=) or wait for instructor's active poll

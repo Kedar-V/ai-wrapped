@@ -21,7 +21,7 @@ import {
 
 const PORT = Number(process.env.PORT || 8787);
 const CORS = process.env.CORS_ORIGIN || '*';
-const POLL_PASSWORD = String(process.env.POLL_PASSWORD || '');
+const POLL_PASSWORD = String(process.env.POLL_PASSWORD || 'ethics');
 const ROOM_TTL_MS = Number(process.env.ROOM_TTL_MS || 6 * 60 * 60 * 1000);
 const CORS_HEADERS = 'Content-Type, ngrok-skip-browser-warning';
 

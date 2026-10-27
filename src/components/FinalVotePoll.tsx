@@ -41,7 +41,7 @@ export function FinalVotePoll({ kind = 'final' }: { kind?: ShipKind }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
   const [password, setPassword] = useState(() => {
-    try { return sessionStorage.getItem('aiw.pollPassword') || ''; } catch { return ''; }
+    try { return sessionStorage.getItem('aiw.pollPassword') || 'ethics'; } catch { return 'ethics'; }
   });
 
   const setChoice = (name: string) =>

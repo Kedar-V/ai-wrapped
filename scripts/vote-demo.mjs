@@ -5,7 +5,6 @@
  *
  * Requires: ngrok installed and logged in (`ngrok config add-authtoken …`).
  */
-import { randomBytes } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { setTimeout as sleep } from 'node:timers/promises';
@@ -14,8 +13,8 @@ const PORT = Number(process.env.PORT || 8787);
 const PAGES =
   process.env.PAGES_URL || 'https://kedar-v.github.io/ai-wrapped/';
 const NGROK_API = 'http://127.0.0.1:4040/api/tunnels';
-// Instructor-only; not committed. Override with POLL_PASSWORD=… npm run vote:demo
-const POLL_PASSWORD = process.env.POLL_PASSWORD || randomBytes(4).toString('hex');
+// Classroom default. Override with POLL_PASSWORD=… npm run vote:demo
+const POLL_PASSWORD = process.env.POLL_PASSWORD || 'ethics';
 
 
 function run(cmd, args, opts = {}) {

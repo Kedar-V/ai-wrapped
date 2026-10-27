@@ -28,10 +28,10 @@ Frontend stays on Pages ([https://kedar-v.github.io/ai-wrapped/](https://kedar-v
 ```bash
 # once: https://ngrok.com/download  then  ngrok config add-authtoken <token>
 npm run vote:demo
-# optional fixed password: POLL_PASSWORD='your-secret' npm run vote:demo
+# override: POLL_PASSWORD='your-secret' npm run vote:demo
 ```
 
-Open the printed class link. The terminal shows an **instructor password** (keep it private). **Start poll** / **New poll** ask for that password; students can vote but cannot reset. Keep that terminal open until the session ends (`Ctrl+C`).
+Open the printed class link. Instructor password defaults to **`ethics`** (override with `POLL_PASSWORD`). **Start poll** / **New poll** ask for that password; students can vote but cannot reset. Keep that terminal open until the session ends (`Ctrl+C`).
 
 ### Local only
 
