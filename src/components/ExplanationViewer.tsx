@@ -1,8 +1,8 @@
 import { FD, FE, FL, REF, W } from '../data/model';
-import { FIT_LABELS, FORMATS, STK } from '../data/stakeholders';
 import { useProfile } from '../hooks';
 import { useAppStore } from '../store/useAppStore';
 import { DataLineageGraph } from './DataLineageGraph';
+import { FitMatrix } from './FitMatrix';
 
 const pts = (r: number) => (Math.round(r * 10) / 10).toFixed(1);
 
@@ -16,10 +16,8 @@ const LEVELS: [1 | 2 | 3 | 4, string][] = [[1, '1 · Plain language'], [2, '2 ·
 
 export function ExplanationViewer() {
   const { F, B, score, thr } = useProfile();
-  const { xMode, level, featSel, xStk, set } = useAppStore();
+  const { xMode, level, featSel, set } = useAppStore();
   const fc = B.c.find((c) => c.k === featSel)!;
-  const stkIdx = STK.findIndex((x) => x.id === xStk);
-  const stk = STK[stkIdx];
   return (
     <>
       <div className="row">
@@ -105,28 +103,7 @@ export function ExplanationViewer() {
         </>
       )}
 
-      {xMode === 'compare' && (
-        <div className="card pop">
-          <div className="eyebrow">Q2 · explanation selector · more detail is not always better</div>
-          <div className="row" role="group" aria-label="Stakeholder">
-            {STK.map((x) => <button key={x.id} className={'chip' + (xStk === x.id ? ' on' : '')} aria-pressed={xStk === x.id} onClick={() => set({ xStk: x.id })}>{x.label}</button>)}
-          </div>
-          <div className="gap g"><b>{stk.label} needs:</b> {stk.need}</div>
-          <div className="scroll">
-            <table className="tbl">
-              <thead><tr><th>Format</th><th>Reveals</th><th>Does not reveal</th><th>Useful to</th><th>Supports action?</th><th>Fit for {stk.label}</th></tr></thead>
-              <tbody>
-                {FORMATS.map((f) => (
-                  <tr key={f.f}>
-                    <td><b>{f.f}</b></td><td>{f.rev}</td><td>{f.hide}</td><td>{f.who}</td><td>{f.act}</td>
-                    <td><span className="mono" style={{ color: '#1DF08A', fontSize: 18 }} aria-hidden="true">{'●'.repeat(f.fit[stkIdx]) + '○'.repeat(3 - f.fit[stkIdx])}</span><div className="small muted">{FIT_LABELS[f.fit[stkIdx]]}</div></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      {xMode === 'compare' && <FitMatrix />}
     </>
   );
 }
