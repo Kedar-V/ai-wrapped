@@ -1,4 +1,4 @@
-import { FD, FE, FL, MODEL, REF, W } from '../data/model';
+import { FD, FE, FL, REF, W } from '../data/model';
 import { FIT_LABELS, FORMATS, STK } from '../data/stakeholders';
 import { useProfile } from '../hooks';
 import { useAppStore } from '../store/useAppStore';
@@ -7,7 +7,6 @@ import { DataLineageGraph } from './DataLineageGraph';
 const pts = (r: number) => (Math.round(r * 10) / 10).toFixed(1);
 
 const RULE_TEXT = [
-  'RULE vuln_flag  ' + MODEL, '',
   ...FE.map((k, i) => `${'nlrp'[i]} = min(${['night_pct', 'lowenergy_pct', 'romantic_playlist_pct', 'repeat_pct'][i]} / ${REF[k]}, 1)`), '',
   `score = 100 x (${FE.map((k, i) => `${W[k].toFixed(2)}*${'nlrp'[i]}`).join(' + ')})`, '',
   'IF score >= 70 THEN', '  label   = "Potentially Emotionally Vulnerable"', '  segment = "Evening Reflective · Wellness"  (exported)', '  weights chosen by hand; no clinical validation',
@@ -71,7 +70,7 @@ export function ExplanationViewer() {
 
           {level === 3 && (
             <div className="card pop">
-              <div className="eyebrow">Level 3 · technical explanation · {MODEL}</div>
+              <div className="eyebrow">Level 3 · technical explanation</div>
               <div className="scroll">
                 <table className="tbl">
                   <thead><tr><th>Input</th><th>Raw</th><th>Transform</th><th>Normalized</th><th>Weight</th><th>Points</th><th style={{ minWidth: 160 }}>Contribution</th></tr></thead>
@@ -94,10 +93,10 @@ export function ExplanationViewer() {
               <div className="card pop"><div className="eyebrow">Level 4 · the complete rule (fully understandable)</div><pre className="code" style={{ margin: 0 }}>{RULE_TEXT}</pre></div>
               <div className="card">
                 <div className="h3">Data lineage</div>
-                <DataLineageGraph vertical label="Data lineage" nodes={['Player events', 'Feature extraction (nightly)', 'Rule vuln_flag v0.3', 'Profile label', 'Segment export → ad platform'].map((t) => ({ t, cls: 'ok' as const }))} />
+                <DataLineageGraph vertical label="Data lineage" nodes={['Player events', 'Feature extraction (nightly)', 'Scoring rule', 'Profile label', 'Segment export → ad platform'].map((t) => ({ t, cls: 'ok' as const }))} />
                 <div className="h3">Intended use</div><div>Content personalization and wellness-category ad targeting.</div>
                 <div className="h3">Known limitations</div>
-                {['No clinical or empirical validation of the weights or threshold', 'Weights set by hand from product intuition (Feb 2026)', 'Confounds: shift work, genre taste, playlists made for others, time zone', 'No labeled ground truth exists to test accuracy'].map((l) => <div key={l} className="small">• {l}</div>)}
+                {['No clinical or empirical validation of the weights or threshold', 'Weights set by hand from product intuition', 'Confounds: shift work, genre taste, playlists made for others, time zone', 'No labeled ground truth exists to test accuracy'].map((l) => <div key={l} className="small">• {l}</div>)}
                 <div className="h3">Downstream recipients</div>
                 {['Recommendation engine', 'Ad platform segment “Evening Reflective · Wellness”', 'Calm Harbor wellness subscription campaign (fictional)'].map((l) => <div key={l} className="small">→ {l}</div>)}
               </div>

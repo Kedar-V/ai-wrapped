@@ -1,4 +1,4 @@
-import { FE, FL, MODEL, TH } from '../data/model';
+import { FE, FL, TH } from '../data/model';
 import { useProfile } from '../hooks';
 import { scoreOf } from '../lib/scoring';
 import { useAppStore } from '../store/useAppStore';
@@ -45,7 +45,7 @@ export function EngineerDashboard() {
       <div className="card">
         <div className="h3">Four checks</div>
         {CHECKS.map((c) => <div key={c.name} className={'gap ' + c.cls}><b>{c.name}:</b> {c.status}<div className="small">{c.note}</div></div>)}
-        <div className="small muted">Model {MODEL} · diagnostics: unit tests 14/14 pass · calibration against labeled ground truth: <b>not available</b></div>
+        <div className="small muted">Diagnostics: unit tests 14/14 pass · calibration against labeled ground truth: <b>not available</b></div>
       </div>
     </div>
   );
