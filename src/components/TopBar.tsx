@@ -2,9 +2,8 @@ import { ACTS, SCREENS } from '../data/scripts';
 import { useAppStore } from '../store/useAppStore';
 
 export function TopBar() {
-  const { screen, from, present, go, set, reset } = useAppStore();
-  const baseIdx = Math.max(0, SCREENS.indexOf(screen === 'instructor' ? (from === 'instructor' ? 'welcome' : from) : screen));
-  const inInstructor = screen === 'instructor';
+  const { screen, present, go, set, reset } = useAppStore();
+  const baseIdx = Math.max(0, SCREENS.indexOf(screen));
 
   const togglePresent = () => {
     const n = !present;
@@ -23,7 +22,7 @@ export function TopBar() {
         <div className="brand disp">AI Wrapped</div>
         <nav className="acts" aria-label="Experience progress">
           {ACTS.map((a) => {
-            const on = a.screens.includes(SCREENS[baseIdx]) && !inInstructor;
+            const on = a.screens.includes(SCREENS[baseIdx]);
             const done = SCREENS.indexOf(a.screens[a.screens.length - 1]) < baseIdx;
             const status = on ? 'current' : done ? 'done' : 'upcoming';
             return (
@@ -38,7 +37,6 @@ export function TopBar() {
         </nav>
         <div className="sp" />
         <button className="btn ghost sm" onClick={togglePresent} aria-pressed={present}>{present ? 'Exit classroom view' : 'Classroom view'}</button>
-        <button className="btn ghost sm" onClick={() => go('instructor')} aria-pressed={inInstructor}>Instructor mode</button>
         <button className="btn ghost sm" onClick={reset}>Reset demo</button>
       </header>
       <div className="pbar" role="progressbar" aria-label="Progress through the session" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(((baseIdx + 1) / SCREENS.length) * 100)}>

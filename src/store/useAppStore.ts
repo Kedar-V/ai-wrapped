@@ -3,14 +3,12 @@ import type { Grid, PresetId } from '../data/disclosure';
 import type { Cell } from '../data/matrix';
 import type { PersonaId } from '../data/personas';
 import type { NegWho, PolicyId } from '../data/policies';
-import type { AnyScreen } from '../data/scripts';
+import type { ScreenId } from '../data/scripts';
 import type { StakeholderId } from '../data/stakeholders';
 import type { Features } from '../data/model';
 
 export interface AppState {
-  screen: AnyScreen;
-  /** Last non-instructor screen, so Instructor mode can return. */
-  from: AnyScreen;
+  screen: ScreenId;
   persona: PersonaId;
   roadmap: boolean;
   present: boolean;
@@ -62,8 +60,6 @@ export interface AppState {
   cFinal: string;
   /** Act I baseline ship vote (same options as cFinal). */
   cBefore: string;
-  discuss: boolean;
-  ans: boolean;
   /** True after this browser submits its principles poll vote. */
   pollLocked: boolean;
   /** True after this browser submits its final deploy vote. */
@@ -76,22 +72,20 @@ export interface AppState {
 
 export function initState(): AppState {
   return {
-    screen: 'welcome', from: 'welcome', persona: 'A', roadmap: false, present: false, wStep: 0, cls: {},
+    screen: 'welcome', persona: 'A', roadmap: false, present: false, wStep: 0, cls: {},
     xStage: 'pre', conf0: 50, conf1: 50, pred: '', act: '', xMode: 'levels', level: 1, xStk: 'listener', featSel: 'night',
     stk: 'listener', corrected: false, restricted: false, delReq: false, purged: false,
     labCor: false, labRes: false, labDel: false, labExp: false, exPurged: false, eng: null,
     adCamp: 'wellness', adStrat: 'behavioral', exStrat: 'engagement', audStep: 0, audCls: {},
     mView: 'current', mProp: null, asym: 0, trapStep: 0, vote: '', dGrid: null, dPre: 'current',
-    cStep: 1, cPri: [], cDef: {}, cPol: '', cNeg: 'B', cNegSel: { who: 'Listener', pid: 'B' }, cFinal: '', cBefore: '', discuss: false, ans: false,
+    cStep: 1, cPri: [], cDef: {}, cPol: '', cNeg: 'B', cNegSel: { who: 'Listener', pid: 'B' }, cFinal: '', cBefore: '',
     pollLocked: false, finalLocked: false, beforeLocked: false, trapLocked: false,
   };
 }
 
 interface Actions {
   set: (patch: Partial<AppState>) => void;
-  /** Change persona and clear everything derived from the previous persona. */
-  /** Navigate; remembers the last real screen so Instructor mode can return. */
-  go: (screen: AnyScreen) => void;
+  go: (screen: ScreenId) => void;
   pickPersona: (id: PersonaId) => void;
   reset: () => void;
 }
@@ -102,7 +96,6 @@ export const useAppStore = create<AppState & Actions>((set) => ({
   go: (screen) =>
     set((st) => ({
       screen,
-      from: screen === 'instructor' ? (st.screen === 'instructor' ? st.from : st.screen) : screen,
       // Re-entering Explain always starts at step 1; in-screen Back handles earlier stages.
       ...(screen === 'explain' && st.screen !== 'explain' ? { xStage: 'pre' as const, pred: '' as const, act: '' as const } : {}),
     })),

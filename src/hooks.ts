@@ -10,7 +10,7 @@ import { TH } from './data/model';
 /** Apply the current hash to the store. Call before first render so deep links survive. */
 export function syncFromHash() {
   let k = window.location.hash.replace(/^#\/?/, '').split('?')[0];
-  if (k === 'persona') k = 'wrapped'; // removed; everyone uses Persona A
+  if (k === 'persona' || k === 'instructor') k = 'wrapped'; // removed screens
   if (isScreen(k) && k !== useAppStore.getState().screen) useAppStore.getState().go(k);
 }
 

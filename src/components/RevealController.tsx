@@ -28,7 +28,7 @@ export function RevealController() {
         <button className="btn pink" onClick={() => set({ trapStep: Math.min(6, t + 1) })} disabled={done}>{done ? 'All reveals shown' : t === 0 ? 'Start the reveal' : 'Reveal next'}</button>
         <button className="btn ghost" onClick={() => set({ trapStep: Math.max(0, t - 1) })} disabled={t === 0}>Hide last reveal</button>
         <button className="btn ghost" onClick={() => set({ trapStep: 0 })}>Restart sequence</button>
-        <span className="muted small">Reveal {t} of 6 · controlled by the instructor</span>
+        <span className="muted small">Reveal {t} of 6</span>
       </div>
       <div className="col" aria-live="polite">
         {cards.filter((c) => t >= c.n).map((c) => (

@@ -1,22 +1,20 @@
-import { SCREENS, SCR } from '../data/scripts';
+import { SCREENS, activeScript } from '../data/scripts';
 import { useAppStore } from '../store/useAppStore';
 
 const X_BACK = { result: 'predict', predict: 'explain', explain: 'pre' } as const;
 
 export function Footer() {
-  const { screen, from, go, reset, cBefore, vote, xStage, set } = useAppStore();
-  const idx = SCREENS.indexOf(screen as (typeof SCREENS)[number]);
-  const meta = SCR[screen];
+  const { screen, go, reset, cBefore, vote, xStage, set, trapStep, cStep } = useAppStore();
+  const idx = SCREENS.indexOf(screen);
+  const meta = activeScript(screen, { trapStep, cStep });
   const nextBlocked = (screen === 'baseline' && !cBefore) || (screen === 'trapVote' && !vote);
   const next = () => {
     if (nextBlocked) return;
-    if (screen === 'instructor') go(from);
-    else if (screen === 'council') reset();
+    if (screen === 'council') reset();
     else go(SCREENS[idx + 1]);
   };
   const back = () => {
-    if (screen === 'instructor') go(from);
-    else if (screen === 'explain' && xStage !== 'pre') set({ xStage: X_BACK[xStage] });
+    if (screen === 'explain' && xStage !== 'pre') set({ xStage: X_BACK[xStage] });
     else if (idx > 0) go(SCREENS[idx - 1]);
   };
   return (
