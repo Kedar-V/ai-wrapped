@@ -39,7 +39,7 @@ export function useProfile() {
   return { P, F, B, flagged: B.flag, score: Math.round(B.total), thr: TH };
 }
 
-/** Listener actions shared by the Lab and the Trap's remedy lanes. */
+/** Trap remedy lanes (Lab Listener uses its own lab* state). */
 export function useListenerActions() {
   const { corrected, restricted, delReq, set } = useAppStore();
   return {

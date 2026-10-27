@@ -43,7 +43,7 @@ export function EngineerDashboard() {
         <div className="small muted">Sandbox only: the live model and every other view are unchanged.</div>
       </div>
       <div className="card">
-        <div className="h3">Four different questions</div>
+        <div className="h3">Four checks</div>
         {CHECKS.map((c) => <div key={c.name} className={'gap ' + c.cls}><b>{c.name}:</b> {c.status}<div className="small">{c.note}</div></div>)}
         <div className="small muted">Model {MODEL} · diagnostics: unit tests 14/14 pass · calibration against labeled ground truth: <b>not available</b></div>
       </div>
