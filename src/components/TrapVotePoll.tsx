@@ -22,7 +22,7 @@ export function TrapVotePoll() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState('');
   const [password, setPassword] = useState(() => {
-    try { return sessionStorage.getItem('aiw.pollPassword') || 'ethics'; } catch { return 'ethics'; }
+    try { return sessionStorage.getItem('aiw.pollPassword') || ''; } catch { return ''; }
   });
 
   useEffect(() => {
