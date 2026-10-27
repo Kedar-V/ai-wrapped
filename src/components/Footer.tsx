@@ -2,10 +2,10 @@ import { SCREENS, SCR } from '../data/scripts';
 import { useAppStore } from '../store/useAppStore';
 
 export function Footer() {
-  const { screen, from, go, reset, cBefore } = useAppStore();
+  const { screen, from, go, reset, cBefore, vote } = useAppStore();
   const idx = SCREENS.indexOf(screen as (typeof SCREENS)[number]);
   const meta = SCR[screen];
-  const nextBlocked = screen === 'baseline' && !cBefore;
+  const nextBlocked = (screen === 'baseline' && !cBefore) || (screen === 'trapVote' && !vote);
   const next = () => {
     if (nextBlocked) return;
     if (screen === 'instructor') go(from);
@@ -25,7 +25,11 @@ export function Footer() {
       <div className="row">
         <button className="btn ghost" onClick={back} disabled={screen === 'welcome'}>Back</button>
         <button className="btn pri" onClick={next} disabled={nextBlocked}>{meta.next}</button>
-        {nextBlocked && <span className="small muted">Cast your before vote to continue.</span>}
+        {nextBlocked && (
+          <span className="small muted">
+            {screen === 'trapVote' ? 'Pick a trap vote to continue.' : 'Cast your before vote to continue.'}
+          </span>
+        )}
       </div>
     </footer>
   );

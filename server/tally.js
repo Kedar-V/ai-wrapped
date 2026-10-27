@@ -1,6 +1,6 @@
 import { PRINCIPLES, VALID } from './principles.js';
 
-/** Final vote options (Ethics Council step 4). */
+/** Final / before ship vote options (Ethics Council + Act I). */
 export const FINALS = [
   'Deploy',
   'Deploy with restrictions',
@@ -8,6 +8,15 @@ export const FINALS = [
   'Do not deploy',
 ];
 export const VALID_FINAL = new Set(FINALS);
+
+/** Trap ethics vote options. */
+export const TRAPS = [
+  'Yes',
+  'No',
+  'Only with safeguards',
+  'Need more information',
+];
+export const VALID_TRAP = new Set(TRAPS);
 
 /**
  * Validate a vote: exactly three distinct known principles.
@@ -74,20 +83,21 @@ export function snapshot(votes, open) {
   };
 }
 
-/** @param {unknown} choice */
-export function parseFinalChoice(choice) {
+/** @param {unknown} choice @param {'final'|'before'|'trap'} [kind] */
+export function parseFinalChoice(choice, kind = 'final') {
   const c = String(choice || '').trim();
-  return VALID_FINAL.has(c) ? c : null;
+  const valid = kind === 'trap' ? VALID_TRAP : VALID_FINAL;
+  return valid.has(c) ? c : null;
 }
 
-/** @param {{ choice: string }[]} votes */
-export function tallyFinals(votes) {
-  const counts = Object.fromEntries(FINALS.map((n) => [n, 0]));
+/** @param {{ choice: string }[]} votes @param {string[]} options */
+export function tallyChoices(votes, options) {
+  const counts = Object.fromEntries(options.map((n) => [n, 0]));
   for (const v of votes) {
     if (v.choice in counts) counts[v.choice] += 1;
   }
   const n = votes.length;
-  return FINALS.map((name) => ({
+  return options.map((name) => ({
     name,
     count: counts[name],
     pct: n ? Math.round((counts[name] / n) * 100) : 0,
@@ -95,19 +105,25 @@ export function tallyFinals(votes) {
 }
 
 /** @param {{ choice: string }[]} votes */
+export function tallyFinals(votes) {
+  return tallyChoices(votes, FINALS);
+}
+
+/** @param {{ choice: string }[]} votes @param {boolean} open @param {'final'|'before'|'trap'} [kind] */
 export function snapshotFinal(votes, open, kind = 'final') {
+  const options = kind === 'trap' ? TRAPS : FINALS;
   return {
     open: !!open,
-    kind: kind === 'before' ? 'before' : 'final',
+    kind,
     votes: votes.length,
-    tally: tallyFinals(votes),
+    tally: tallyChoices(votes, options),
     defenses: [],
   };
 }
 
 /** @param {{ kind?: string, votes: any[], open: boolean }} room */
 export function snapshotRoom(room) {
-  return room.kind === 'final' || room.kind === 'before'
+  return room.kind === 'final' || room.kind === 'before' || room.kind === 'trap'
     ? snapshotFinal(room.votes, room.open, room.kind)
     : snapshot(room.votes, room.open);
 }

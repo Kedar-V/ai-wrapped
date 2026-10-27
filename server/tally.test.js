@@ -53,4 +53,15 @@ describe('final vote', () => {
     assert.equal(snap.tally.find((x) => x.name === 'Deploy')?.count, 2);
     assert.equal(snap.tally.find((x) => x.name === 'Redesign')?.count, 1);
   });
+  it('parses trap ethics choices', () => {
+    assert.equal(parseFinalChoice('Only with safeguards', 'trap'), 'Only with safeguards');
+    assert.equal(parseFinalChoice('Deploy', 'trap'), null);
+    const snap = snapshotFinal(
+      [{ choice: 'No' }, { choice: 'Yes' }, { choice: 'No' }],
+      true,
+      'trap',
+    );
+    assert.equal(snap.kind, 'trap');
+    assert.equal(snap.tally.find((x) => x.name === 'No')?.count, 2);
+  });
 });

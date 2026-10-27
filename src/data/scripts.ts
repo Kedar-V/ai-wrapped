@@ -1,4 +1,4 @@
-export const SCREENS = ['welcome', 'wrapped', 'think', 'baseline', 'explain', 'lab', 'matrix', 'trap', 'disclosure', 'council'] as const;
+export const SCREENS = ['welcome', 'wrapped', 'think', 'baseline', 'explain', 'lab', 'matrix', 'trap', 'trapVote', 'disclosure', 'council'] as const;
 export type ScreenId = (typeof SCREENS)[number];
 export type AnyScreen = ScreenId | 'instructor';
 
@@ -8,7 +8,7 @@ export const ACTS: { id: string; label: string; screens: ScreenId[]; time: strin
   { id: 'I', label: 'Your AI Wrapped', screens: ['welcome', 'wrapped', 'think', 'baseline'], time: '0–3 min', q: 'Q1 · Q2' },
   { id: 'II', label: 'Explain My Profile', screens: ['explain'], time: '3–7 min', q: 'Q2 · Q5' },
   { id: 'III', label: 'Stakeholder Lab', screens: ['lab', 'matrix'], time: '7–13 min', q: 'Q1 · Q2 · Q3' },
-  { id: 'IV', label: 'Explanation Trap', screens: ['trap', 'disclosure'], time: '13–18 min', q: 'Q3 · Q4 · Q6' },
+  { id: 'IV', label: 'Explanation Trap', screens: ['trap', 'trapVote', 'disclosure'], time: '13–18 min', q: 'Q3 · Q4 · Q6' },
   { id: 'V', label: 'Ethics Council', screens: ['council'], time: '18–25 min', q: 'Q4 · Q6 · Q7' },
 ];
 
@@ -34,7 +34,8 @@ export const SCR: Record<AnyScreen, ScreenMeta> = {
   explain: { label: 'Explain My Profile', time: '3:00', mins: 4, q: [2, 5], prompt: 'Did the explanation make you more confident, or more correct? Are those the same thing?', next: 'Enter the Stakeholder Lab', demo: 'Take the confidence reading, show the four levels, then the 61% → 15% prediction.', ask: 'If night listening drops to 15%, does the label disappear?', expect: 'Most predict it disappears. It stays: the rule is a weighted sum and other features compensate.', reveal: 'Same profile through four different roles.', principle: 'Explainability is not understanding' },
   lab: { label: 'Stakeholder Lab', time: '7:00', mins: 4, q: [1, 2, 3], prompt: 'Should an AI platform know something about you that you never told it? Who among these four can act on it?', next: 'Compare access side by side', demo: 'Walk Listener → Engineer → Executive → Auditor. Each role stands alone: nothing one role does appears in another, so groups can work in parallel on separate devices.', ask: 'Who can change the system and who is only affected by it?', expect: 'Listener can edit a label but not the segment; executive holds deployment authority.', reveal: 'Access matrix and information asymmetry.', principle: 'Accountability' },
   matrix: { label: 'Access matrix', time: '11:00', mins: 2, q: [1, 3], prompt: 'Who can decide without understanding, and who is affected without the power to challenge?', next: 'Trigger the Explanation Trap', demo: 'Reveal asymmetry layers, then edit the proposed permissions and read the gaps panel.', ask: 'What would you change first in the proposed column?', expect: 'Give listeners provenance and real correction authority; give auditors protected access.', reveal: 'The Explanation Trap.', principle: 'Effective recourse' },
-  trap: { label: 'Explanation Trap', time: '13:00', mins: 3, q: [3, 6], prompt: 'The algorithm was transparent. The explanation was faithful. Was the system ethical?', next: 'Set disclosure rules', demo: 'Reveal one step at a time, letting the room react. Pause on reveal 4 (validity) and reveal 6 (accountability gap).', ask: 'What changed between reveal 3 and reveal 4?', expect: 'Faithfulness is not validity. Perfect interpretability does not justify the use.', reveal: 'Disclosure simulator.', principle: 'Validity and purpose limitation' },
+  trap: { label: 'Explanation Trap', time: '13:00', mins: 3, q: [3, 6], prompt: 'The algorithm was transparent. The explanation was faithful. Was the system ethical?', next: 'Vote: was it ethical?', demo: 'Reveal one step at a time, letting the room react. Pause on reveal 4 (validity) and reveal 6 (accountability gap).', ask: 'What changed between reveal 3 and reveal 4?', expect: 'Faithfulness is not validity. Perfect interpretability does not justify the use.', reveal: 'Trap ethics vote.', principle: 'Validity and purpose limitation' },
+  trapVote: { label: 'Was it ethical?', time: '15:30', mins: 1, q: [6], prompt: 'The algorithm was transparent. The explanation was faithful. Was the system ethical?', next: 'Set disclosure rules', demo: 'Start a trap poll. Students pick Yes / No / Only with safeguards / Need more information once.', ask: 'What would make the system ethical, if anything?', expect: 'Most lean No or Only with safeguards after the six reveals.', reveal: 'Disclosure simulator.', principle: 'Validity and purpose limitation' },
   disclosure: { label: 'Disclosure simulator', time: '16:00', mins: 2, q: [3, 4], prompt: 'Who should see what, and why is “make it all public” not the answer?', next: 'Convene the Ethics Council', demo: 'Start from Maximum public, then move to Balanced. Read the trade-off notes aloud.', ask: 'What does public release risk that protected auditor access does not?', expect: 'Gaming, privacy exposure, proprietary leakage.', reveal: 'Ethics Council.', principle: 'Proportionate transparency' },
   council: { label: 'Ethics Council', time: '18:00', mins: 7, q: [4, 6, 7], prompt: 'Who deserves an explanation, and when is an explanation simply not enough?', next: 'Back to start', demo: 'Principles → policy → negotiation → vote → before/after.', ask: 'Defend your top two or three priorities against someone who chose differently.', expect: 'Validity, recourse and data minimization often outrank transparency once the trap is understood.', reveal: 'Close with the final question.', principle: 'Responsible data science design' },
   instructor: { label: 'Instructor mode', time: '', mins: 0, q: [], prompt: 'Pick a stage and a stakeholder, then launch a discussion question.', next: 'Return to the experience', demo: '', ask: '', expect: '', reveal: '', principle: '' },
@@ -49,6 +50,7 @@ export const BGS: Record<AnyScreen, string> = {
   lab: 'linear-gradient(180deg,#140B28,#0E0919)',
   matrix: 'linear-gradient(180deg,#130A26,#0D0817)',
   trap: 'radial-gradient(900px 500px at 50% -10%,#4A0F2C 0%,#12060F 60%,#0A040A 100%)',
+  trapVote: 'radial-gradient(900px 500px at 50% -10%,#4A0F2C 0%,#12060F 60%,#0A040A 100%)',
   disclosure: 'radial-gradient(900px 500px at 20% -10%,#3A0E26 0%,#12060F 60%,#0A040A 100%)',
   council: 'radial-gradient(900px 500px at 70% -10%,#4A2410 0%,#140A08 60%,#0A0505 100%)',
   instructor: 'linear-gradient(180deg,#101018,#0A0A12)',

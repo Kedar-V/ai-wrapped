@@ -1,11 +1,10 @@
-import { TRAPVOTES } from '../data/policies';
 import { useListenerActions, useProfile } from '../hooks';
 import { useAppStore } from '../store/useAppStore';
 import { Lane, type LaneCls } from './ListenerDashboard';
 
 export function RevealController() {
   const { F, B } = useProfile();
-  const { trapStep: t, vote, purged, set } = useAppStore();
+  const { trapStep: t, purged, set, go } = useAppStore();
   const a = useListenerActions();
   const sc = Math.round(B.total);
   const done = t >= 6;
@@ -23,13 +22,12 @@ export function RevealController() {
     { n: 5, title: 'The downstream consequence', head: 'The label became an advertising audience', body: 'The inferred segment (“Evening Reflective · Wellness”, 412,000 listeners) was offered to Calm Harbor’s wellness subscription campaign. The listener was not clearly told a personal inference would be used this way.', lanes: false },
     { n: 6, title: 'The accountability gap', head: 'Fixing the label does not fix the harm', body: 'The listener can remove the label from their dashboard, but a previously exported advertising segment is not automatically removed. These are four different remedies:', lanes: true },
   ];
-  const tot = TRAPVOTES.reduce((x, y) => x + y[1], 0) + (vote ? 1 : 0);
   return (
     <>
       <div className="row">
         <button className="btn pink" onClick={() => set({ trapStep: Math.min(6, t + 1) })} disabled={done}>{done ? 'All reveals shown' : t === 0 ? 'Start the reveal' : 'Reveal next'}</button>
         <button className="btn ghost" onClick={() => set({ trapStep: Math.max(0, t - 1) })} disabled={t === 0}>Hide last reveal</button>
-        <button className="btn ghost" onClick={() => set({ trapStep: 0, vote: '' })}>Restart sequence</button>
+        <button className="btn ghost" onClick={() => set({ trapStep: 0 })}>Restart sequence</button>
         <span className="muted small">Reveal {t} of 6 · controlled by the instructor</span>
       </div>
       <div className="col" aria-live="polite">
@@ -52,20 +50,9 @@ export function RevealController() {
         ))}
       </div>
       {done && (
-        <div className="card hi pop" style={{ borderColor: '#FF4F7A' }}>
-          <div className="eyebrow" style={{ color: '#FF9DC6' }}>Final reveal question</div>
-          <div className="disp h2" style={{ fontSize: 'clamp(32px,5vw,64px)' }}>The algorithm was transparent. The explanation was faithful. Was the system ethical?</div>
-          <div className="g4" role="group" aria-label="Your vote">
-            {TRAPVOTES.map((v) => {
-              const pct = Math.round(((v[1] + (vote === v[0] ? 1 : 0)) / tot) * 100);
-              return (
-                <button key={v[0]} className={'vote' + (vote === v[0] ? ' on' : '')} aria-pressed={vote === v[0]} onClick={() => set({ vote: v[0] })}>
-                  <b>{v[0]}</b><span className="bar"><i className="b-p" style={{ width: pct + '%' }} /></span><span className="mono small">{pct}%</span>
-                </button>
-              );
-            })}
-          </div>
-          <div className="small muted">Sample results (illustrative, n=100) plus your local vote. No classroom backend exists in this prototype.</div>
+        <div className="row">
+          <button className="btn pri" onClick={() => go('trapVote')}>Continue to trap vote</button>
+          <span className="small muted">Next: was the system ethical?</span>
         </div>
       )}
     </>

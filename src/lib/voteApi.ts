@@ -16,7 +16,7 @@ export interface LiveSnapshot {
   defenses?: LiveDefense[];
 }
 
-export type PollKind = 'principles' | 'final' | 'before';
+export type PollKind = 'principles' | 'final' | 'before' | 'trap';
 
 const DEFAULT = 'http://localhost:8787';
 const ROOM_KEY = 'aiw.voteRoom';

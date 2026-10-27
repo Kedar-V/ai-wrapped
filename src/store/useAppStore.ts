@@ -70,6 +70,8 @@ export interface AppState {
   finalLocked: boolean;
   /** True after this browser submits its before (baseline) ship vote. */
   beforeLocked: boolean;
+  /** True after this browser submits its trap ethics vote. */
+  trapLocked: boolean;
 }
 
 export function initState(): AppState {
@@ -81,7 +83,7 @@ export function initState(): AppState {
     adCamp: 'wellness', adStrat: 'behavioral', exStrat: 'engagement', audStep: 0, audCls: {},
     mView: 'current', mProp: null, asym: 0, trapStep: 0, vote: '', dGrid: null, dPre: 'current',
     cStep: 1, cPri: [], cDef: {}, cPol: '', cNeg: 'B', cNegSel: { who: 'Listener', pid: 'B' }, cFinal: '', cBefore: '', discuss: false, ans: false,
-    pollLocked: false, finalLocked: false, beforeLocked: false,
+    pollLocked: false, finalLocked: false, beforeLocked: false, trapLocked: false,
   };
 }
 

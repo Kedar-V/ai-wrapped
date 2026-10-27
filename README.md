@@ -15,7 +15,7 @@ npm test        # Vitest
 
 ## Flow
 
-`welcome → wrapped → think → baseline → explain → lab → matrix → trap → disclosure → council`, plus Instructor mode. Everyone uses Persona A (The Midnight Romantic). Routes are hash based (`#/welcome`, `#/trap`, …) and stay in sync with the store. Use **Instructor mode** in the top bar for stage jumps, stakeholder switching, trap reveals, discussion questions and the facilitator script. **Classroom view** scales the UI ~12% and requests fullscreen. **Reset demo** restores the initial state.
+`welcome → wrapped → think → baseline → explain → lab → matrix → trap → trapVote → disclosure → council`, plus Instructor mode. Everyone uses Persona A (The Midnight Romantic). Routes are hash based (`#/welcome`, `#/trap`, …) and stay in sync with the store. Use **Instructor mode** in the top bar for stage jumps, stakeholder switching, trap reveals, discussion questions and the facilitator script. **Classroom view** scales the UI ~12% and requests fullscreen. **Reset demo** restores the initial state.
 
 ## Live voting (Ethics Council)
 
