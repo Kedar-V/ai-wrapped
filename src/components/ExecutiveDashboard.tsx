@@ -4,21 +4,22 @@ import { useAppStore } from '../store/useAppStore';
 
 export function ExecutiveDashboard() {
   const { flagged } = useProfile();
-  const { exStrat, corrected, delReq, purged, set } = useAppStore();
+  const { exStrat, exPurged, set } = useAppStore();
   const ex = EX[exStrat];
-  const open: string[] = [];
-  if (delReq && !purged) open.push('1 pending downstream deletion request');
-  if (corrected) open.push('1 profile correction logged');
-  if (!open.length) open.push('No open items');
+  const open = !flagged
+    ? ['No open items for this listener.']
+    : exPurged
+      ? ['Request resolved: the exported segment was purged.']
+      : ['1 pending request: a listener in “Evening Reflective · Wellness” disputed their label and asked to be removed from advertising systems.'];
   const tiles = [
     { l: 'Engagement', v: (ex.eng > 0 ? '+' : '') + ex.eng + '%', sub: 'vs baseline', col: '#1DF08A' },
     { l: 'Retention', v: ex.ret + '%', sub: '12-month', col: '#1DF08A' },
     { l: 'Ad revenue', v: (ex.rev > 0 ? '+' : '') + '$' + ex.rev + 'M', sub: 'annualized, illustrative', col: ex.rev > 0 ? '#FF8A1F' : '#A78BFA' },
-    { l: 'Complaints / month', v: String(ex.cmp + (delReq ? 1 : 0)), sub: delReq ? 'includes 1 from this listener' : 'volume', col: '#FF4FA3' },
-    { l: 'Profile corrections', v: String(ex.cor + (corrected ? 1 : 0)), sub: corrected ? 'includes 1 from this listener' : 'per month', col: '#F6F1FF' },
+    { l: 'Complaints / month', v: String(ex.cmp), sub: 'volume', col: '#FF4FA3' },
+    { l: 'Profile corrections', v: String(ex.cor), sub: 'per month', col: '#F6F1FF' },
     { l: 'Privacy risk', v: ex.risk, sub: 'qualitative', col: ex.risk === 'High' ? '#FF4F7A' : ex.risk === 'Medium' ? '#FF8A1F' : '#1DF08A' },
   ];
-  const purgeOff = !(flagged && !purged);
+  const purgeOff = !(flagged && !exPurged);
   return (
     <div className="g2">
       <div className="card pop">
@@ -34,7 +35,7 @@ export function ExecutiveDashboard() {
         <div className={'gap ' + ex.gc}>{ex.gov}</div>
         <div className="h3">Open items from the listener</div>
         {open.map((o) => <div key={o} className="small">• {o}</div>)}
-        <button className="btn pink" onClick={() => set({ purged: true })} disabled={purgeOff}>{!flagged ? 'No exported segment for this listener' : purged ? 'Exported segment purged' : 'Purge exported segment (executive authority)'}</button>
+        <button className="btn pink" onClick={() => set({ exPurged: true })} disabled={purgeOff}>{!flagged ? 'No exported segment for this listener' : exPurged ? 'Exported segment purged' : 'Purge exported segment (executive authority)'}</button>
         <div className="small muted">Only the executive role holds authority to purge an exported segment. A listener’s correction does not do this automatically. Purge cannot be undone until Reset demo.</div>
       </div>
     </div>

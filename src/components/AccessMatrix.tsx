@@ -51,16 +51,67 @@ export function AccessMatrix() {
   );
 }
 
-/** Power-vs-understanding gaps, computed from the visible matrix. */
+/** One gap box per role, computed from the visible matrix. */
 export function matrixGaps(M: Cell[][]) {
-  const g: { cls: string; t: string }[] = [];
+  const lv = (v: Cell) => ({ A: 'available', R: 'restricted', X: 'behind authorization', U: 'unavailable' }[v]);
+  const g: { who: string; cls: string; t: string }[] = [];
   // Columns: 0 Listener, 1 Engineer, 2 Executive, 3 Auditor
-  const exU = [2, 3, 4, 5].filter((r) => M[r][2] !== 'A').length;
-  if (M[10][2] !== 'U' && exU >= 2) g.push({ cls: 'gap d', t: `Executive can influence deployment but lacks full access to ${exU} of 4 understanding layers (explanation, features, rules, provenance). Decides without understanding.` });
-  if (M[9][0] !== 'A') g.push({ cls: 'gap p', t: `Listener correction authority is “${MXS[M[9][0]].l}”: they can dispute a label but not stop its downstream use.` });
-  if (M[5][0] === 'U') g.push({ cls: 'gap p', t: 'Listener cannot see data provenance. Affected without being able to check where the conclusion came from.' });
-  if (M[10][0] === 'U') g.push({ cls: 'gap p', t: 'Listener has no voice in deployment of the system that profiles them.' });
+  const lFix = M[9][0] === 'A';
+  const lProv = M[5][0] !== 'U';
+  const lVoice = M[10][0] !== 'U';
+  if (!lFix) {
+    g.push({
+      who: 'Listener',
+      cls: 'gap p',
+      t: 'Affected without power: can dispute the label but not stop its downstream use'
+        + (lProv ? '' : ', cannot see where the conclusion came from')
+        + (lVoice ? '.' : ', and has no say in whether the system is deployed.'),
+    });
+  } else if (!lVoice) {
+    g.push({ who: 'Listener', cls: 'gap d', t: 'Can now correct the label and its downstream copies, but still has no say in whether the system is deployed.' });
+  } else {
+    g.push({ who: 'Listener', cls: 'gap g', t: 'Can correct the label downstream and has a voice in deployment.' });
+  }
 
-  if (!g.length) g.push({ cls: 'gap g', t: 'No major power-versus-understanding gaps in this configuration.' });
+  const eOut = M[7][1] === 'A';
+  const eGov = M[8][1] === 'A';
+  if (!eOut && !eGov) {
+    g.push({ who: 'ML Engineer', cls: 'gap p', t: `Understands the mechanism without seeing its consequences: business outcomes are ${lv(M[7][1])} and governance records are ${lv(M[8][1])}. Builds what it cannot fully judge.` });
+  } else if (!eOut || !eGov) {
+    g.push({
+      who: 'ML Engineer',
+      cls: 'gap d',
+      t: `Understands the mechanism and now sees ${eOut ? 'business outcomes' : 'governance records'}, but ${eOut ? 'governance records are ' + lv(M[8][1]) : 'business outcomes are ' + lv(M[7][1])}. Sees only part of the impact.`,
+    });
+  } else {
+    g.push({ who: 'ML Engineer', cls: 'gap g', t: 'Understands the mechanism and can see its consequences.' });
+  }
+
+  const exU = [2, 3, 4, 5].filter((r) => M[r][2] !== 'A').length;
+  if (M[10][2] === 'U') {
+    g.push({ who: 'Executive', cls: 'gap d', t: 'Holds no deployment authority in this configuration, so someone else must answer for the decision.' });
+  } else if (exU >= 2) {
+    g.push({ who: 'Executive', cls: 'gap p', t: `Decides without understanding: holds deployment authority (${lv(M[10][2])}) but lacks full access to ${exU} of 4 understanding layers (explanation, features, rules, provenance).` });
+  } else if (exU === 1) {
+    g.push({ who: 'Executive', cls: 'gap d', t: `Holds deployment authority (${lv(M[10][2])}) and lacks full access to 1 of 4 understanding layers.` });
+  } else {
+    g.push({ who: 'Executive', cls: 'gap g', t: 'Deployment decisions are backed by full access to how the inference works.' });
+  }
+
+  const aSee = M[8][3] === 'A';
+  const aAct = M[9][3] !== 'U' || M[10][3] !== 'U';
+  const aFull = M[9][3] === 'A' || M[10][3] === 'A';
+  if (aSee && aFull) {
+    g.push({ who: 'Auditor', cls: 'gap g', t: 'Can inspect the evidence and has real authority to act on it.' });
+  } else if (aSee && aAct) {
+    g.push({ who: 'Auditor', cls: 'gap d', t: `Can inspect the records, but authority to act is limited (correction ${lv(M[9][3])}, deployment ${lv(M[10][3])}). Can push back, not block.` });
+  } else if (aSee) {
+    g.push({ who: 'Auditor', cls: 'gap p', t: 'Understanding without power: can see what evidence is missing but can only recommend, not block.' });
+  } else if (aAct) {
+    g.push({ who: 'Auditor', cls: 'gap d', t: `Has some authority but audit records are ${lv(M[8][3])}: could act without seeing the evidence.` });
+  } else {
+    g.push({ who: 'Auditor', cls: 'gap p', t: `Oversight in name only: audit records are ${lv(M[8][3])} and it has no authority to correct or block anything.` });
+  }
+
   return g;
 }

@@ -69,7 +69,7 @@ flag if score ≥ 70
 ```
 
 - Persona A (The Midnight Romantic) scores 99 and is flagged; with night 61% → 15% it scores 73, still flagged. B, C, D are not flagged.
-- Cross-view state `corrected`, `restricted`, `delReq`, `purged` drives the listener lanes, auditor records, executive tiles and trap lanes. `purged` is executive-only and irreversible until Reset. Correcting the label does not remove the exported advertising segment.
+- Lab roles are standalone (`labCor` / `labRes` / `labDel` / `exPurged`) so groups can work in parallel. Trap remedies use separate `corrected` / `restricted` / `purged`. Correcting a label never removes an exported advertising segment.
 
 ## Layout
 

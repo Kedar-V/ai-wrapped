@@ -26,11 +26,19 @@ export interface AppState {
   xStk: StakeholderId;
   featSel: keyof Features;
   stk: StakeholderId;
+  /** Trap remedy lanes (separate from Lab so roles can run in parallel). */
   corrected: boolean;
   restricted: boolean;
   delReq: boolean;
-  /** Executive-only and irreversible until Reset. */
+  /** Trap: executive purge of exported segment. Irreversible until Reset. */
   purged: boolean;
+  /** Lab Listener controls — isolated from Trap / Executive / Auditor. */
+  labCor: boolean;
+  labRes: boolean;
+  labDel: boolean;
+  labExp: boolean;
+  /** Lab Executive purge — isolated from Listener and Trap. */
+  exPurged: boolean;
   eng: Partial<Features> | null;
   adCamp: string;
   adStrat: string;
@@ -68,7 +76,8 @@ export function initState(): AppState {
   return {
     screen: 'welcome', from: 'welcome', persona: 'A', roadmap: false, present: false, wStep: 0, cls: {},
     xStage: 'pre', conf0: 50, conf1: 50, pred: '', act: '', xMode: 'levels', level: 1, xStk: 'listener', featSel: 'night',
-    stk: 'listener', corrected: false, restricted: false, delReq: false, purged: false, eng: null,
+    stk: 'listener', corrected: false, restricted: false, delReq: false, purged: false,
+    labCor: false, labRes: false, labDel: false, labExp: false, exPurged: false, eng: null,
     adCamp: 'wellness', adStrat: 'behavioral', exStrat: 'engagement', audStep: 0, audCls: {},
     mView: 'current', mProp: null, asym: 0, trapStep: 0, vote: '', dGrid: null, dPre: 'current',
     cStep: 1, cPri: [], cDef: {}, cPol: '', cNeg: 'B', cNegSel: { who: 'Listener', pid: 'B' }, cFinal: '', cBefore: '', discuss: false, ans: false,
@@ -91,6 +100,10 @@ export const useAppStore = create<AppState & Actions>((set) => ({
   go: (screen) =>
     set((st) => ({ screen, from: screen === 'instructor' ? (st.screen === 'instructor' ? st.from : st.screen) : screen })),
   pickPersona: (id) =>
-    set({ persona: id, eng: null, cls: {}, xStage: 'pre', pred: '', act: '', corrected: false, restricted: false, delReq: false, purged: false }),
+    set({
+      persona: id, eng: null, cls: {}, xStage: 'pre', pred: '', act: '',
+      corrected: false, restricted: false, delReq: false, purged: false,
+      labCor: false, labRes: false, labDel: false, labExp: false, exPurged: false,
+    }),
   reset: () => set(initState()),
 }));
