@@ -1,8 +1,10 @@
 import { SCREENS, SCR } from '../data/scripts';
 import { useAppStore } from '../store/useAppStore';
 
+const X_BACK = { result: 'predict', predict: 'explain', explain: 'pre' } as const;
+
 export function Footer() {
-  const { screen, from, go, reset, cBefore, vote } = useAppStore();
+  const { screen, from, go, reset, cBefore, vote, xStage, set } = useAppStore();
   const idx = SCREENS.indexOf(screen as (typeof SCREENS)[number]);
   const meta = SCR[screen];
   const nextBlocked = (screen === 'baseline' && !cBefore) || (screen === 'trapVote' && !vote);
@@ -14,6 +16,7 @@ export function Footer() {
   };
   const back = () => {
     if (screen === 'instructor') go(from);
+    else if (screen === 'explain' && xStage !== 'pre') set({ xStage: X_BACK[xStage] });
     else if (idx > 0) go(SCREENS[idx - 1]);
   };
   return (

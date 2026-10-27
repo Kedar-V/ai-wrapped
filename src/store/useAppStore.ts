@@ -100,7 +100,12 @@ export const useAppStore = create<AppState & Actions>((set) => ({
   ...initState(),
   set: (patch) => set(patch),
   go: (screen) =>
-    set((st) => ({ screen, from: screen === 'instructor' ? (st.screen === 'instructor' ? st.from : st.screen) : screen })),
+    set((st) => ({
+      screen,
+      from: screen === 'instructor' ? (st.screen === 'instructor' ? st.from : st.screen) : screen,
+      // Re-entering Explain always starts at step 1; in-screen Back handles earlier stages.
+      ...(screen === 'explain' && st.screen !== 'explain' ? { xStage: 'pre' as const, pred: '' as const, act: '' as const } : {}),
+    })),
   pickPersona: (id) =>
     set({
       persona: id, eng: null, cls: {}, xStage: 'pre', pred: '', act: '',
