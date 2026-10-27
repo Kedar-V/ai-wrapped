@@ -1,13 +1,21 @@
+import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { TRAP_TABS, type TrapPhase } from '../data/scripts';
 import { useListenerActions, useProfile } from '../hooks';
 import { useAppStore } from '../store/useAppStore';
 import { Lane, type LaneCls } from './ListenerDashboard';
 
+const ASK_AT: Record<2 | 4 | 6, TrapPhase> = { 2: 'early', 4: 'mid', 6: 'late' };
+const isGate = (n: number): n is 2 | 4 | 6 => n === 2 || n === 4 || n === 6;
+
 export function RevealController() {
   const { F, B } = useProfile();
-  const { trapStep: t, purged, set, go } = useAppStore();
+  const { trapStep: t, trapAsk, purged, set, go } = useAppStore();
   const a = useListenerActions();
   const sc = Math.round(B.total);
-  const done = t >= 6;
+  const asking = !!trapAsk;
+  const tab = trapAsk ? TRAP_TABS[trapAsk] : null;
+  const gateReady = isGate(t) && !asking;
   const lanes: { name: string; cls: LaneCls; note: string }[] = [
     { name: 'Profile correction', cls: a.corrected ? 'done' : 'todo', note: a.corrected ? 'Done: label removed from the listener’s dashboard.' : 'Available to the listener: remove the label from their own dashboard.' },
     { name: 'Future-use restriction', cls: a.restricted ? 'done' : 'todo', note: a.restricted ? 'Done: opted out of future psychological profiling.' : 'Not set: new exports can still use this inference.' },
@@ -22,13 +30,85 @@ export function RevealController() {
     { n: 5, title: 'The downstream consequence', head: 'The label became an advertising audience', body: 'The inferred segment (“Evening Reflective · Wellness”, 412,000 listeners) was offered to Calm Harbor’s wellness subscription campaign. The listener was not clearly told a personal inference would be used this way.', lanes: false },
     { n: 6, title: 'The accountability gap', head: 'Fixing the label does not fix the harm', body: 'The listener can remove the label from their dashboard, but a previously exported advertising segment is not automatically removed. These are four different remedies:', lanes: true },
   ];
+
+  const openQuestion = () => {
+    if (!isGate(t)) return;
+    set({ trapAsk: ASK_AT[t] });
+  };
+
+  const continueFromAsk = () => {
+    if (trapAsk === 'late') {
+      set({ trapAsk: '' });
+      go('trapVote');
+      return;
+    }
+    if (trapAsk === 'early') {
+      set({ trapAsk: '', trapStep: 3 });
+      return;
+    }
+    if (trapAsk === 'mid') {
+      set({ trapAsk: '', trapStep: 5 });
+    }
+  };
+
+  const advanceReveal = () => {
+    if (gateReady || asking) return;
+    set({ trapStep: Math.min(6, t + 1), trapAsk: '' });
+  };
+
+  const hideLast = () => {
+    if (asking) {
+      set({ trapAsk: '' });
+      return;
+    }
+    set({ trapStep: Math.max(0, t - 1), trapAsk: '' });
+  };
+
+  useEffect(() => {
+    if (!asking) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') set({ trapAsk: '' });
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [asking, set]);
+
+  const gateTab = gateReady ? TRAP_TABS[ASK_AT[t]] : null;
+  const continueLabel = trapAsk === 'late' ? 'Continue to trap vote' : 'Continue to next reveals';
+
+  const overlay = tab && createPortal(
+    <div className="trap-ask" role="dialog" aria-modal="true" aria-labelledby="trap-ask-title">
+      <div className="trap-ask-bg" aria-hidden="true" />
+      <div className="trap-ask-panel pop">
+        <div className="trap-ask-kicker">
+          Discussion · {tab.q.map((n) => 'Q' + n).join(' · ')}
+        </div>
+        <div className="trap-ask-phase">{tab.tab}</div>
+        <h2 id="trap-ask-title" className="trap-ask-title">{tab.prompt}</h2>
+        <p className="trap-ask-ask">{tab.ask}</p>
+        <div className="trap-ask-actions">
+          <button className="btn trap-ask-go" onClick={continueFromAsk}>{continueLabel}</button>
+          <button className="btn ghost" onClick={() => set({ trapAsk: '' })}>Close question</button>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+
   return (
     <>
       <div className="row">
-        <button className="btn pink" onClick={() => set({ trapStep: Math.min(6, t + 1) })} disabled={done}>{done ? 'All reveals shown' : t === 0 ? 'Start the reveal' : 'Reveal next'}</button>
-        <button className="btn ghost" onClick={() => set({ trapStep: Math.max(0, t - 1) })} disabled={t === 0}>Hide last reveal</button>
-        <button className="btn ghost" onClick={() => set({ trapStep: 0 })}>Restart sequence</button>
-        <span className="muted small">Reveal {t} of 6</span>
+        <button className="btn pink" onClick={advanceReveal} disabled={gateReady || asking || t >= 6}>
+          {t === 0 ? 'Start the reveal' : t >= 6 ? 'All reveals shown' : 'Reveal next'}
+        </button>
+        {gateReady && (
+          <button className="btn trap-ask-btn" onClick={openQuestion}>
+            Reveal discussion question · {gateTab!.q.map((n) => 'Q' + n).join(' · ')}
+          </button>
+        )}
+        <button className="btn ghost" onClick={hideLast} disabled={t === 0 && !asking}>Hide last</button>
+        <button className="btn ghost" onClick={() => set({ trapStep: 0, trapAsk: '' })}>Restart sequence</button>
+        <span className="muted small">{gateReady ? 'Pair complete — reveal the question' : `Reveal ${t} of 6`}</span>
       </div>
       <div className="col" aria-live="polite">
         {cards.filter((c) => t >= c.n).map((c) => (
@@ -49,12 +129,7 @@ export function RevealController() {
           </div>
         ))}
       </div>
-      {done && (
-        <div className="row">
-          <button className="btn pri" onClick={() => go('trapVote')}>Continue to trap vote</button>
-          <span className="small muted">Next: was the system ethical?</span>
-        </div>
-      )}
+      {overlay}
     </>
   );
 }

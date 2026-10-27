@@ -47,6 +47,8 @@ export interface AppState {
   mProp: Cell[][] | null;
   asym: number;
   trapStep: number;
+  /** Discussion pause after reveal pairs 2 / 4 / 6. */
+  trapAsk: '' | 'early' | 'mid' | 'late';
   vote: string;
   dGrid: Grid | null;
   dPre: PresetId | '';
@@ -77,7 +79,7 @@ export function initState(): AppState {
     stk: 'listener', corrected: false, restricted: false, delReq: false, purged: false,
     labCor: false, labRes: false, labDel: false, labExp: false, exPurged: false, eng: null,
     adCamp: 'wellness', adStrat: 'behavioral', exStrat: 'engagement', audStep: 0, audCls: {},
-    mView: 'current', mProp: null, asym: 0, trapStep: 0, vote: '', dGrid: null, dPre: 'current',
+    mView: 'current', mProp: null, asym: 0, trapStep: 0, trapAsk: '', vote: '', dGrid: null, dPre: 'current',
     cStep: 1, cPri: [], cDef: {}, cPol: '', cNeg: 'B', cNegSel: { who: 'Listener', pid: 'B' }, cFinal: '', cBefore: '',
     pollLocked: false, finalLocked: false, beforeLocked: false, trapLocked: false,
   };

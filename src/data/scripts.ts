@@ -130,14 +130,21 @@ export const COUNCIL_TABS: Record<1 | 2 | 3 | 4 | 5, TabScript> = {
   },
 };
 
-export type FacilCtx = { trapStep?: number; cStep?: number };
+export type TrapPhase = 'early' | 'mid' | 'late';
+export type FacilCtx = { trapStep?: number; trapAsk?: '' | TrapPhase; cStep?: number };
+
+export function trapPhase(step = 0, ask: '' | TrapPhase = ''): TrapPhase {
+  if (ask) return ask;
+  if (step <= 2) return 'early';
+  if (step <= 4) return 'mid';
+  return 'late';
+}
 
 /** Active facilitator script for the footer discussion prompt. */
 export function activeScript(screen: ScreenId, ctx: FacilCtx = {}): ScreenMeta {
   const base = SCR[screen];
   if (screen === 'trap') {
-    const phase = (ctx.trapStep ?? 0) <= 2 ? 'early' : (ctx.trapStep ?? 0) <= 4 ? 'mid' : 'late';
-    const t = TRAP_TABS[phase];
+    const t = TRAP_TABS[trapPhase(ctx.trapStep, ctx.trapAsk)];
     return { ...base, q: t.q, prompt: t.prompt, demo: t.demo, ask: t.ask, expect: t.expect, reveal: t.reveal, principle: t.principle };
   }
   if (screen === 'council') {

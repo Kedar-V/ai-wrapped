@@ -11,7 +11,6 @@ import {
   type NegWho,
   type PolicyId,
 } from '../data/policies';
-import { COUNCIL_TABS } from '../data/scripts';
 import { useAppStore } from '../store/useAppStore';
 import { BeforeAfterBars } from './BeforeAfterBars';
 import { FinalVotePoll } from './FinalVotePoll';
@@ -21,13 +20,6 @@ const STEPS = ['1 Principles', '2 Policy', '3 Negotiation', '4 Final vote', '5 B
 
 export function EthicsCouncil() {
   const { cStep: stp, cPri, cDef, cPol, cNegSel, cFinal, cBefore, cls, vote, pollLocked, set } = useAppStore();
-  const tab = COUNCIL_TABS[Math.min(5, Math.max(1, stp)) as 1 | 2 | 3 | 4 | 5];
-  const entry = (
-    <div className="card" style={{ borderColor: 'rgba(255,180,107,.35)' }}>
-      <div className="eyebrow" style={{ color: '#FFB46B' }}>Entry · {tab.q.map((n) => 'Q' + n).join(' · ')}</div>
-      <p className="lead" style={{ margin: 0 }}>{tab.prompt}</p>
-    </div>
-  );
   const pol = POLICIES.find((p) => p.id === cPol);
   const sel = cNegSel ?? { who: 'Listener' as NegWho, pid: 'B' as PolicyId };
   const selPol = POLICIES.find((p) => p.id === sel.pid)!;
@@ -54,7 +46,6 @@ export function EthicsCouncil() {
 
       {stp === 1 && (
         <>
-          {entry}
           <h2 className="disp h2">Choose your top three principles.</h2>
           <p className="lead">You can only hold three. Then defend each one in a sentence. {cPri.length} of 3 chosen.</p>
           <div className="g3">
@@ -81,7 +72,6 @@ export function EthicsCouncil() {
 
       {stp === 2 && (
         <>
-          {entry}
           <h2 className="disp h2">Choose a deployment policy.</h2>
           <div className="g2">
             {POLICIES.map((p) => (
@@ -109,7 +99,6 @@ export function EthicsCouncil() {
 
       {stp === 3 && (
         <>
-          {entry}
           <h2 className="disp h2">Who gains and who pays under each policy?</h2>
           <p className="lead">Each policy is built to serve one stakeholder best and costs the others. Tap any cell to hear that stakeholder’s case.</p>
           <div className="row small" style={{ flexWrap: 'wrap', gap: 10 }}>
@@ -167,7 +156,6 @@ export function EthicsCouncil() {
 
       {stp === 4 && (
         <>
-          {entry}
           <h2 className="disp h2">Final vote: should this system ship?</h2>
           <FinalVotePoll />
         </>
@@ -175,7 +163,6 @@ export function EthicsCouncil() {
 
       {stp === 5 && (
         <>
-          {entry}
           <h2 className="disp h2">How your view moved.</h2>
           <div className="g2">
             <div className="card">

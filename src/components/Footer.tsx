@@ -4,9 +4,9 @@ import { useAppStore } from '../store/useAppStore';
 const X_BACK = { result: 'predict', predict: 'explain', explain: 'pre' } as const;
 
 export function Footer() {
-  const { screen, go, reset, cBefore, vote, xStage, set, trapStep, cStep } = useAppStore();
+  const { screen, go, reset, cBefore, vote, xStage, set, trapStep, trapAsk, cStep } = useAppStore();
   const idx = SCREENS.indexOf(screen);
-  const meta = activeScript(screen, { trapStep, cStep });
+  const meta = activeScript(screen, { trapStep, trapAsk, cStep });
   const nextBlocked = (screen === 'baseline' && !cBefore) || (screen === 'trapVote' && !vote);
   const next = () => {
     if (nextBlocked) return;
